@@ -23,19 +23,32 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody UserDTO userDTO, HttpServletResponse response) {
+    public ApiResponse registerUser(@RequestBody UserDTO userDTO, HttpServletResponse response) {
         String result = userService.registerUser(userDTO);
 
         if (result.equals("Registration Successful!")) {
-            Cookie cookie = new Cookie("userEmail", userDTO.getEmail());
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            cookie.setMaxAge(7 * 24 * 60 * 60); // 7 Days
-            response.addCookie(cookie);
+            // Generate JWT token using username or email
+            String token = jwtUtil.generateToken(userDTO.getUsername());
+
+            // Set token in cookie
+            Cookie jwtCookie = new Cookie("jwtToken", token);
+            jwtCookie.setHttpOnly(true);
+            jwtCookie.setPath("/");
+            jwtCookie.setMaxAge(7 * 24 * 60 * 60); // 7 Days
+            response.addCookie(jwtCookie);
+
+            // Optionally set another cookie to store username (non-HTTP-only, accessible to frontend if needed)
+            Cookie userCookie = new Cookie("username", userDTO.getUsername());
+            userCookie.setPath("/");
+            userCookie.setMaxAge(7 * 24 * 60 * 60);
+            response.addCookie(userCookie);
+
+            return new ApiResponse(201, "Registration Successful!", "JWT Token: " + token);
         }
 
-        return result;
+        return new ApiResponse(400, "Registration Failed", result);
     }
+
 
     @GetMapping("/roles")
     public UserRole[] getAllRoles() {
