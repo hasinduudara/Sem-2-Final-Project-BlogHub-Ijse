@@ -3,6 +3,7 @@ package lk.ijse.gdse.backend.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lk.ijse.gdse.backend.dto.ApiResponse;
+import lk.ijse.gdse.backend.dto.LoginResponse;
 import lk.ijse.gdse.backend.dto.UserDTO;
 import lk.ijse.gdse.backend.entity.UserEntity;
 import lk.ijse.gdse.backend.entity.UserRole;
@@ -69,10 +70,11 @@ public class UserController {
         jwtCookie.setHttpOnly(true);
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
-
         response.addCookie(jwtCookie);
 
-        return new ApiResponse(200, "Login Success", user.getUsername() + " logged in");
+        // ✅ Show token directly in API response
+        return new ApiResponse(200, "Login Success", new LoginResponse(user.getUsername(), token));
     }
+
 
 }
