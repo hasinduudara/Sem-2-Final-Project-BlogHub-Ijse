@@ -1,64 +1,154 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Get all elements
-    const toggleButtons = document.querySelectorAll('.toggle-btn');
-    const loginForm = document.querySelector('.login-form');
-    const registerForm = document.querySelector('.register-form');
-    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
-    const forgotPasswordModal = document.getElementById('forgotPasswordModal');
-    const closeBtn = forgotPasswordModal.querySelector('.close');
-    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleButtons = document.querySelectorAll(".toggle-btn");
+  const loginForm = document.querySelector(".login-form");
+  const registerForm = document.querySelector(".register-form");
+  const forgotPasswordLink = document.getElementById("forgotPasswordLink");
+  const forgotPasswordModal = document.getElementById("forgotPasswordModal");
+  const closeBtn = forgotPasswordModal.querySelector(".close");
+  const forgotPasswordForm = document.getElementById("forgotPasswordForm");
 
-    // Add click event listeners to toggle buttons
-    toggleButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Remove active class from all buttons
-            toggleButtons.forEach(btn => btn.classList.remove('active'));
-            
-            // Add active class to clicked button
-            button.classList.add('active');
+  toggleButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      toggleButtons.forEach((btn) => btn.classList.remove("active"));
+      button.classList.add("active");
 
-            // Toggle forms based on button clicked
-            if (button.dataset.form === 'login') {
-                loginForm.classList.add('active');
-                registerForm.classList.remove('active');
-            } else {
-                registerForm.classList.add('active');
-                loginForm.classList.remove('active');
-            }
+      if (button.dataset.form === "login") {
+        loginForm.classList.add("active");
+        registerForm.classList.remove("active");
+      } else {
+        registerForm.classList.add("active");
+        loginForm.classList.remove("active");
+      }
+    });
+  });
+
+  forgotPasswordLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    forgotPasswordModal.style.display = "block";
+  });
+
+  closeBtn.addEventListener("click", () => {
+    forgotPasswordModal.style.display = "none";
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === forgotPasswordModal) {
+      forgotPasswordModal.style.display = "none";
+    }
+  });
+
+  forgotPasswordForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("forgotEmail").value;
+    alert(
+      "Password reset link has been sent to your email if it exists in our system."
+    );
+    forgotPasswordModal.style.display = "none";
+  });
+
+  // -----------------------
+  //  REGISTER FORM HANDLER
+  // -----------------------
+  document
+    .getElementById("registerForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("registerUsername").value;
+      const email = document.getElementById("registerEmail").value;
+      const password = document.getElementById("registerPassword").value;
+      const role = document.getElementById("role").value;
+
+      try {
+        const res = await fetch("http://localhost:8080/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ username, email, password, role }),
         });
-    });
 
-    // Forgot Password Modal functionality
-    forgotPasswordLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        forgotPasswordModal.style.display = 'block';
-    });
-
-    closeBtn.addEventListener('click', () => {
-        forgotPasswordModal.style.display = 'none';
-    });
-
-    // Close modal when clicking outside
-    window.addEventListener('click', (e) => {
-        if (e.target === forgotPasswordModal) {
-            forgotPasswordModal.style.display = 'none';
+        const data = await res.json();
+        if (res.ok && data.code === 201) {
+          alert("Registration Successful! Please login.");
+          // Switch to login form
+          document.querySelector('.toggle-btn[data-form="login"]').click();
+          document.getElementById("loginEmail").value = email; // pre-fill email
+        } else {
+          alert(data.data || "Registration failed");
         }
+      } catch (err) {
+        console.error(err);
+        alert("An error occurred during registration.");
+      }
     });
 
-    // Handle forgot password form submission
-    forgotPasswordForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('forgotEmail').value;
-        
-        try {
-            // Here you would typically make an API call to send reset password email
-            console.log('Sending reset password email to:', email);
-            // Show success message or handle API response
-            alert('Password reset link has been sent to your email if it exists in our system.');
-            forgotPasswordModal.style.display = 'none';
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while processing your request. Please try again.');
+  // -----------------------
+  //  LOGIN FORM HANDLER
+  // -----------------------
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    try {
+      const res = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.code === 200) {
+        alert("Login Successful!");
+        // Role check + redirect
+        const userRole = await fetchUserRole(email);
+        if (userRole) {
+          redirectToDashboard(userRole.toUpperCase());
+        } else {
+          alert("Unable to determine user role.");
         }
-    });
+      } else {
+        alert(data.data || "Login failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred during login.");
+    }
+  });
+
+  // -----------------------
+  // HELPER: Fetch user role
+  // -----------------------
+  async function fetchUserRole(email) {
+    try {
+      const res = await fetch(`http://localhost:8080/api/users/${email}`, {
+        credentials: "include",
+      });
+      if (!res.ok) return null;
+
+      const userData = await res.json();
+      return userData.role || null;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }
+
+  // -----------------------
+  // HELPER: Redirect
+  // -----------------------
+  function redirectToDashboard(role) {
+    if (role === "USER") {
+      window.location.href = "/Frontend/pages/home-page.html";
+    } else if (role === "PUBLISHER") {
+      window.location.href =
+        "/Frontend/pages/Publisher/publisher-dashboard.html";
+    } else if (role === "ADMIN") {
+      window.location.href = "/Frontend/pages/Admin/admin-dashboard.html";
+    } else {
+      alert("Unknown role: " + role);
+    }
+  }
 });
