@@ -46,10 +46,9 @@ public class UserServiceImpl implements UserService {
                 .orElse(null);
     }
 
-//    @Override
-//    public UserEntity getUserByEmail(String email) {
-//        return userRepository.findByEmail(email).orElse(null);
-//    }
-
+    @Override
+    public UserEntity findByEmail(String email) { // ✅ No password check for JWT validation
+        return userRepository.findByEmail(email).orElse(null);
+    }
 
 }
