@@ -101,5 +101,5 @@ public class UserController {
 
         return new ApiResponse(200, "Logout Successful", null);
     }
-    
+
 }
