@@ -10,6 +10,7 @@ import lk.ijse.gdse.backend.entity.UserRole;
 import lk.ijse.gdse.backend.service.UserService;
 import lk.ijse.gdse.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -76,5 +77,29 @@ public class UserController {
         return new ApiResponse(200, "Login Success", new LoginResponse(user.getUsername(), token));
     }
 
+    @GetMapping("/users/{email}")
+    public UserEntity getUserByEmail(@PathVariable String email) {
+        UserEntity user = userService.findByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        return user;
+    }
 
+    @PostMapping("/logout")
+    public ApiResponse logout(HttpServletResponse response) {
+        Cookie jwtCookie = new Cookie("jwtToken", null);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(0); // expire immediately
+        response.addCookie(jwtCookie);
+
+        Cookie userCookie = new Cookie("username", null);
+        userCookie.setPath("/");
+        userCookie.setMaxAge(0);
+        response.addCookie(userCookie);
+
+        return new ApiResponse(200, "Logout Successful", null);
+    }
+    
 }
