@@ -23,19 +23,20 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .cors().and()
-                .authorizeHttpRequests()
-                .requestMatchers("/api/auth/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authenticationProvider(authenticationProvider());
+        http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> {}) // uses default settings
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**", "/api/articles/published", "/api/articles/{id}").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {

@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import org.springframework.web.reactive.function.client.WebClient;
+
 import java.util.List;
 
 @Configuration
@@ -33,5 +35,10 @@ public class ApplicationConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public WebClient webClient() {
+        return WebClient.builder().build();
     }
 }

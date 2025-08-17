@@ -21,4 +21,8 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    public String getName() {
+        return username;
+    }
 }
