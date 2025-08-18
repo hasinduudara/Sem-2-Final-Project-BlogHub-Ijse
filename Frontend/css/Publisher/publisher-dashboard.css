@@ -1,72 +1,75 @@
 :root {
-            --primary-color: #4e73df;
-            --secondary-color: #f8f9fc;
-        }
-        body {
-            background-color: #f8f9fc;
-        }
-        .navbar {
-            background-color: white;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-        .profile-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            cursor: pointer;
-        }
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-        .card {
-            border: none;
-            border-radius: 0.5rem;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
-            transition: transform 0.2s;
-            margin-bottom: 1.5rem;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .article-img {
-            height: 200px;
-            object-fit: cover;
-            border-top-left-radius: 0.5rem;
-            border-top-right-radius: 0.5rem;
-        }
-        .status-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-        .btn-primary {
-            background-color: var(--primary-color);
-            border: none;
-        }
-        .btn-primary:hover {
-            background-color: #2e59d9;
-        }
-        .btn-outline-primary {
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        .btn-outline-primary:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        #createArticleModal .modal-content {
-            border: none;
-            border-radius: 0.5rem;
-        }
-        .form-control, .form-select, .form-control:focus, .form-select:focus {
-            border: 1px solid #d1d3e2;
-            box-shadow: none;
-        }
-        .nav-pills .nav-link.active {
-            background-color: var(--primary-color);
-        }
-        .nav-pills .nav-link {
-            color: #5a5c69;
-        }
+  --primary-color: #4e73df;
+  --secondary-color: #f8f9fc;
+}
+body {
+  background-color: #f8f9fc;
+}
+.navbar {
+  background-color: white;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+.profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+.card {
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+  transition: transform 0.2s;
+  margin-bottom: 1.5rem;
+}
+.card:hover {
+  transform: translateY(-5px);
+}
+.article-img {
+  height: 200px;
+  object-fit: cover;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+.status-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+.btn-primary {
+  background-color: var(--primary-color);
+  border: none;
+}
+.btn-primary:hover {
+  background-color: #2e59d9;
+}
+.btn-outline-primary {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+.btn-outline-primary:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+#createArticleModal .modal-content {
+  border: none;
+  border-radius: 0.5rem;
+}
+.form-control,
+.form-select,
+.form-control:focus,
+.form-select:focus {
+  border: 1px solid #d1d3e2;
+  box-shadow: none;
+}
+.nav-pills .nav-link.active {
+  background-color: var(--primary-color);
+}
+.nav-pills .nav-link {
+  color: #5a5c69;
+}

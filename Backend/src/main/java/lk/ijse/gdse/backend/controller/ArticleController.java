@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,7 +23,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:5500", allowCredentials = "true") // adjust if needed
 public class ArticleController {
-
     private final ArticleService articleService;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;

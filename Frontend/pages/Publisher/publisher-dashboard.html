@@ -15,83 +15,10 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
-    <style>
-      :root {
-        --primary-color: #4e73df;
-        --secondary-color: #f8f9fc;
-      }
-      body {
-        background-color: #f8f9fc;
-      }
-      .navbar {
-        background-color: white;
-        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-      }
-      .profile-img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        cursor: pointer;
-      }
-      .dropdown-menu {
-        border: none;
-        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-      }
-      .card {
-        border: none;
-        border-radius: 0.5rem;
-        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
-        transition: transform 0.2s;
-        margin-bottom: 1.5rem;
-      }
-      .card:hover {
-        transform: translateY(-5px);
-      }
-      .article-img {
-        height: 200px;
-        object-fit: cover;
-        border-top-left-radius: 0.5rem;
-        border-top-right-radius: 0.5rem;
-      }
-      .status-badge {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-      }
-      .btn-primary {
-        background-color: var(--primary-color);
-        border: none;
-      }
-      .btn-primary:hover {
-        background-color: #2e59d9;
-      }
-      .btn-outline-primary {
-        color: var(--primary-color);
-        border-color: var(--primary-color);
-      }
-      .btn-outline-primary:hover {
-        background-color: var(--primary-color);
-        color: white;
-      }
-      #createArticleModal .modal-content {
-        border: none;
-        border-radius: 0.5rem;
-      }
-      .form-control,
-      .form-select,
-      .form-control:focus,
-      .form-select:focus {
-        border: 1px solid #d1d3e2;
-        box-shadow: none;
-      }
-      .nav-pills .nav-link.active {
-        background-color: var(--primary-color);
-      }
-      .nav-pills .nav-link {
-        color: #5a5c69;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="/Frontend/pages/Publisher/publisher-dashboard.html"
+    />
   </head>
   <body>
     <!-- Navigation -->
@@ -340,169 +267,52 @@
 
     <!-- Custom JS for UI interactions -->
     <script>
-      // Profile image click handler
-      document
-        .getElementById("profileDropdown")
-        .addEventListener("click", function () {
-          // This would normally check if a profile image exists and update the src
-          // For demo, we're using a placeholder
-          const profileImg = this;
-          // In a real app, you would check if user has a profile image
-          // If not, you could show a default avatar
-          console.log("Profile dropdown clicked");
-        });
-
-      // Generate Article button click handler
-      document
-        .getElementById("generateArticleBtn")
-        .addEventListener("click", function () {
-          // This would normally redirect to an article generation page
-          alert("Redirecting to article generation page...");
-          // window.location.href = '/generate-article';
-        });
-
-      // Form submission handler
-      document
-        .getElementById("articleForm")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
-          // In a real app, this would submit the form data to your backend
-          console.log("Form submitted");
-          // Hide the modal after submission
-          const modal = bootstrap.Modal.getInstance(
-            document.getElementById("createArticleModal")
-          );
-          modal.hide();
-          // Show success message
-          alert("Article published successfully!");
-        });
-
-      document
-        .getElementById("logoutBtn")
-        .addEventListener("click", async () => {
-          try {
-            const res = await fetch("http://localhost:8080/api/auth/logout", {
-              method: "POST",
-              credentials: "include",
-            });
-
-            if (res.ok) {
-              console.log("Token deleted");
-              alert("Logged out successfully!");
-              window.location.href =
-                "/Frontend/pages/login-and-register/login-and-register.html"; // Login page path එක
-            } else {
-              console.error("Logout failed");
-              alert("Logout failed");
-            }
-          } catch (err) {
-            console.error(err);
-            alert("Error logging out");
-          }
-        });
-
       const articleForm = document.getElementById("articleForm");
 
       articleForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const title = document.getElementById("articleTitle").value.trim();
-        const content = document.getElementById("articleContent").value.trim();
+        // Collect form values
+        const title = document.getElementById("articleTitle").value;
+        const content = document.getElementById("articleContent").value;
         const category = document.getElementById("articleCategory").value;
-        const publishDate = document.getElementById("publishDate").value; // '' or ISO
+        const publishDate = document.getElementById("publishDate").value;
         const imageFile = document.getElementById("articleImage").files[0];
 
-        const fd = new FormData();
-        fd.append("title", title);
-        fd.append("content", content);
-        fd.append("category", category === "Select a category" ? "" : category);
-        if (publishDate) fd.append("publishDate", publishDate);
-        if (imageFile) fd.append("image", imageFile);
+        // Prepare form data (multipart/form-data)
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("content", content);
+        formData.append("category", category);
+        if (publishDate) formData.append("publishDate", publishDate);
+        if (imageFile) formData.append("image", imageFile);
 
         try {
-          const res = await fetch("http://localhost:8080/api/articles", {
+          const response = await fetch("http://localhost:8080/api/articles", {
             method: "POST",
-            credentials: "include", // JWT cookie
-            body: fd,
+            body: formData,
+            credentials: "include", // 🔑 send cookies (JWT token stored in HttpOnly cookie)
           });
 
-          if (!res.ok) throw new Error("Create failed");
-          const data = await res.json();
+          if (!response.ok) {
+            throw new Error("Failed to create article");
+          }
 
-          // close modal
+          const result = await response.json();
+          console.log("✅ Article created:", result);
+
+          alert("Article created successfully!");
+          articleForm.reset();
+
+          // Close modal after submission
           const modal = bootstrap.Modal.getInstance(
             document.getElementById("createArticleModal")
           );
           modal.hide();
-
-          alert(
-            data.status === "PUBLISHED"
-              ? "Article published!"
-              : "Article scheduled for " + data.scheduleAt
-          );
-
-          // Reload your dashboard lists
-          loadMyArticles("PUBLISHED");
-          loadMyArticles("SCHEDULED");
-        } catch (err) {
-          console.error(err);
-          alert("Error creating article");
+        } catch (error) {
+          console.error("❌ Error creating article:", error);
+          alert("Error creating article: " + error.message);
         }
-      });
-
-      async function loadMyArticles(status) {
-        const wrapId = status === "PUBLISHED" ? "published" : "scheduled";
-        const container = document.getElementById(wrapId);
-        container.innerHTML = ""; // clear
-
-        const res = await fetch(
-          `http://localhost:8080/api/articles/me?status=${status}&page=0&size=50`,
-          {
-            credentials: "include",
-          }
-        );
-        const json = await res.json();
-        if (!json.content.length) {
-          container.innerHTML = `<div class="text-center py-5">
-        <h4 class="text-muted">No ${status.toLowerCase()} articles</h4>
-      </div>`;
-          return;
-        }
-
-        const rows = document.createElement("div");
-        rows.className = "row g-3";
-
-        json.content.forEach((a) => {
-          const col = document.createElement("div");
-          col.className = "col-md-4";
-          col.innerHTML = `
-      <div class="card h-100">
-        ${
-          a.imageUrl
-            ? `<img src="${a.imageUrl}" class="card-img-top" alt="">`
-            : ""
-        }
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">${a.title}</h5>
-          <p class="card-text">${a.excerpt}</p>
-          <div class="mt-auto">
-            <a class="btn btn-outline-primary btn-sm" href="/Frontend/pages/Publisher/publisher-dashboard.html#view-${
-              a.id
-            }">
-              View
-            </a>
-          </div>
-        </div>
-      </div>`;
-          rows.appendChild(col);
-        });
-
-        container.appendChild(rows);
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        loadMyArticles("PUBLISHED");
-        loadMyArticles("SCHEDULED");
       });
     </script>
   </body>
