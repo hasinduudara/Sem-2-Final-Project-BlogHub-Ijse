@@ -65,12 +65,12 @@ public class JwtUtil {
         return extractEmail(token);
     }
 
-    // ✅ Helper: Extract JWT from Cookie or Header
+    // ✅ Helper: Extract JWT from Cookie or Header - FIXED COOKIE NAME
     private String extractTokenFromCookieOrHeader(HttpServletRequest request) {
-        // From Cookies
+        // From Cookies - Fixed to look for "jwtToken" instead of "jwt"
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if ("jwt".equals(cookie.getName())) { // ⚠️ make sure you use same name when setting cookie
+                if ("jwtToken".equals(cookie.getName())) { // ✅ Fixed cookie name
                     return cookie.getValue();
                 }
             }

@@ -1,180 +1,509 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Publisher Dashboard - BlogHub</title>
     <link rel="icon" href="/Frontend/assets/image/blogging.png" />
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/Frontend/css/Publisher/publisher-dashboard.css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #4e73df;
+        --secondary-color: #f8f9fc;
+      }
+      body {
+        background-color: #f8f9fc;
+      }
+      .navbar {
+        background-color: white;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+      }
+      .profile-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+      }
+      .dropdown-menu {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+      }
+      .card {
+        border: none;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        transition: transform 0.2s;
+        margin-bottom: 1.5rem;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+      }
+      .article-img {
+        height: 200px;
+        object-fit: cover;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+      }
+      .status-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+      }
+      .btn-primary {
+        background-color: var(--primary-color);
+        border: none;
+      }
+      .btn-primary:hover {
+        background-color: #2e59d9;
+      }
+      .btn-outline-primary {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+      .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        color: white;
+      }
+      #createArticleModal .modal-content {
+        border: none;
+        border-radius: 0.5rem;
+      }
+      .form-control,
+      .form-select,
+      .form-control:focus,
+      .form-select:focus {
+        border: 1px solid #d1d3e2;
+        box-shadow: none;
+      }
+      .nav-pills .nav-link.active {
+        background-color: var(--primary-color);
+      }
+      .nav-pills .nav-link {
+        color: #5a5c69;
+      }
+    </style>
+  </head>
+  <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold text-primary" href="#">BlogHub</a>
-            <div class="d-flex align-items-center">
-                <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#createArticleModal">
-                    <i class="fas fa-plus me-1"></i> New Article
-                </button>
-                <div class="dropdown me-2">
-                    <img src="https://via.placeholder.com/40" alt="Profile" class="profile-img" id="profileDropdown" 
-                         data-bs-toggle="dropdown" aria-expanded="false">
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                    </ul>
-                </div>
-                <button id="logoutBtn" class="btn btn-outline-danger">
-                    <i class="fas fa-sign-out-alt me-1"></i> Logout
-                </button>
-            </div>
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-primary" href="#">BlogHub</a>
+        <div class="d-flex align-items-center">
+          <button
+            class="btn btn-primary me-2"
+            data-bs-toggle="modal"
+            data-bs-target="#createArticleModal"
+          >
+            <i class="fas fa-plus me-1"></i> New Article
+          </button>
+          <div class="dropdown me-2">
+            <img
+              src="https://via.placeholder.com/40"
+              alt="Profile"
+              class="profile-img"
+              id="profileDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            />
+            <ul
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="profileDropdown"
+            >
+              <li>
+                <a class="dropdown-item" href="#"
+                  ><i class="fas fa-user me-2"></i>Profile</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="#"
+                  ><i class="fas fa-cog me-2"></i>Settings</a
+                >
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a class="dropdown-item text-danger" href="#"
+                  ><i class="fas fa-sign-out-alt me-2"></i>Logout</a
+                >
+              </li>
+            </ul>
+          </div>
+          <button id="logoutBtn" class="btn btn-outline-danger">
+            <i class="fas fa-sign-out-alt me-1"></i> Logout
+          </button>
         </div>
+      </div>
     </nav>
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="h4 mb-0">My Articles</h2>
-            <div>
-                <button class="btn btn-outline-primary" id="generateArticleBtn">
-                    <i class="fas fa-magic me-1"></i> Generate Article
-                </button>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4 mb-0">My Articles</h2>
+        <div>
+          <button class="btn btn-outline-primary" id="generateArticleBtn">
+            <i class="fas fa-magic me-1"></i> Generate Article
+          </button>
+        </div>
+      </div>
+
+      <!-- Article Tabs -->
+      <ul class="nav nav-pills mb-4" id="articleTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link active"
+            id="published-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#published"
+            type="button"
+            role="tab"
+          >
+            Published
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="scheduled-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#scheduled"
+            type="button"
+            role="tab"
+          >
+            Scheduled
+          </button>
+        </li>
+      </ul>
+
+      <!-- Tab Content -->
+      <div class="tab-content" id="articleTabsContent">
+        <!-- Published Articles -->
+        <div
+          class="tab-pane fade show active"
+          id="published"
+          role="tabpanel"
+          aria-labelledby="published-tab"
+        >
+          <div class="text-center py-5">
+            <div class="mb-3">
+              <i class="fas fa-newspaper fa-4x text-muted mb-3"></i>
+              <h4 class="text-muted">No articles published yet</h4>
+              <p class="text-muted">
+                Get started by creating your first article
+              </p>
+              <button
+                class="btn btn-primary mt-2"
+                data-bs-toggle="modal"
+                data-bs-target="#createArticleModal"
+              >
+                <i class="fas fa-plus me-1"></i> Create Article
+              </button>
             </div>
+          </div>
         </div>
 
-        <!-- Article Tabs -->
-        <ul class="nav nav-pills mb-4" id="articleTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="published-tab" data-bs-toggle="pill" data-bs-target="#published" 
-                        type="button" role="tab">Published</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="scheduled-tab" data-bs-toggle="pill" data-bs-target="#scheduled" 
-                        type="button" role="tab">Scheduled</button>
-            </li>
-
-        </ul>
-
-        <!-- Tab Content -->
-        <div class="tab-content" id="articleTabsContent">
-            <!-- Published Articles -->
-            <div class="tab-pane fade show active" id="published" role="tabpanel" aria-labelledby="published-tab">
-                <div class="text-center py-5">
-                    <div class="mb-3">
-                        <i class="fas fa-newspaper fa-4x text-muted mb-3"></i>
-                        <h4 class="text-muted">No articles published yet</h4>
-                        <p class="text-muted">Get started by creating your first article</p>
-                        <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#createArticleModal">
-                            <i class="fas fa-plus me-1"></i> Create Article
-                        </button>
-                    </div>
-                </div>
+        <!-- Scheduled Articles -->
+        <div
+          class="tab-pane fade"
+          id="scheduled"
+          role="tabpanel"
+          aria-labelledby="scheduled-tab"
+        >
+          <div class="text-center py-5">
+            <div class="mb-3">
+              <i class="fas fa-calendar-alt fa-4x text-muted mb-3"></i>
+              <h4 class="text-muted">No scheduled articles</h4>
+              <p class="text-muted">
+                Schedule your first article by setting a future publish date
+              </p>
+              <button
+                class="btn btn-primary mt-2"
+                data-bs-toggle="modal"
+                data-bs-target="#createArticleModal"
+              >
+                <i class="fas fa-plus me-1"></i> Create Article
+              </button>
             </div>
-
-            <!-- Scheduled Articles -->
-            <div class="tab-pane fade" id="scheduled" role="tabpanel" aria-labelledby="scheduled-tab">
-                <div class="text-center py-5">
-                    <div class="mb-3">
-                        <i class="fas fa-calendar-alt fa-4x text-muted mb-3"></i>
-                        <h4 class="text-muted">No scheduled articles</h4>
-                        <p class="text-muted">Schedule your first article by setting a future publish date</p>
-                        <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#createArticleModal">
-                            <i class="fas fa-plus me-1"></i> Create Article
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Create Article Modal -->
-    <div class="modal fade" id="createArticleModal" tabindex="-1" aria-labelledby="createArticleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createArticleModalLabel">Create New Article</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div
+      class="modal fade"
+      id="createArticleModal"
+      tabindex="-1"
+      aria-labelledby="createArticleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="createArticleModalLabel">
+              Create New Article
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="articleForm">
+              <div class="mb-3">
+                <label for="articleTitle" class="form-label"
+                  >Article Title</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="articleTitle"
+                  placeholder="Enter article title"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="articleImage" class="form-label"
+                  >Featured Image</label
+                >
+                <input
+                  class="form-control"
+                  type="file"
+                  id="articleImage"
+                  accept="image/*"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="articleContent" class="form-label">Content</label>
+                <textarea
+                  class="form-control"
+                  id="articleContent"
+                  rows="10"
+                  placeholder="Write your article here..."
+                ></textarea>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="articleCategory" class="form-label"
+                    >Category</label
+                  >
+                  <select class="form-select" id="articleCategory">
+                    <option selected>Select a category</option>
+                    <option value="technology">Technology</option>
+                    <option value="web-dev">Web Development</option>
+                    <option value="ai">Artificial Intelligence</option>
+                    <option value="programming">Programming</option>
+                  </select>
                 </div>
-                <div class="modal-body">
-                    <form id="articleForm">
-                        <div class="mb-3">
-                            <label for="articleTitle" class="form-label">Article Title</label>
-                            <input type="text" class="form-control" id="articleTitle" placeholder="Enter article title" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="articleImage" class="form-label">Featured Image</label>
-                            <input class="form-control" type="file" id="articleImage" accept="image/*">
-                        </div>
-                        <div class="mb-3">
-                            <label for="articleContent" class="form-label">Content</label>
-                            <textarea class="form-control" id="articleContent" rows="10" placeholder="Write your article here..."></textarea>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="articleCategory" class="form-label">Category</label>
-                                <select class="form-select" id="articleCategory">
-                                    <option selected>Select a category</option>
-                                    <option value="technology">Technology</option>
-                                    <option value="web-dev">Web Development</option>
-                                    <option value="ai">Artificial Intelligence</option>
-                                    <option value="programming">Programming</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="publishDate" class="form-label">Publish Date</label>
-                                <input type="datetime-local" class="form-control" id="publishDate">
-                                <div class="form-text">Leave empty to publish immediately</div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-end mt-4">
-                            <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Publish Article</button>
-                        </div>
-                    </form>
+                <div class="col-md-6 mb-3">
+                  <label for="publishDate" class="form-label"
+                    >Publish Date</label
+                  >
+                  <input
+                    type="datetime-local"
+                    class="form-control"
+                    id="publishDate"
+                  />
+                  <div class="form-text">
+                    Leave empty to publish immediately
+                  </div>
                 </div>
-            </div>
+              </div>
+              <div class="d-flex justify-content-end mt-4">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary me-2"
+                  data-bs-dismiss="modal"
+                >
+                  Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  Publish Article
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Custom JS for UI interactions -->
     <script>
-        // Profile image click handler
-        document.getElementById('profileDropdown').addEventListener('click', function() {
-            // This would normally check if a profile image exists and update the src
-            // For demo, we're using a placeholder
-            const profileImg = this;
-            // In a real app, you would check if user has a profile image
-            // If not, you could show a default avatar
-            console.log("Profile dropdown clicked");
+      // Profile image click handler
+      document
+        .getElementById("profileDropdown")
+        .addEventListener("click", function () {
+          // This would normally check if a profile image exists and update the src
+          // For demo, we're using a placeholder
+          const profileImg = this;
+          // In a real app, you would check if user has a profile image
+          // If not, you could show a default avatar
+          console.log("Profile dropdown clicked");
         });
 
-        // Generate Article button click handler
-        document.getElementById('generateArticleBtn').addEventListener('click', function() {
-            // This would normally redirect to an article generation page
-            alert('Redirecting to article generation page...');
-            // window.location.href = '/generate-article';
+      // Generate Article button click handler
+      document
+        .getElementById("generateArticleBtn")
+        .addEventListener("click", function () {
+          // This would normally redirect to an article generation page
+          alert("Redirecting to article generation page...");
+          // window.location.href = '/generate-article';
         });
 
-        // Form submission handler
-        document.getElementById('articleForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // In a real app, this would submit the form data to your backend
-            console.log('Form submitted');
-            // Hide the modal after submission
-            const modal = bootstrap.Modal.getInstance(document.getElementById('createArticleModal'));
-            modal.hide();
-            // Show success message
-            alert('Article published successfully!');
+      // Form submission handler
+      document
+        .getElementById("articleForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          // In a real app, this would submit the form data to your backend
+          console.log("Form submitted");
+          // Hide the modal after submission
+          const modal = bootstrap.Modal.getInstance(
+            document.getElementById("createArticleModal")
+          );
+          modal.hide();
+          // Show success message
+          alert("Article published successfully!");
         });
+
+      document
+        .getElementById("logoutBtn")
+        .addEventListener("click", async () => {
+          try {
+            const res = await fetch("http://localhost:8080/api/auth/logout", {
+              method: "POST",
+              credentials: "include",
+            });
+
+            if (res.ok) {
+              console.log("Token deleted");
+              alert("Logged out successfully!");
+              window.location.href =
+                "/Frontend/pages/login-and-register/login-and-register.html"; // Login page path එක
+            } else {
+              console.error("Logout failed");
+              alert("Logout failed");
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Error logging out");
+          }
+        });
+
+      const articleForm = document.getElementById("articleForm");
+
+      articleForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const title = document.getElementById("articleTitle").value.trim();
+        const content = document.getElementById("articleContent").value.trim();
+        const category = document.getElementById("articleCategory").value;
+        const publishDate = document.getElementById("publishDate").value; // '' or ISO
+        const imageFile = document.getElementById("articleImage").files[0];
+
+        const fd = new FormData();
+        fd.append("title", title);
+        fd.append("content", content);
+        fd.append("category", category === "Select a category" ? "" : category);
+        if (publishDate) fd.append("publishDate", publishDate);
+        if (imageFile) fd.append("image", imageFile);
+
+        try {
+          const res = await fetch("http://localhost:8080/api/articles", {
+            method: "POST",
+            credentials: "include", // JWT cookie
+            body: fd,
+          });
+
+          if (!res.ok) throw new Error("Create failed");
+          const data = await res.json();
+
+          // close modal
+          const modal = bootstrap.Modal.getInstance(
+            document.getElementById("createArticleModal")
+          );
+          modal.hide();
+
+          alert(
+            data.status === "PUBLISHED"
+              ? "Article published!"
+              : "Article scheduled for " + data.scheduleAt
+          );
+
+          // Reload your dashboard lists
+          loadMyArticles("PUBLISHED");
+          loadMyArticles("SCHEDULED");
+        } catch (err) {
+          console.error(err);
+          alert("Error creating article");
+        }
+      });
+
+      async function loadMyArticles(status) {
+        const wrapId = status === "PUBLISHED" ? "published" : "scheduled";
+        const container = document.getElementById(wrapId);
+        container.innerHTML = ""; // clear
+
+        const res = await fetch(
+          `http://localhost:8080/api/articles/me?status=${status}&page=0&size=50`,
+          {
+            credentials: "include",
+          }
+        );
+        const json = await res.json();
+        if (!json.content.length) {
+          container.innerHTML = `<div class="text-center py-5">
+        <h4 class="text-muted">No ${status.toLowerCase()} articles</h4>
+      </div>`;
+          return;
+        }
+
+        const rows = document.createElement("div");
+        rows.className = "row g-3";
+
+        json.content.forEach((a) => {
+          const col = document.createElement("div");
+          col.className = "col-md-4";
+          col.innerHTML = `
+      <div class="card h-100">
+        ${
+          a.imageUrl
+            ? `<img src="${a.imageUrl}" class="card-img-top" alt="">`
+            : ""
+        }
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">${a.title}</h5>
+          <p class="card-text">${a.excerpt}</p>
+          <div class="mt-auto">
+            <a class="btn btn-outline-primary btn-sm" href="/Frontend/pages/Publisher/publisher-dashboard.html#view-${
+              a.id
+            }">
+              View
+            </a>
+          </div>
+        </div>
+      </div>`;
+          rows.appendChild(col);
+        });
+
+        container.appendChild(rows);
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadMyArticles("PUBLISHED");
+        loadMyArticles("SCHEDULED");
+      });
     </script>
-</body>
+  </body>
 </html>
