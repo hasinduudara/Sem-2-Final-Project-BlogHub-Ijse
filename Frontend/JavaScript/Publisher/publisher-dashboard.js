@@ -83,8 +83,8 @@ async function loadMyArticles(status) {
   const json = await res.json();
   if (!json.content.length) {
     container.innerHTML = `<div class="text-center py-5">
-        <h4 class="text-muted">No ${status.toLowerCase()} articles</h4>
-      </div>`;
+          <h4 class="text-muted">No ${status.toLowerCase()} articles</h4>
+        </div>`;
     return;
   }
 
@@ -95,24 +95,24 @@ async function loadMyArticles(status) {
     const col = document.createElement("div");
     col.className = "col-md-4";
     col.innerHTML = `
-      <div class="card h-100">
-        ${
-          a.imageUrl
-            ? `<img src="${a.imageUrl}" class="card-img-top" alt="">`
-            : ""
-        }
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">${a.title}</h5>
-          <p class="card-text">${a.excerpt}</p>
-          <div class="mt-auto">
-            <a class="btn btn-outline-primary btn-sm" href="/Frontend/pages/Publisher/publisher-dashboard.html#view-${
-              a.id
-            }">
-              View
-            </a>
+        <div class="card h-100">
+          ${
+            a.imageUrl
+              ? `<img src="${a.imageUrl}" class="card-img-top" alt="">`
+              : ""
+          }
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">${a.title}</h5>
+            <p class="card-text">${a.excerpt}</p>
+            <div class="mt-auto">
+              <a class="btn btn-outline-primary btn-sm" href="/Frontend/pages/Publisher/publisher-dashboard.html#view-${
+                a.id
+              }">
+                View
+              </a>
+            </div>
           </div>
-        </div>
-      </div>`;
+        </div>`;
     rows.appendChild(col);
   });
 
