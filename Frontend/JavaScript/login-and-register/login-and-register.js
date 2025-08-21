@@ -95,22 +95,31 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        credentials: "include", // only needed if your backend sets cookies
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
+
       if (res.ok && data.code === 200) {
+        const token = data.data.token; // ✅ correct property
+        const username = data.data.username;
+
+        // Save token for later requests
+        localStorage.setItem("jwt", token);
+        localStorage.setItem("username", username);
+
         alert("Login Successful!");
-        // Role check + redirect
-        const userRole = await fetchUserRole(email);
+
+        // ✅ Fetch role with token
+        const userRole = await fetchUserRole(email, token);
         if (userRole) {
           redirectToDashboard(userRole.toUpperCase());
         } else {
           alert("Unable to determine user role.");
         }
       } else {
-        alert(data.data || "Login failed");
+        alert(data.status || "Login failed");
       }
     } catch (err) {
       console.error(err);
