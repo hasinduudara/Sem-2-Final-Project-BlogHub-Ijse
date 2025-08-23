@@ -2,15 +2,15 @@ package lk.ijse.gdse.backend.util;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lk.ijse.gdse.backend.entity.UserEntity;
-import lk.ijse.gdse.backend.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,55 +19,63 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
 
-    @Autowired
-    private UserService userService;
+    private final JwtUtil jwtUtil;
+    private final UserDetailsService userDetailsService;
+
+    // ✅ List of endpoints to skip JWT filter
+    private static final List<String> EXCLUDED_URLS = List.of(
+            "/auth/register",
+            "/auth/login"
+    );
+
+    // ✅ Skip filter for public endpoints
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return EXCLUDED_URLS.stream()
+                .anyMatch(uri -> request.getServletPath().startsWith(uri));
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        final String token = extractTokenFromCookies(request);
-        String email = null;
+        final String authHeader = request.getHeader("Authorization");
+        String token = null;
+        String username = null;
 
-        if (token != null) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
             try {
-                email = jwtUtil.extractEmail(token);
+                username = jwtUtil.extractUsername(token);
             } catch (Exception e) {
-                // Token is invalid or expired, skip authentication
+                logger.warn("Invalid JWT Token: {}", e.getMessage());
+                filterChain.doFilter(request, response);
+                return;
             }
+        } else {
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserEntity user = userService.findByEmail(email); // ✅ No password check
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (user != null && jwtUtil.validateToken(token, email)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        user.getEmail(), // principal
-                        null,
-                        List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())) // ✅ Add role authority
-                );
+            if (jwtUtil.validateToken(token, userDetails)) {
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities()
+                        );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private String extractTokenFromCookies(HttpServletRequest request) {
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("jwtToken".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
     }
 }

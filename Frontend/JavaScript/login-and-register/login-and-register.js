@@ -1,12 +1,18 @@
+// ==========================
+// AUTH HANDLER SCRIPT (auth.js)
+// ==========================
 document.addEventListener("DOMContentLoaded", () => {
   const toggleButtons = document.querySelectorAll(".toggle-btn");
   const loginForm = document.querySelector(".login-form");
   const registerForm = document.querySelector(".register-form");
   const forgotPasswordLink = document.getElementById("forgotPasswordLink");
   const forgotPasswordModal = document.getElementById("forgotPasswordModal");
-  const closeBtn = forgotPasswordModal.querySelector(".close");
+  const closeBtn = forgotPasswordModal?.querySelector(".close");
   const forgotPasswordForm = document.getElementById("forgotPasswordForm");
 
+  // -----------------------
+  // FORM TOGGLE (Login <-> Register)
+  // -----------------------
   toggleButtons.forEach((button) => {
     button.addEventListener("click", () => {
       toggleButtons.forEach((btn) => btn.classList.remove("active"));
@@ -22,12 +28,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  forgotPasswordLink.addEventListener("click", (e) => {
+  // -----------------------
+  // FORGOT PASSWORD MODAL
+  // -----------------------
+  forgotPasswordLink?.addEventListener("click", (e) => {
     e.preventDefault();
     forgotPasswordModal.style.display = "block";
   });
 
-  closeBtn.addEventListener("click", () => {
+  closeBtn?.addEventListener("click", () => {
     forgotPasswordModal.style.display = "none";
   });
 
@@ -37,9 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  forgotPasswordForm.addEventListener("submit", async (e) => {
+  forgotPasswordForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const email = document.getElementById("forgotEmail").value;
+    const email = document.getElementById("forgotEmail").value.trim();
     alert(
       "Password reset link has been sent to your email if it exists in our system."
     );
@@ -47,16 +56,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // -----------------------
-  //  REGISTER FORM HANDLER
+  // REGISTER FORM HANDLER
   // -----------------------
   document
     .getElementById("registerForm")
-    .addEventListener("submit", async (e) => {
+    ?.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const username = document.getElementById("registerUsername").value;
-      const email = document.getElementById("registerEmail").value;
-      const password = document.getElementById("registerPassword").value;
+      const username = document.getElementById("registerUsername").value.trim();
+      const email = document.getElementById("registerEmail").value.trim();
+      const password = document.getElementById("registerPassword").value.trim();
       const role = document.getElementById("role").value;
 
       try {
@@ -71,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (res.ok && data.code === 201) {
           alert("Registration Successful! Please login.");
           // Switch to login form
-          document.querySelector('.toggle-btn[data-form="login"]').click();
+          document.querySelector('.toggle-btn[data-form="login"]')?.click();
           document.getElementById("loginEmail").value = email; // pre-fill email
         } else {
           alert(data.data || "Registration failed");
@@ -83,56 +92,65 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   // -----------------------
-  //  LOGIN FORM HANDLER
+  // LOGIN FORM HANDLER
   // -----------------------
-  document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+  document
+    .getElementById("loginForm")
+    ?.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
 
-    try {
-      const res = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", // only needed if your backend sets cookies
-        body: JSON.stringify({ email, password }),
-      });
+      try {
+        const res = await fetch("http://localhost:8080/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ email, password }),
+        });
 
-      const data = await res.json();
-
-      if (res.ok && data.code === 200) {
-        const token = data.data.token; // ✅ correct property
-        const username = data.data.username;
-
-        // Save token for later requests
-        localStorage.setItem("jwt", token);
-        localStorage.setItem("username", username);
-
-        alert("Login Successful!");
-
-        // ✅ Fetch role with token
-        const userRole = await fetchUserRole(email, token);
-        if (userRole) {
-          redirectToDashboard(userRole.toUpperCase());
-        } else {
-          alert("Unable to determine user role.");
+        let data;
+        try {
+          data = await res.json();
+        } catch (parseError) {
+          const text = await res.text();
+          console.error("Non-JSON response:", text);
+          throw parseError;
         }
-      } else {
-        alert(data.status || "Login failed");
+
+        if (res.ok && data.code === 200) {
+          const token = data.data.token;
+          const username = data.data.username;
+
+          // ✅ Safe localStorage access
+          try {
+            localStorage.setItem("token", token);
+            localStorage.setItem("username", username);
+          } catch (e) {
+            console.warn("Cannot access localStorage:", e);
+          }
+
+          alert("Login Successful!");
+          const userRole = await fetchUserRole(email, token);
+          if (userRole) redirectToDashboard(userRole.toUpperCase());
+          else alert("Unable to determine user role.");
+        } else {
+          alert(data.message || "Login failed");
+        }
+      } catch (err) {
+        console.error("Login error:", err);
+        alert("Something went wrong");
       }
-    } catch (err) {
-      console.error(err);
-      alert("An error occurred during login.");
-    }
-  });
+    });
 
   // -----------------------
   // HELPER: Fetch user role
   // -----------------------
-  async function fetchUserRole(email) {
+  async function fetchUserRole(email, token) {
     try {
       const res = await fetch(`http://localhost:8080/api/auth/users/${email}`, {
+        headers: { Authorization: `Bearer ${token}` },
         credentials: "include",
       });
       if (!res.ok) return null;
