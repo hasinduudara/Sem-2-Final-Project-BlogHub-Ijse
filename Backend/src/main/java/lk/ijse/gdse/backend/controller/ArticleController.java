@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/api/articles")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5500") // no need allowCredentials since no cookies
+//@CrossOrigin(origins = "http://localhost:5500")
 public class ArticleController {
 
     private final ArticleService articleService;
@@ -50,13 +50,13 @@ public class ArticleController {
     }
 
     // ---- Public feed for home page ----
-    @GetMapping("/published")
-    public ResponseEntity<PagedResponse<ArticleDTO>> listPublished(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size
-    ) {
-        return ResponseEntity.ok(articleService.listPublished(page, size));
-    }
+//    @GetMapping("/published")
+//    public ResponseEntity<PagedResponse<ArticleDTO>> listPublished(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "12") int size
+//    ) {
+//        return ResponseEntity.ok(articleService.listPublished(page, size));
+//    }
 
     // ---- Publisher dashboard tabs ----
     @GetMapping("/me")

@@ -66,13 +66,13 @@ public class ArticleServiceImpl implements lk.ijse.gdse.backend.service.ArticleS
         return toDTO(saved);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public PagedResponse<ArticleDTO> listPublished(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "publishAt"));
-        Page<ArticleEntity> pg = articleRepo.findByStatusOrderByPublishAtDesc(ArticleStatus.PUBLISHED, pageable);
-        return toPaged(pg);
-    }
+//    @Override
+//    @Transactional(readOnly = true)
+//    public PagedResponse<ArticleDTO> listPublished(int page, int size) {
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "publishAt"));
+//        Page<ArticleEntity> pg = articleRepo.findByStatusOrderByPublishAtDesc(ArticleStatus.PUBLISHED, pageable);
+//        return toPaged(pg);
+//    }
 
     @Override
     @Transactional(readOnly = true)
@@ -133,5 +133,12 @@ public class ArticleServiceImpl implements lk.ijse.gdse.backend.service.ArticleS
                 .createdAt(e.getCreatedAt())
                 .publisherName(e.getPublisher() != null ? e.getPublisher().getName() : null)
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ArticleDTO> listAllPublished() {
+        List<ArticleEntity> articles = articleRepo.findByStatusOrderByPublishAtDesc(ArticleStatus.PUBLISHED, Pageable.unpaged()).getContent();
+        return articles.stream().map(this::toDTO).toList();
     }
 }

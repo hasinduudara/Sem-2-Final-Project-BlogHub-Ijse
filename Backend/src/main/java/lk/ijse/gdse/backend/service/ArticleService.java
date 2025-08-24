@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface ArticleService {
     ArticleDTO createArticle(Long publisherId,
@@ -15,7 +16,9 @@ public interface ArticleService {
                              LocalDateTime publishDate, // nullable
                              MultipartFile image);      // nullable
 
-    PagedResponse<ArticleDTO> listPublished(int page, int size);
+//    PagedResponse<ArticleDTO> listPublished(int page, int size);
+
+    List<ArticleDTO> listAllPublished();
 
     PagedResponse<ArticleDTO> listMine(Long publisherId, String status, int page, int size);
 
