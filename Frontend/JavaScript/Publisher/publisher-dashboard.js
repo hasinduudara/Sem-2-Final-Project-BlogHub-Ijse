@@ -86,6 +86,7 @@ $("#articleForm").on("submit", function (e) {
     },
     error: function (xhr) {
       console.error("Article creation error:", xhr);
+      console.log("JWT Token:", token);
       if (xhr.status === 403) {
         showNotification(
           "Permission denied. Please check your authentication.",
