@@ -122,7 +122,9 @@
       // Load articles from backend
       async function loadHomeArticles() {
         try {
-          const res = await fetch("http://localhost:8080/api/home/articles"); // public endpoint, no credentials
+          const res = await fetch(
+            "http://localhost:8080/api/articles/published"
+          );
           if (!res.ok) throw new Error("Network response was not ok");
 
           const data = await res.json();

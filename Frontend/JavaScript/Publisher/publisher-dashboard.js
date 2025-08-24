@@ -109,44 +109,47 @@ $("#articleForm").on("submit", function (e) {
 
 // 🔹 Load My Articles
 function loadMyArticles(status) {
-  const wrapId =
-    status === "PUBLISHED" ? "publishedContainer" : "scheduledContainer";
+  const containerId = status === "PUBLISHED" ? "publishedContainer" : "scheduledContainer";
   const emptyId = status === "PUBLISHED" ? "publishedEmpty" : "scheduledEmpty";
-  const container = $("#" + wrapId);
+
+  const container = $("#" + containerId);
   const emptyState = $("#" + emptyId);
 
   container.empty();
+  emptyState.hide();
 
-  const token = localStorage.getItem("jwt");
+  const token = localStorage.getItem("token"); // JWT token stored after login
   if (!token) {
+    console.error("No JWT token found!");
     emptyState.show();
     return;
   }
 
   $.ajax({
-    url: `${API_BASE}/articles/me?status=${status}&page=0&size=50`,
-    method: "GET",
-    headers: { Authorization: "Bearer " + token },
-    success: function (json) {
-      if (!json.content || json.content.length === 0) {
+    url: `http://localhost:8080/api/articles/me?status=${status}&page=0&size=50`,
+    type: "GET",
+    headers: { "Authorization": "Bearer " + token },
+    success: function (res) {
+      if (!res.content || res.content.length === 0) {
         emptyState.show();
         return;
       }
 
-      emptyState.hide();
-      json.content.forEach((article) => {
-        const excerpt = article.excerpt
-          ? article.excerpt.substring(0, 100) +
-            (article.excerpt.length > 100 ? "..." : "")
+      container.empty();
+      res.content.forEach(article => {
+        const excerpt = article.excerpt 
+          ? article.excerpt.length > 100 
+            ? article.excerpt.substring(0, 100) + "..."
+            : article.excerpt
           : "No content available";
 
         const card = $(`
           <div class="col-md-6 col-lg-4">
             <div class="card h-100">
               ${
-                article.imageUrl
+                article.imageUrl 
                   ? `<img src="${article.imageUrl}" class="card-img-top" alt="${article.title}">`
-                  : `<div class="card-img-top bg-light d-flex align-items-center justify-content-center">
+                  : `<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:200px;">
                        <i class="fas fa-image fa-3x text-muted"></i>
                      </div>`
               }
@@ -154,13 +157,9 @@ function loadMyArticles(status) {
                 <h5 class="card-title">${article.title}</h5>
                 <p class="card-text flex-grow-1">${excerpt}</p>
                 <div class="mt-auto d-flex justify-content-between align-items-center">
-                  <small class="text-muted">${new Date(
-                    article.createdAt
-                  ).toLocaleDateString()}</small>
+                  <small class="text-muted">${new Date(article.createdAt).toLocaleDateString()}</small>
                   <div>
-                    <button class="btn btn-outline-primary btn-sm view-article" data-id="${
-                      article.id
-                    }">
+                    <button class="btn btn-outline-primary btn-sm view-article" data-id="${article.id}">
                       View
                     </button>
                   </div>
@@ -173,14 +172,21 @@ function loadMyArticles(status) {
       });
     },
     error: function (xhr) {
-      console.error("Error loading articles", xhr);
+      console.error("Error loading articles:", xhr);
       emptyState.show();
       if (xhr.status === 401) {
-        showNotification("Session expired. Please login again.", "error");
+        alert("Session expired. Please login again.");
+        window.location.href = "/Frontend/pages/login-and-register/login-and-register.html";
       }
-    },
+    }
   });
 }
+
+// Call on page load
+$(document).ready(function() {
+  loadMyArticles("PUBLISHED");
+  loadMyArticles("SCHEDULED");
+});
 
 // 🔹 Initial load
 $(document).ready(function () {

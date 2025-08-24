@@ -13,10 +13,8 @@ public interface ArticleService {
                              String title,
                              String content,
                              String category,
-                             LocalDateTime publishDate, // nullable
-                             MultipartFile image);      // nullable
-
-//    PagedResponse<ArticleDTO> listPublished(int page, int size);
+                             LocalDateTime publishDate,
+                             MultipartFile image);
 
     List<ArticleDTO> listAllPublished();
 
@@ -24,5 +22,17 @@ public interface ArticleService {
 
     ArticleDTO getOne(Long id);
 
-    void runSchedulerOnce(); // to be used by @Scheduled
+    void runSchedulerOnce();
+
+    // NEW ----
+    ArticleDTO updateArticle(Long publisherId,
+                             Long articleId,
+                             String title,
+                             String content,
+                             String category,
+                             LocalDateTime publishDate,
+                             MultipartFile image);
+
+    void deleteArticle(Long publisherId, Long articleId);
 }
+

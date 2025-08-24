@@ -66,14 +66,6 @@ public class ArticleServiceImpl implements lk.ijse.gdse.backend.service.ArticleS
         return toDTO(saved);
     }
 
-//    @Override
-//    @Transactional(readOnly = true)
-//    public PagedResponse<ArticleDTO> listPublished(int page, int size) {
-//        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "publishAt"));
-//        Page<ArticleEntity> pg = articleRepo.findByStatusOrderByPublishAtDesc(ArticleStatus.PUBLISHED, pageable);
-//        return toPaged(pg);
-//    }
-
     @Override
     @Transactional(readOnly = true)
     public PagedResponse<ArticleDTO> listMine(Long publisherId, String statusStr, int page, int size) {
@@ -141,4 +133,51 @@ public class ArticleServiceImpl implements lk.ijse.gdse.backend.service.ArticleS
         List<ArticleEntity> articles = articleRepo.findByStatusOrderByPublishAtDesc(ArticleStatus.PUBLISHED, Pageable.unpaged()).getContent();
         return articles.stream().map(this::toDTO).toList();
     }
+
+    @Override
+    public ArticleDTO updateArticle(Long publisherId, Long articleId, String title, String content,
+                                    String category, LocalDateTime publishDate, MultipartFile image) {
+
+        ArticleEntity article = articleRepo.findById(articleId)
+                .orElseThrow(() -> new RuntimeException("Article not found"));
+
+        if (!article.getPublisher().getId().equals(publisherId)) {
+            throw new RuntimeException("You are not allowed to edit this article");
+        }
+
+        if (title != null) article.setTitle(title);
+        if (content != null) article.setContent(content);
+        if (category != null) article.setCategory(category);
+
+        if (image != null && !image.isEmpty()) {
+            String imageUrl = imgBBClient.uploadToImgBB(image);
+            article.setImageUrl(imageUrl);
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (publishDate == null || !publishDate.isAfter(now)) {
+            article.setStatus(ArticleStatus.PUBLISHED);
+            article.setPublishAt(now);
+            article.setScheduleAt(null);
+        } else {
+            article.setStatus(ArticleStatus.SCHEDULED);
+            article.setScheduleAt(publishDate);
+            article.setPublishAt(null);
+        }
+
+        return toDTO(article);
+    }
+
+    @Override
+    public void deleteArticle(Long publisherId, Long articleId) {
+        ArticleEntity article = articleRepo.findById(articleId)
+                .orElseThrow(() -> new RuntimeException("Article not found"));
+
+        if (!article.getPublisher().getId().equals(publisherId)) {
+            throw new RuntimeException("You are not allowed to delete this article");
+        }
+
+        articleRepo.delete(article);
+    }
+
 }
