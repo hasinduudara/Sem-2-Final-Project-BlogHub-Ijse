@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BlogHub - Article Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      .article-image {
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+      .logout-btn {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+      }
+      .logout-btn:hover {
+        background-color: #c82333;
+        transform: scale(1.05);
+      }
+      .profile-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <div class="container">
+        <a class="navbar-brand" href="home-page.html">BlogHub</a>
+        <div class="ms-auto d-flex align-items-center">
+          <img
+            src="/Frontend/assets/image/user-icon.png"
+            alt="Profile"
+            class="profile-image me-3"
+          />
+          <button class="logout-btn" id="logoutBtn">
+            <i class="fas fa-sign-out-alt me-1"></i>Logout
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Article Detail -->
+    <div class="container mt-4" id="articleContainer">
+      <div class="text-center">
+        <div class="alert alert-info">
+          <i class="fas fa-spinner fa-spin me-2"></i>Loading article...
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Get article ID from URL
+      function getArticleId() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("id");
+      }
+
+      // Render article detail
+      function renderArticle(article) {
+        $("#articleContainer").html(`
+          <div class="card shadow-sm p-4">
+            ${
+              article.imageUrl
+                ? `<img src="${article.imageUrl}" class="article-image w-100" alt="Article Image">`
+                : ""
+            }
+            <h2 class="mb-3">${article.title}</h2>
+            <p class="text-muted">Published on: ${
+              article.publishedAt
+                ? new Date(article.publishedAt).toLocaleDateString()
+                : "N/A"
+            }</p>
+            <hr>
+            <div class="article-content">
+              ${article.content || "<p>No content available.</p>"}
+            </div>
+            <a href="home-page.html" class="btn btn-secondary mt-4">
+              <i class="fas fa-arrow-left me-1"></i>Back to Home
+            </a>
+          </div>
+        `);
+      }
+
+      // Load article detail using AJAX
+      function loadArticleDetail() {
+        const id = getArticleId();
+
+        if (!id) {
+          $("#articleContainer").html(`
+      <div class="alert alert-danger text-center">
+        <i class="fas fa-exclamation-triangle me-2"></i>Invalid article ID
+      </div>`);
+          return;
+        }
+
+        // 🔑 Get token from localStorage
+        const token = localStorage.getItem("token");
+
+        $.ajax({
+          url: `http://localhost:8080/api/articles/${id}`,
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + token, // use variable
+          },
+          success: function (data) {
+            renderArticle(data);
+          },
+          error: function (xhr) {
+            console.error(xhr);
+            $("#articleContainer").html(`
+        <div class="alert alert-danger text-center">
+          <i class="fas fa-exclamation-triangle me-2"></i>Error loading article
+        </div>`);
+          },
+        });
+      }
+
+      // Logout functionality with AJAX
+      $("#logoutBtn").on("click", function () {
+        const token = localStorage.getItem("token"); // declare here too
+
+        $.ajax({
+          url: "http://localhost:8080/api/auth/logout",
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+          success: function () {
+            alert("Logged out successfully!");
+            localStorage.removeItem("token"); // clear token
+            window.location.href =
+              "/Frontend/pages/login-and-register/login-and-register.html";
+          },
+          error: function () {
+            alert("Logout failed");
+          },
+        });
+      });
+
+      // Load when page ready
+      $(document).ready(function () {
+        loadArticleDetail();
+      });
+    </script>
+  </body>
+</html>
