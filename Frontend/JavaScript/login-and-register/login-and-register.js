@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (role === "USER") {
       console.log("Navigating to user profile");
-      window.location.href = `${baseUrl}/Frontend/pages/home-page.html`;
+      window.location.href = `${baseUrl}/home-page.html`;
     } else if (role === "PUBLISHER") {
       console.log("Navigating to publisher dashboard");
       window.location.href = `${baseUrl}/Publisher/publisher-dashboard.html`;
