@@ -21,7 +21,7 @@ function showNotification(message, type = "success") {
 
 // 🔹 Logout
 $("#logoutBtn").on("click", function () {
-  localStorage.removeItem("jwt");
+  localStorage.removeItem("token");
   localStorage.removeItem("username");
   localStorage.removeItem("email");
   localStorage.removeItem("role");
@@ -55,7 +55,7 @@ $("#articleForm").on("submit", function (e) {
   if (publishDate) fd.append("publishDate", publishDate);
   if (imageFile) fd.append("image", imageFile);
 
-  const token = localStorage.getItem("jwt");
+  const token = localStorage.getItem("token");
   if (!token) {
     showNotification("Please login again", "error");
     window.location.href =
@@ -110,7 +110,8 @@ $("#articleForm").on("submit", function (e) {
 
 // 🔹 Load My Articles
 function loadMyArticles(status) {
-  const containerId = status === "PUBLISHED" ? "publishedContainer" : "scheduledContainer";
+  const containerId =
+    status === "PUBLISHED" ? "publishedContainer" : "scheduledContainer";
   const emptyId = status === "PUBLISHED" ? "publishedEmpty" : "scheduledEmpty";
 
   const container = $("#" + containerId);
@@ -129,7 +130,7 @@ function loadMyArticles(status) {
   $.ajax({
     url: `http://localhost:8080/api/articles/me?status=${status}&page=0&size=50`,
     type: "GET",
-    headers: { "Authorization": "Bearer " + token },
+    headers: { Authorization: "Bearer " + token },
     success: function (res) {
       if (!res.content || res.content.length === 0) {
         emptyState.show();
@@ -137,9 +138,9 @@ function loadMyArticles(status) {
       }
 
       container.empty();
-      res.content.forEach(article => {
-        const excerpt = article.excerpt 
-          ? article.excerpt.length > 100 
+      res.content.forEach((article) => {
+        const excerpt = article.excerpt
+          ? article.excerpt.length > 100
             ? article.excerpt.substring(0, 100) + "..."
             : article.excerpt
           : "No content available";
@@ -148,7 +149,7 @@ function loadMyArticles(status) {
           <div class="col-md-6 col-lg-4">
             <div class="card h-100">
               ${
-                article.imageUrl 
+                article.imageUrl
                   ? `<img src="${article.imageUrl}" class="card-img-top" alt="${article.title}">`
                   : `<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:200px;">
                        <i class="fas fa-image fa-3x text-muted"></i>
@@ -158,9 +159,13 @@ function loadMyArticles(status) {
                 <h5 class="card-title">${article.title}</h5>
                 <p class="card-text flex-grow-1">${excerpt}</p>
                 <div class="mt-auto d-flex justify-content-between align-items-center">
-                  <small class="text-muted">${new Date(article.createdAt).toLocaleDateString()}</small>
+                  <small class="text-muted">${new Date(
+                    article.createdAt
+                  ).toLocaleDateString()}</small>
                   <div>
-                    <button class="btn btn-outline-primary btn-sm view-article" data-id="${article.id}">
+                    <button class="btn btn-outline-primary btn-sm view-article" data-id="${
+                      article.id
+                    }">
                       View
                     </button>
                   </div>
@@ -177,21 +182,22 @@ function loadMyArticles(status) {
       emptyState.show();
       if (xhr.status === 401) {
         alert("Session expired. Please login again.");
-        window.location.href = "/Frontend/pages/login-and-register/login-and-register.html";
+        window.location.href =
+          "/Frontend/pages/login-and-register/login-and-register.html";
       }
-    }
+    },
   });
 }
 
 // Call on page load
-$(document).ready(function() {
+$(document).ready(function () {
   loadMyArticles("PUBLISHED");
   loadMyArticles("SCHEDULED");
 });
 
 // 🔹 Initial load
 $(document).ready(function () {
-  const token = localStorage.getItem("jwt");
+  const token = localStorage.getItem("token");
   if (!token) {
     window.location.href =
       "/Frontend/pages/login-and-register/login-and-register.html";

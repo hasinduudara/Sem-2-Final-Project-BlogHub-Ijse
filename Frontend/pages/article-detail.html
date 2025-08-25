@@ -65,6 +65,29 @@
       </div>
     </div>
 
+    <hr />
+    <!-- Like Button -->
+    <div class="d-flex align-items-center mb-3">
+      <button id="likeBtn" class="btn btn-outline-primary me-2">
+        <i class="fas fa-thumbs-up me-1"></i> Like
+      </button>
+      <span id="likeCount">0 Likes</span>
+    </div>
+
+    <!-- Comments Section -->
+    <div id="commentsSection" class="mt-4">
+      <h5>Comments</h5>
+      <div id="commentsList" class="mb-3">
+        <p class="text-muted">Loading comments...</p>
+      </div>
+      <textarea
+        id="commentInput"
+        class="form-control mb-2"
+        placeholder="Write a comment..."
+      ></textarea>
+      <button id="addCommentBtn" class="btn btn-primary">Post Comment</button>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -112,17 +135,20 @@
           return;
         }
 
-        // 🔑 Get token from localStorage
         const token = localStorage.getItem("token");
 
         $.ajax({
           url: `http://localhost:8080/api/articles/${id}`,
           method: "GET",
           headers: {
-            Authorization: "Bearer " + token, // use variable
+            Authorization: "Bearer " + token,
           },
-          success: function (data) {
-            renderArticle(data);
+          success: function (article) {
+            renderArticle(article);
+
+            // ✅ After article is rendered, load likes and comments
+            loadLikes(article.id);
+            loadComments(article.id);
           },
           error: function (xhr) {
             console.error(xhr);
@@ -134,19 +160,116 @@
         });
       }
 
-      // Logout functionality with AJAX
+      // Load likes
+      function loadLikes(articleId) {
+        const token = localStorage.getItem("token");
+        $.ajax({
+          url: `http://localhost:8080/api/likes/${articleId}`,
+          method: "GET",
+          headers: { Authorization: "Bearer " + token },
+          success: function (likeCount) {
+            $("#likeCount").text(likeCount + " Likes");
+          },
+          error: function () {
+            $("#likeCount").text("0 Likes");
+          },
+        });
+      }
+
+      // Like button click
+      $(document).on("click", "#likeBtn", function () {
+        const articleId = getArticleId();
+        const token = localStorage.getItem("token");
+
+        $.ajax({
+          url: `http://localhost:8080/api/likes/${articleId}`,
+          method: "POST",
+          headers: { Authorization: "Bearer " + token },
+          success: function () {
+            loadLikes(articleId);
+          },
+          error: function (xhr) {
+            console.error(xhr);
+            alert("Error liking the article");
+          },
+        });
+      });
+
+      // Load comments
+      function loadComments(articleId) {
+        const token = localStorage.getItem("token");
+        $.ajax({
+          url: `http://localhost:8080/api/comments/${articleId}`,
+          method: "GET",
+          headers: { Authorization: "Bearer " + token },
+          success: function (response) {
+            const comments = response.data; // 👈 data field access
+            if (!Array.isArray(comments) || comments.length === 0) {
+              $("#commentsList").html(
+                "<p class='text-muted'>No comments yet.</p>"
+              );
+              return;
+            }
+            let html = "";
+            comments.forEach((c) => {
+              html += `
+          <div class="border p-2 mb-2 rounded">
+            <strong>${c.username}</strong> <small class="text-muted">${new Date(
+                c.createdAt
+              ).toLocaleString()}</small>
+            <p>${c.content}</p>
+          </div>`;
+            });
+            $("#commentsList").html(html);
+          },
+          error: function () {
+            $("#commentsList").html(
+              "<p class='text-danger'>Failed to load comments.</p>"
+            );
+          },
+        });
+      }
+
+      // Add comment
+      $("#addCommentBtn").on("click", function () {
+        const articleId = getArticleId();
+        const content = $("#commentInput").val().trim();
+        if (!content) return alert("Comment cannot be empty!");
+
+        const token = localStorage.getItem("token");
+        $.ajax({
+          url: "http://localhost:8080/api/comments",
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          data: JSON.stringify({
+            articleId: parseInt(articleId),
+            content: content,
+          }),
+          success: function () {
+            $("#commentInput").val("");
+            loadComments(articleId);
+          },
+          error: function (xhr) {
+            console.error(xhr);
+            alert("Failed to post comment");
+          },
+        });
+      });
+
+      // Logout
       $("#logoutBtn").on("click", function () {
-        const token = localStorage.getItem("token"); // declare here too
+        const token = localStorage.getItem("token");
 
         $.ajax({
           url: "http://localhost:8080/api/auth/logout",
           method: "POST",
-          headers: {
-            Authorization: "Bearer " + token,
-          },
+          headers: { Authorization: "Bearer " + token },
           success: function () {
             alert("Logged out successfully!");
-            localStorage.removeItem("token"); // clear token
+            localStorage.removeItem("token");
             window.location.href =
               "/Frontend/pages/login-and-register/login-and-register.html";
           },
@@ -156,7 +279,7 @@
         });
       });
 
-      // Load when page ready
+      // On page ready
       $(document).ready(function () {
         loadArticleDetail();
       });

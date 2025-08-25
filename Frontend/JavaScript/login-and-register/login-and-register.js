@@ -123,6 +123,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const token = data.data.token;
           const username = data.data.username;
 
+          // Show success message first
+          alert("Login Successful!");
+
           // ✅ Safe localStorage access
           try {
             localStorage.setItem("token", token);
@@ -131,10 +134,18 @@ document.addEventListener("DOMContentLoaded", () => {
             console.warn("Cannot access localStorage:", e);
           }
 
-          alert("Login Successful!");
-          const userRole = await fetchUserRole(email, token);
-          if (userRole) redirectToDashboard(userRole.toUpperCase());
-          else alert("Unable to determine user role.");
+          // Fetch user role and redirect
+          try {
+            const userRole = await fetchUserRole(email, token);
+            if (userRole) {
+              redirectToDashboard(userRole.toUpperCase());
+            } else {
+              alert("Unable to determine user role.");
+            }
+          } catch (roleError) {
+            console.error("Error fetching user role:", roleError);
+            alert("Login successful but unable to redirect. Please try again.");
+          }
         } else {
           alert(data.message || "Login failed");
         }
@@ -153,12 +164,17 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { Authorization: `Bearer ${token}` },
         credentials: "include",
       });
-      if (!res.ok) return null;
+
+      if (!res.ok) {
+        console.error("Failed to fetch user role, status:", res.status);
+        return null;
+      }
 
       const userData = await res.json();
+      console.log("User data received:", userData);
       return userData.role || null;
     } catch (err) {
-      console.error(err);
+      console.error("Error in fetchUserRole:", err);
       return null;
     }
   }
@@ -167,14 +183,21 @@ document.addEventListener("DOMContentLoaded", () => {
   // HELPER: Redirect
   // -----------------------
   function redirectToDashboard(role) {
+    console.log("Redirecting with role:", role);
+
+    const baseUrl = "http://127.0.0.1:5500/Frontend/pages";
+
     if (role === "USER") {
-      window.location.href = "/Frontend/pages/home-page.html";
+      console.log("Navigating to user profile");
+      window.location.href = `${baseUrl}/Frontend/pages/home-page.html`;
     } else if (role === "PUBLISHER") {
-      window.location.href =
-        "/Frontend/pages/Publisher/publisher-dashboard.html";
+      console.log("Navigating to publisher dashboard");
+      window.location.href = `${baseUrl}/Publisher/publisher-dashboard.html`;
     } else if (role === "ADMIN") {
-      window.location.href = "/Frontend/pages/Admin/admin-dashboard.html";
+      console.log("Navigating to admin dashboard");
+      window.location.href = `${baseUrl}/Admin/admin-dashboard.html`;
     } else {
+      console.error("Unknown role received:", role);
       alert("Unknown role: " + role);
     }
   }
