@@ -117,6 +117,7 @@ public class ArticleServiceImpl implements lk.ijse.gdse.backend.service.ArticleS
                 .id(e.getId())
                 .title(e.getTitle())
                 .imageUrl(e.getImageUrl())
+                .content(e.getContent())
                 .category(e.getCategory())
                 .excerpt(excerpt)
                 .status(e.getStatus().name())

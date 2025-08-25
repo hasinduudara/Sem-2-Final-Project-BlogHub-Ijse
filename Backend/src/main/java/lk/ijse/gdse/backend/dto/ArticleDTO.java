@@ -11,6 +11,7 @@ public class ArticleDTO {
     private Long id;
     private String title;
     private String imageUrl;
+    private String content;
     private String category;
     private String excerpt;     // first ~200 chars
     private String status;
