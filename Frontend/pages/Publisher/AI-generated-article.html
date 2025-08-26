@@ -44,6 +44,53 @@
       <div id="generatedArticle" class="article-preview d-none">
         <h4 id="genTitle"></h4>
         <p id="genContent"></p>
+
+        <!-- Image Upload Section -->
+        <div class="card mt-3 mb-3">
+          <div class="card-header">
+            <h5 class="mb-0">Add Article Image (Optional)</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label
+                for="articleImage"
+                class="form-label"
+                >Choose an image for your article</label
+              >
+              <input
+                type="file"
+                class="form-control"
+                id="articleImage"
+                accept="image/*"
+              />
+              <div class="form-text"
+                >Supported formats: JPG, PNG, GIF. Max size: 5MB</div
+              >
+            </div>
+
+            <!-- Image Preview -->
+            <div id="imagePreview" class="d-none">
+              <label class="form-label">Image Preview:</label>
+              <div class="text-center">
+                <img
+                  id="previewImg"
+                  src=""
+                  alt="Article Image Preview"
+                  class="img-fluid rounded"
+                  style="max-height: 300px"
+                />
+              </div>
+              <button
+                type="button"
+                id="removeImage"
+                class="btn btn-sm btn-outline-danger mt-2"
+              >
+                <i class="bi bi-trash"></i> Remove Image
+              </button>
+            </div>
+          </div>
+        </div>
+
         <button id="publishBtn" class="btn btn-success mt-2">
           Publish Article
         </button>
@@ -90,10 +137,44 @@
         });
       });
 
+      // Image upload and preview
+      $("#articleImage").on("change", function () {
+        const file = this.files[0];
+
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            $("#previewImg").attr("src", e.target.result);
+            $("#imagePreview").removeClass("d-none");
+          };
+          reader.readAsDataURL(file);
+        } else {
+          $("#imagePreview").addClass("d-none");
+        }
+      });
+
+      // Remove image button click
+      $("#removeImage").on("click", function () {
+        $("#articleImage").val("");
+        $("#previewImg").attr("src", "");
+        $("#imagePreview").addClass("d-none");
+      });
+
       // Publish button click
       $("#publishBtn").on("click", function () {
         const title = $("#genTitle").text();
         const content = $("#genContent").text();
+        const imageFile = $("#articleImage")[0].files[0];
+
+        // Create FormData object for multipart/form-data
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("content", content);
+
+        // Append image file if selected
+        if (imageFile) {
+          formData.append("image", imageFile);
+        }
 
         $.ajax({
           url: "http://localhost:8080/api/articles",
@@ -101,10 +182,9 @@
           headers: {
             Authorization: "Bearer " + token,
           },
-          data: {
-            title: title,
-            content: content,
-          },
+          data: formData,
+          processData: false, // Important: Don't process the data
+          contentType: false, // Important: Don't set content type, let browser set it
           success: function (res) {
             $("#statusMsg").html(
               "<div class='alert alert-success'>Article published successfully!</div>"
