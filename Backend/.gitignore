@@ -34,3 +34,4 @@ build/
 
 # Ignore GPTClient.java file (contains API keys)
 src/main/java/lk/ijse/gdse/backend/util/GPTClient.java
+src/main/java/lk/ijse/gdse/backend/util/ImgBBClient.java
