@@ -1,7 +1,10 @@
 package lk.ijse.gdse.backend.controller;
 
+import lk.ijse.gdse.backend.dto.ApiResponse;
 import lk.ijse.gdse.backend.dto.ArticleDTO;
+import lk.ijse.gdse.backend.dto.GeneratedArticleDTO;
 import lk.ijse.gdse.backend.dto.PagedResponse;
+import lk.ijse.gdse.backend.service.AiContentService;
 import lk.ijse.gdse.backend.service.ArticleService;
 import lk.ijse.gdse.backend.entity.UserEntity;
 import lk.ijse.gdse.backend.repository.UserRepository;
@@ -22,6 +25,7 @@ public class ArticleController {
 
     private final ArticleService articleService;
     private final UserRepository userRepository;
+    private final AiContentService aiContentService;
 
     @GetMapping("/published")
     public ResponseEntity<List<ArticleDTO>> getAllPublishedArticles() {
@@ -118,4 +122,14 @@ public class ArticleController {
     public ResponseEntity<ArticleDTO> getOne(@PathVariable Long id) {
         return ResponseEntity.ok(articleService.getOne(id));
     }
+
+    // ---- Generate AI Article ----
+    @PostMapping("/generate")
+    public ResponseEntity<ApiResponse> generateArticle(@RequestParam String title) {
+        GeneratedArticleDTO dto = aiContentService.generateArticleContent(title);
+        ApiResponse response = new ApiResponse(200, "Article content generated successfully", dto);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

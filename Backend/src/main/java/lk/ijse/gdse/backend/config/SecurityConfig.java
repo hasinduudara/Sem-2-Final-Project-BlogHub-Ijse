@@ -37,6 +37,7 @@ public class SecurityConfig {
                         auth.requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/api/articles/published/**").permitAll()
                                 .requestMatchers("/api/home/**").permitAll()
+                                .requestMatchers("/api/articles/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Article Generator - BlogHub</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        padding: 20px;
+        background: #f8f9fa;
+      }
+      .card {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card shadow p-4">
+      <h3 class="mb-3">Generate AI Article</h3>
+
+      <div class="mb-3">
+        <label for="titleInput" class="form-label">Article Title</label>
+        <input
+          type="text"
+          class="form-control"
+          id="titleInput"
+          placeholder="Enter your title"
+        />
+      </div>
+
+      <button id="generateBtn" class="btn btn-primary mb-3">
+        Generate Article
+      </button>
+
+      <div id="loading" class="alert alert-info d-none">
+        Generating article... Please wait.
+      </div>
+
+      <div id="generatedArticle" class="article-preview d-none">
+        <h4 id="genTitle"></h4>
+        <p id="genContent"></p>
+        <button id="publishBtn" class="btn btn-success mt-2">
+          Publish Article
+        </button>
+      </div>
+
+      <div id="statusMsg" class="mt-3"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      const token = localStorage.getItem("token"); // Logged-in JWT
+      console.log("JWT Token:", token);
+
+      // Generate article button click
+      $("#generateBtn").on("click", function () {
+        const title = $("#titleInput").val()?.trim();
+
+        if (!title) return alert("Title is required!");
+
+        if (!token) return alert("You must be logged in!");
+
+        $("#loading").removeClass("d-none");
+
+        $.ajax({
+          url: "http://localhost:8080/api/articles/generate",
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+          data: { title: title },
+          success: function (res) {
+            $("#loading").addClass("d-none");
+            $("#genTitle").text(res.data.title);
+            $("#genContent").text(res.data.content);
+            $("#generatedArticle").removeClass("d-none");
+          },
+          error: function (xhr) {
+            $("#loading").addClass("d-none");
+            $("#statusMsg").html(
+              "<div class='alert alert-danger'>Failed to generate article.</div>"
+            );
+            console.error(xhr);
+          },
+        });
+      });
+
+      // Publish button click
+      $("#publishBtn").on("click", function () {
+        const title = $("#genTitle").text();
+        const content = $("#genContent").text();
+
+        $.ajax({
+          url: "http://localhost:8080/api/articles",
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+          data: {
+            title: title,
+            content: content,
+          },
+          success: function (res) {
+            $("#statusMsg").html(
+              "<div class='alert alert-success'>Article published successfully!</div>"
+            );
+          },
+          error: function (xhr) {
+            $("#statusMsg").html(
+              "<div class='alert alert-danger'>Failed to publish article.</div>"
+            );
+            console.error(xhr);
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
