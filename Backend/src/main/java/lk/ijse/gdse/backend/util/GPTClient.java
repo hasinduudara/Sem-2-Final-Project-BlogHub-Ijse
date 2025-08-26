@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 public class GPTClient {
 
     // Your new OpenRouter API Key
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "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";
 
     public static String generateArticleContent(String title) {
         try {

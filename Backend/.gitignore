@@ -32,5 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 
-# Exclude sensitive files
-**/GPTClient.java
+src/main/java/lk.ijse.gdse.backend/util/GPTClient.java
