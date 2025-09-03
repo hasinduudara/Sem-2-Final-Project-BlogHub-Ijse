@@ -19,12 +19,20 @@
     />
     <style>
       body {
-        background-color: #f0f2f5;
+        background-color: #1a1a1a;
         font-family: Arial, sans-serif;
+        overflow-x: hidden;
+        position: relative;
+        color: #e0e0e0;
       }
       .navbar {
-        background-color: #ffffff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #1c1c1c;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        position: relative;
+        z-index: 10;
+      }
+      .navbar-brand {
+        color: #f0f0f0 !important;
       }
       .card-link {
         text-decoration: none;
@@ -33,12 +41,17 @@
       }
       .card-link:hover .dashboard-card {
         transform: translateY(-10px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
       }
       .dashboard-card {
-        background-color: #ffffff;
+        background-color: rgba(36, 36, 36, 0.8);
+        backdrop-filter: blur(5px);
         border-radius: 15px;
         transition: all 0.3s ease-in-out;
+        color: #f0f0f0;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden; /* This is crucial for the glow effect */
       }
       .icon-container {
         width: 60px;
@@ -47,8 +60,12 @@
         align-items: center;
         justify-content: center;
         border-radius: 50%;
-        background-color: #e9ecef;
+        background-color: rgba(51, 51, 51, 0.8);
         transition: background-color 0.3s ease-in-out;
+        z-index: 1; /* Ensure icon is above the glow effect */
+      }
+      .icon-container i {
+        color: #e0e0e0;
       }
       .card-link:hover .icon-container {
         background-color: #0d6efd;
@@ -56,10 +73,58 @@
       .card-link:hover .icon-container i {
         color: #ffffff;
       }
+      h1,
+      h5 {
+        color: #f0f0f0;
+      }
+      .lead,
+      .text-muted {
+        color: #b0b0b0 !important;
+      }
+
+      /* Card Hover Glow Effect */
+      .dashboard-card::before {
+        content: "";
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(1, 102, 255, 0.2),
+          /* Blue glow color */ transparent 70%
+        );
+        transition: all 0.7s ease-out;
+        transform: translate(-50%, -50%);
+        z-index: 0;
+      }
+      .card-link:hover .dashboard-card::before {
+        width: 350px; /* Expand the glow size */
+        height: 350px;
+        opacity: 1;
+      }
+
+      /* Particle Network Background */
+      #p5-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+      }
+
+      /* Main content z-index */
+      .container,
+      .navbar {
+        position: relative;
+        z-index: 1;
+      }
     </style>
   </head>
-
   <body>
+    <canvas id="p5-canvas"></canvas>
+
     <nav class="navbar navbar-expand-lg navbar-light">
       <div class="container-fluid">
         <a class="navbar-brand fw-bold text-primary" href="#">
@@ -138,7 +203,88 @@
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+
+    <script>
+      let particles = [];
+      const numParticles = 100;
+      const connectionDistance = 150;
+
+      function setup() {
+        let canvas = createCanvas(windowWidth, windowHeight);
+        canvas.id("p5-canvas");
+        canvas.style("display", "block");
+        canvas.style("position", "fixed");
+        canvas.style("top", "0");
+        canvas.style("left", "0");
+        canvas.style("z-index", "-1");
+
+        for (let i = 0; i < numParticles; i++) {
+          particles.push(new Particle());
+        }
+      }
+
+      function draw() {
+        background("#1a1a1a");
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update();
+          particles[i].show();
+          for (let j = i + 1; j < particles.length; j++) {
+            let d = dist(
+              particles[i].x,
+              particles[i].y,
+              particles[j].x,
+              particles[j].y
+            );
+            if (d < connectionDistance) {
+              let alpha = map(d, 0, connectionDistance, 20, 0);
+              stroke(255, 255, 255, alpha);
+              strokeWeight(0.5);
+              line(
+                particles[i].x,
+                particles[i].y,
+                particles[j].x,
+                particles[j].y
+              );
+            }
+          }
+        }
+      }
+
+      class Particle {
+        constructor() {
+          this.x = random(width);
+          this.y = random(height);
+          this.vx = random(-0.5, 0.5);
+          this.vy = random(-0.5, 0.5);
+          this.r = random(1, 3);
+          this.color = 255;
+        }
+
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+
+          if (this.x < 0 || this.x > width) {
+            this.vx *= -1;
+          }
+          if (this.y < 0 || this.y > height) {
+            this.vy *= -1;
+          }
+        }
+
+        show() {
+          noStroke();
+          fill(this.color);
+          ellipse(this.x, this.y, this.r * 2);
+        }
+      }
+
+      function windowResized() {
+        resizeCanvas(windowWidth, windowHeight);
+      }
+    </script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/Frontend/JavaScript/Admin/admin-dashboard.js"></script>
   </body>
