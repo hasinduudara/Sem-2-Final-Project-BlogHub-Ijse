@@ -38,6 +38,9 @@ public class SecurityConfig {
                                 .requestMatchers("/api/articles/published/**").permitAll()
                                 .requestMatchers("/api/home/**").permitAll()
                                 .requestMatchers("/api/articles/**").permitAll()
+                                .requestMatchers("/api/auth/register",
+                                        "/api/auth/login",
+                                        "/api/auth/logout").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->

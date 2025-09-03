@@ -58,4 +58,13 @@ public class UserController {
         if (user == null) throw new UsernameNotFoundException("User not found");
         return user;
     }
+
+    // ✅ Add inside UserController
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse> logout() {
+        // If you want, invalidate token here (e.g., add to blacklist)
+        return ResponseEntity.ok(
+                new ApiResponse(200, "Logout Successful", null)
+        );
+    }
 }
