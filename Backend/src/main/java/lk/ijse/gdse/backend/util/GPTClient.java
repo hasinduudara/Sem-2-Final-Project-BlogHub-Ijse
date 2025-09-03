@@ -1,16 +1,19 @@
 package lk.ijse.gdse.backend.util;
 
-import org.springframework.stereotype.Component;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+
+import org.springframework.stereotype.Component;
 
 @Component
 public class GPTClient {
 
     // Your new OpenRouter API Key
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "";
 
     public static String generateArticleContent(String title) {
         try {

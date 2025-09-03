@@ -3,8 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Forgot Password</title>
+    <title>BlogHub - AI Generator Subscription</title>
     <link rel="icon" href="/Frontend/assets/image/blogging.png" />
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <!-- Inter Font -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
@@ -15,17 +20,18 @@
         font-family: "Inter", sans-serif;
         background-color: #000000; /* Solid black background */
         display: flex;
-        justify-content: center;
-        align-items: center;
+        flex-direction: column;
+        justify-content: center; /* සියලුම අන්තර්ගතයන් තිරයේ මැදට පෙළගැසීමට */
+        align-items: center; /* Center content horizontally */
         min-height: 100vh;
         margin: 0;
-        overflow: hidden; /* Hide scrollbars for the canvas */
+        overflow: auto; /* අන්තර්ගතය දිග වැඩි නම් scroll කිරීමට ඉඩ දෙන්න */
         color: #f0f0f0; /* Light text for visibility */
       }
 
       /* 3D Canvas Styles */
       #three-canvas {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
@@ -34,7 +40,29 @@
         opacity: 0.7; /* Make it subtle */
       }
 
-      .container {
+      .content-wrapper {
+        position: relative;
+        z-index: 1; /* Above 3D background */
+        padding: 40px 20px;
+        max-width: 1200px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center; /* අන්තර්ගතය සිරස් අතට මැදට පෙළගැසීමට */
+        text-align: center;
+        box-sizing: border-box; /* Padding තිරයේ ප්‍රමාණයට බලපෑමට ඉඩ නොදීමට */
+      }
+
+      h1 {
+        color: #ffffff;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.3); /* Subtle glow */
+        margin-bottom: 40px;
+      }
+
+      .subscription-card {
         background: rgba(
           255,
           255,
@@ -43,15 +71,18 @@
         ); /* Subtle white translucent background */
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         padding: 30px;
-        border-radius: 20px; /* More rounded corners */
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); /* Darker shadow */
-        width: 100%;
+        margin-bottom: 30px;
+        color: #f0f0f0;
         max-width: 400px;
-        text-align: center;
-        z-index: 1; /* Above 3D background */
-        position: relative;
-        border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle white border */
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: all 0.3s ease-in-out;
         animation: floatEffect 5s ease-in-out infinite; /* Gentle floating animation */
       }
 
@@ -67,119 +98,170 @@
         }
       }
 
-      h2 {
-        margin-bottom: 25px; /* Increased margin */
-        color: #ffffff; /* Pure white heading */
+      .subscription-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      .plan-title {
+        font-size: 1.8rem;
         font-weight: 700;
-        letter-spacing: 1px;
-        text-shadow: 0 0 5px rgba(255, 255, 255, 0.2); /* Subtle glow */
+        margin-bottom: 15px;
+        color: #ffffff;
       }
 
-      .form-group {
-        margin-bottom: 20px; /* Increased margin */
-        text-align: left;
+      .plan-price {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 20px;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
       }
 
-      label {
-        display: block;
-        margin-bottom: 8px; /* Increased margin */
-        color: #f8f8f8; /* Very light gray label */
-        font-weight: 500;
-        font-size: 0.95rem;
-      }
-
-      input[type="text"],
-      input[type="password"] {
-        width: 100%;
-        padding: 12px; /* Increased padding */
-        background: rgba(
-          255,
-          255,
-          255,
-          0.1
-        ); /* Subtle white input background */
-        border: 1px solid rgba(255, 255, 255, 0.15); /* Slightly visible border */
-        border-radius: 8px; /* Rounded input corners */
-        box-sizing: border-box;
-        color: #f0f0f0; /* Light text in input */
+      .plan-price small {
         font-size: 1rem;
-        transition: all 0.3s ease;
-      }
-      input[type="text"]:focus,
-      input[type="password"]:focus {
-        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3); /* Custom focus ring */
-        border: 1px solid #ffffff; /* White border on focus */
-        background: rgba(255, 255, 255, 0.2); /* Slightly brighter on focus */
-        color: #ffffff; /* Pure white text on focus */
-        outline: none;
-      }
-      input::placeholder {
-        color: #cccccc; /* Lighter placeholder text */
-        opacity: 0.7;
+        font-weight: 400;
+        color: #cccccc;
       }
 
-      .submit-btn {
+      .plan-features {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 30px;
+        text-align: left;
+        flex-grow: 1; /* Make features take available space */
+      }
+
+      .plan-features li {
+        margin-bottom: 10px;
+        font-size: 1.05rem;
+        color: #e0e0e0;
+        display: flex;
+        align-items: center;
+      }
+
+      .plan-features li::before {
+        content: "✓"; /* Checkmark icon */
+        color: #ffffff; /* White checkmark */
+        font-weight: bold;
+        margin-right: 10px;
+        font-size: 1.2rem;
+      }
+
+      .btn-subscribe {
         background-color: #333333; /* Dark gray button */
         color: white;
-        padding: 12px 25px; /* Increased padding */
+        padding: 12px 25px;
         border: none;
         border-radius: 30px; /* Pill-shaped button */
         cursor: pointer;
-        font-size: 1rem;
+        font-size: 1.1rem;
         width: 100%;
-        margin-top: 15px; /* Increased margin */
         font-weight: 600;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
         transition: all 0.3s ease;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       }
 
-      .submit-btn:hover {
+      .btn-subscribe:hover {
         background-color: #555555; /* Medium gray on hover */
-        transform: translateY(-2px); /* Lift effect */
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        transform: translateY(-3px) scale(1.02); /* Lift and slight scale effect */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        color: white; /* Keep text white on hover */
       }
 
-      .step {
+      .btn-free-access {
+        background: transparent;
+        color: #ffffff;
+        padding: 12px 25px;
+        border: 1px solid #ffffff;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        width: 100%;
+        font-weight: 600;
+        letter-spacing: 0.8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        text-decoration: none; /* Remove underline from link */
+        display: inline-block; /* Treat link like a block element */
+        margin-top: 15px; /* Spacing between buttons */
+      }
+
+      .btn-free-access:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Modal styling */
+      .modal {
         display: none;
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
       }
-
-      .step.active {
-        display: block;
-        animation: fadeIn 0.5s ease-out; /* Fade in animation for steps */
+      .modal-content {
+        background: rgba(255, 255, 255, 0.1);
+        margin: 15% auto;
+        padding: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        width: 80%;
+        max-width: 400px;
+        border-radius: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        animation-name: animatetop;
+        animation-duration: 0.4s;
       }
-
-      @keyframes fadeIn {
+      .modal-content p {
+        color: #f0f0f0;
+        font-size: 1.1rem;
+        margin: 0;
+      }
+      @keyframes animatetop {
         from {
+          top: -300px;
           opacity: 0;
-          transform: translateY(10px);
         }
         to {
+          top: 0;
           opacity: 1;
-          transform: translateY(0);
         }
       }
-
-      #userEmail {
+      .close-btn {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
         font-weight: bold;
-        color: #cccccc; /* Medium light gray email text */
-        display: block; /* Ensure it takes full width for centering */
-        margin-top: 10px;
-        margin-bottom: 20px;
       }
-
-      /* Styling for navigation back to login/home if needed */
-      .back-link {
-        display: inline-block;
-        margin-top: 25px;
-        color: #999999;
+      .close-btn:hover,
+      .close-btn:focus {
+        color: white;
         text-decoration: none;
-        font-size: 0.9rem;
-        transition: color 0.3s ease;
+        cursor: pointer;
       }
-      .back-link:hover {
-        color: #ffffff;
-        text-decoration: underline;
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2rem;
+          margin-bottom: 30px;
+        }
+        .plan-title {
+          font-size: 1.5rem;
+        }
+        .plan-price {
+          font-size: 2rem;
+        }
+        .subscription-card {
+          padding: 20px;
+        }
       }
     </style>
   </head>
@@ -187,83 +269,43 @@
     <!-- 3D Canvas -->
     <canvas id="three-canvas"></canvas>
 
-    <div class="container">
-      <h2>Forgot Password</h2>
+    <div class="content-wrapper">
+      <h1 class="mb-5">Go Premium with AI Article Generation!</h1>
 
-      <!-- Username Step -->
-      <div class="step active" id="usernameStep">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            required
-            placeholder="Enter your username"
-          />
+      <div class="subscription-card">
+        <div>
+          <h3 class="plan-title">Premium Plan</h3>
+          <p class="plan-price">LKR 4999<small>/month</small></p>
+          <ul class="plan-features">
+            <li>Unlimited AI Articles</li>
+            <li>Full Feature Access</li>
+            <li>24/7 Dedicated Support</li>
+            <li>Access to All AI Models & Betas</li>
+            <li>Team Collaboration</li>
+            <li>API Access</li>
+          </ul>
         </div>
-        <button type="button" class="submit-btn" id="findEmailBtn">
-          Find User Email
+        <button
+          type="button"
+          class="btn-subscribe"
+          onclick="initiatePayHere('premium')"
+        >
+          Subscribe Now
         </button>
+        <a
+          href="/Frontend/pages/Publisher/AI-generated-article.html"
+          class="btn-free-access"
+          >Access Free Version</a
+        >
       </div>
+    </div>
 
-      <!-- Email Step -->
-      <div class="step" id="emailStep">
-        <p>User Email: <span id="userEmail"></span></p>
-        <button type="button" class="submit-btn" id="sendOtpBtn">
-          Send OTP
-        </button>
+    <!-- The Modal -->
+    <div id="messageModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <p id="modal-text"></p>
       </div>
-
-      <!-- OTP Step -->
-      <div class="step" id="otpStep">
-        <div class="form-group">
-          <label for="otp">Enter OTP</label>
-          <input
-            type="text"
-            id="otp"
-            name="otp"
-            required
-            placeholder="Enter the OTP"
-          />
-        </div>
-        <button type="button" class="submit-btn" id="verifyOtpBtn">
-          Verify OTP
-        </button>
-      </div>
-
-      <!-- New Password Step -->
-      <div class="step" id="newPasswordStep">
-        <div class="form-group">
-          <label for="newPassword">New Password</label>
-          <input
-            type="password"
-            id="newPassword"
-            name="newPassword"
-            required
-            placeholder="Enter new password"
-          />
-        </div>
-        <div class="form-group">
-          <label for="confirmPassword">Confirm Password</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            required
-            placeholder="Confirm new password"
-          />
-        </div>
-        <button type="button" class="submit-btn" id="updatePasswordBtn">
-          Update Password
-        </button>
-      </div>
-
-      <a
-        href="/Frontend/pages/login-and-register/login-and-register.html"
-        class="back-link"
-        >Back to Login</a
-      >
     </div>
 
     <!-- Three.js CDN -->
@@ -299,27 +341,26 @@
         renderer.setPixelRatio(window.devicePixelRatio);
 
         // Icosahedron (main geometric shape)
-        const icoGeometry = new THREE.IcosahedronGeometry(2, 1); // Radius 2, 1 subdivision for slightly more detail
+        const icoGeometry = new THREE.IcosahedronGeometry(2.5, 1); // Slightly larger
         const icoMaterial = new THREE.MeshBasicMaterial({
           color: 0xcccccc, // Light gray
           wireframe: true,
           transparent: true,
-          opacity: 0.2,
+          opacity: 0.15, // A bit more subtle
           blending: THREE.AdditiveBlending,
         });
         icosahedron = new THREE.Mesh(icoGeometry, icoMaterial);
         scene.add(icosahedron);
 
         // Particles
-        const particleCount = 500;
+        const particleCount = 700; // More particles
         const particleGeometry = new THREE.BufferGeometry();
         const particlePositions = new Float32Array(particleCount * 3);
         const particleColors = new Float32Array(particleCount * 3);
         const particleColor = new THREE.Color(0x888888); // Medium gray particles
 
         for (let i = 0; i < particleCount; i++) {
-          // Position particles randomly around the icosahedron
-          const r = 3 + Math.random() * 3; // Radius from 3 to 6
+          const r = 4 + Math.random() * 4; // Radius from 4 to 8
           const theta = Math.random() * Math.PI * 2;
           const phi = Math.acos(Math.random() * 2 - 1);
           particlePositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
@@ -337,10 +378,10 @@
         );
 
         const particleMaterial = new THREE.PointsMaterial({
-          size: 0.05,
+          size: 0.04, // Slightly smaller particles
           vertexColors: true,
           transparent: true,
-          opacity: 0.5,
+          opacity: 0.4,
           blending: THREE.AdditiveBlending,
           sizeAttenuation: true,
         });
@@ -351,7 +392,7 @@
         const lineMaterial = new THREE.LineBasicMaterial({
           color: 0x666666, // Darker gray for lines
           transparent: true,
-          opacity: 0.05, // Very subtle lines
+          opacity: 0.04, // Even more subtle lines
           blending: THREE.AdditiveBlending,
         });
         const lineGeometry = new THREE.BufferGeometry();
@@ -415,12 +456,12 @@
         requestAnimationFrame(animateThreeJS);
 
         // Rotate icosahedron
-        icosahedron.rotation.x += 0.0005;
-        icosahedron.rotation.y += 0.001;
+        icosahedron.rotation.x += 0.0003;
+        icosahedron.rotation.y += 0.0006;
 
         // Rotate particles system
-        particles.rotation.y += 0.0007;
-        particles.rotation.x += 0.0002;
+        particles.rotation.y += 0.0004;
+        particles.rotation.x += 0.0001;
 
         // Update dynamic lines
         const currentLinePositions = lines.geometry.attributes.position.array;
@@ -430,7 +471,6 @@
         const tempParticle1 = new THREE.Vector3();
         const tempParticle2 = new THREE.Vector3();
 
-        // Resetting to zero effectively hides them for recalculation
         for (let i = 0; i < currentLinePositions.length; i++) {
           currentLinePositions[i] = 0;
         }
@@ -454,6 +494,7 @@
               .applyMatrix4(particles.matrixWorld);
 
             if (tempParticle1.distanceTo(tempParticle2) < 0.8) {
+              // Adjust connection distance
               currentLinePositions[lineIndex++] = tempParticle1.x;
               currentLinePositions[lineIndex++] = tempParticle1.y;
               currentLinePositions[lineIndex++] = tempParticle1.z;
@@ -468,12 +509,37 @@
         lines.geometry.setDrawRange(0, lineIndex);
 
         // Camera movement based on mouse/touch
-        camera.position.x += (mouseX * 0.0005 - camera.position.x) * 0.05;
-        camera.position.y += (-mouseY * 0.0005 - camera.position.y) * 0.05;
+        camera.position.x += (mouseX * 0.0003 - camera.position.x) * 0.05;
+        camera.position.y += (-mouseY * 0.0003 - camera.position.y) * 0.05;
         camera.lookAt(scene.position);
 
         renderer.render(scene, camera);
       }
+
+      // --- PayHere Integration Placeholder ---
+      function initiatePayHere(plan) {
+        const modal = document.getElementById("messageModal");
+        const modalText = document.getElementById("modal-text");
+        modalText.textContent =
+          "Initiating PayHere subscription for the " +
+          plan +
+          " plan! (This is a placeholder)";
+        modal.style.display = "block";
+      }
+
+      // Modal close functionality
+      const modal = document.getElementById("messageModal");
+      const span = document.getElementsByClassName("close-btn")[0];
+
+      span.onclick = function () {
+        modal.style.display = "none";
+      };
+
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
 
       // Initialize Three.js when the window loads
       window.onload = function () {
@@ -481,7 +547,7 @@
         animateThreeJS();
       };
     </script>
-    <!-- Original forgot-password.js for form logic -->
-    <script src="/Frontend/JavaScript/login-and-register/forgot-password.js"></script>
+    <!-- Bootstrap JS CDN (optional, for components that require JS) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
