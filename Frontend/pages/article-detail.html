@@ -16,272 +16,185 @@
       .article-image {
         max-height: 400px;
         object-fit: cover;
-        border-radius: 10px;
-        margin-bottom: 20px;
+        width: 100%;
       }
-      .logout-btn {
-        background-color: #dc3545;
-        color: white;
+      .like-btn {
+        background-color: #0d6efd;
         border: none;
+        color: white;
         padding: 8px 16px;
         border-radius: 20px;
+        cursor: pointer;
       }
-      .logout-btn:hover {
-        background-color: #c82333;
-        transform: scale(1.05);
-      }
-      .profile-image {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
+      .like-btn:hover {
+        background-color: #0b5ed7;
       }
     </style>
   </head>
   <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-      <div class="container">
-        <a class="navbar-brand" href="home-page.html">BlogHub</a>
-        <div class="ms-auto d-flex align-items-center">
-          <img
-            src="/Frontend/assets/image/user-icon.png"
-            alt="Profile"
-            class="profile-image me-3"
-          />
-          <button class="logout-btn" id="logoutBtn">
-            <i class="fas fa-sign-out-alt me-1"></i>Logout
-          </button>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Article Detail -->
     <div class="container mt-4" id="articleContainer">
-      <div class="text-center">
-        <div class="alert alert-info">
-          <i class="fas fa-spinner fa-spin me-2"></i>Loading article...
-        </div>
+      <div class="alert alert-info">
+        <i class="fas fa-spinner fa-spin me-2"></i>Loading article...
       </div>
-    </div>
-
-    <hr />
-    <!-- Like Button -->
-    <div class="d-flex align-items-center mb-3">
-      <button id="likeBtn" class="btn btn-outline-primary me-2">
-        <i class="fas fa-thumbs-up me-1"></i> Like
-      </button>
-      <span id="likeCount">0 Likes</span>
     </div>
 
     <!-- Comments Section -->
-    <div id="commentsSection" class="mt-4">
-      <h5>Comments</h5>
-      <div id="commentsList" class="mb-3">
-        <p class="text-muted">Loading comments...</p>
-      </div>
-      <textarea
-        id="commentInput"
-        class="form-control mb-2"
-        placeholder="Write a comment..."
-      ></textarea>
-      <button id="addCommentBtn" class="btn btn-primary">Post Comment</button>
+    <div class="container mt-4">
+      <h4>Comments</h4>
+      <ul class="list-group mb-3" id="commentsList">
+        <li class="list-group-item">Loading comments...</li>
+      </ul>
+
+      <form id="commentForm">
+        <div class="mb-3">
+          <textarea
+            class="form-control"
+            id="commentText"
+            rows="3"
+            placeholder="Write your comment..."
+            required
+          ></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-paper-plane me-1"></i> Post Comment
+        </button>
+      </form>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      // Get article ID from URL
-      function getArticleId() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get("id");
-      }
 
-      // Render article detail
-      function renderArticle(article) {
-        $("#articleContainer").html(`
-          <div class="card shadow-sm p-4">
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const articleId = params.get("id");
+
+      // Load article
+      async function loadArticle() {
+        try {
+          const res = await fetch(
+            `http://localhost:8080/api/articles/${articleId}`
+          );
+          if (!res.ok) throw new Error("Failed to load article");
+
+          const article = await res.json();
+          const container = document.getElementById("articleContainer");
+
+          container.innerHTML = `
+          <div class="card">
             ${
               article.imageUrl
-                ? `<img src="${article.imageUrl}" class="article-image w-100" alt="Article Image">`
+                ? `<img src="${article.imageUrl}" class="card-img-top article-image" alt="">`
                 : ""
             }
-            <h2 class="mb-3">${article.title}</h2>
-            <p class="text-muted">Published on: ${
-              article.publishedAt
-                ? new Date(article.publishedAt).toLocaleDateString()
-                : "N/A"
-            }</p>
-            <hr>
-            <div class="article-content">
-              ${article.content || "<p>No content available.</p>"}
+            <div class="card-body">
+              <h2>${article.title}</h2>
+              <p class="text-muted">By ${article.authorName} | ${new Date(
+            article.publishedAt
+          ).toLocaleDateString()}</p>
+              <p>${article.content}</p>
+              <button class="like-btn" id="likeBtn">
+                <i class="fas fa-thumbs-up me-1"></i> Like (<span id="likeCount">${
+                  article.likes || 0
+                }</span>)
+              </button>
             </div>
-            <a href="home-page.html" class="btn btn-secondary mt-4">
-              <i class="fas fa-arrow-left me-1"></i>Back to Home
-            </a>
           </div>
-        `);
-      }
+        `;
 
-      // Load article detail using AJAX
-      function loadArticleDetail() {
-        const id = getArticleId();
-
-        if (!id) {
-          $("#articleContainer").html(`
-      <div class="alert alert-danger text-center">
-        <i class="fas fa-exclamation-triangle me-2"></i>Invalid article ID
-      </div>`);
-          return;
+          // Like button handler
+          document
+            .getElementById("likeBtn")
+            .addEventListener("click", async () => {
+              try {
+                const res = await fetch(
+                  `http://localhost:8080/api/articles/${articleId}/like`,
+                  {
+                    method: "POST",
+                    credentials: "include",
+                  }
+                );
+                if (res.ok) {
+                  const newCount = await res.json();
+                  document.getElementById("likeCount").textContent =
+                    newCount.likes;
+                }
+              } catch (err) {
+                console.error(err);
+              }
+            });
+        } catch (err) {
+          console.error(err);
+          document.getElementById("articleContainer").innerHTML = `
+          <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>Failed to load article
+          </div>
+        `;
         }
-
-        const token = localStorage.getItem("token");
-
-        $.ajax({
-          url: `http://localhost:8080/api/articles/${id}`,
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-          success: function (article) {
-            renderArticle(article);
-
-            // ✅ After article is rendered, load likes and comments
-            loadLikes(article.id);
-            loadComments(article.id);
-          },
-          error: function (xhr) {
-            console.error(xhr);
-            $("#articleContainer").html(`
-        <div class="alert alert-danger text-center">
-          <i class="fas fa-exclamation-triangle me-2"></i>Error loading article
-        </div>`);
-          },
-        });
       }
-
-      // Load likes
-      function loadLikes(articleId) {
-        const token = localStorage.getItem("token");
-        $.ajax({
-          url: `http://localhost:8080/api/likes/${articleId}`,
-          method: "GET",
-          headers: { Authorization: "Bearer " + token },
-          success: function (likeCount) {
-            $("#likeCount").text(likeCount + " Likes");
-          },
-          error: function () {
-            $("#likeCount").text("0 Likes");
-          },
-        });
-      }
-
-      // Like button click
-      $(document).on("click", "#likeBtn", function () {
-        const articleId = getArticleId();
-        const token = localStorage.getItem("token");
-
-        $.ajax({
-          url: `http://localhost:8080/api/likes/${articleId}`,
-          method: "POST",
-          headers: { Authorization: "Bearer " + token },
-          success: function () {
-            loadLikes(articleId);
-          },
-          error: function (xhr) {
-            console.error(xhr);
-            alert("Error liking the article");
-          },
-        });
-      });
 
       // Load comments
-      function loadComments(articleId) {
-        const token = localStorage.getItem("token");
-        $.ajax({
-          url: `http://localhost:8080/api/comments/${articleId}`,
-          method: "GET",
-          headers: { Authorization: "Bearer " + token },
-          success: function (response) {
-            const comments = response.data; // 👈 data field access
-            if (!Array.isArray(comments) || comments.length === 0) {
-              $("#commentsList").html(
-                "<p class='text-muted'>No comments yet.</p>"
-              );
-              return;
-            }
-            let html = "";
-            comments.forEach((c) => {
-              html += `
-          <div class="border p-2 mb-2 rounded">
-            <strong>${c.username}</strong> <small class="text-muted">${new Date(
-                c.createdAt
-              ).toLocaleString()}</small>
-            <p>${c.content}</p>
-          </div>`;
-            });
-            $("#commentsList").html(html);
-          },
-          error: function () {
-            $("#commentsList").html(
-              "<p class='text-danger'>Failed to load comments.</p>"
-            );
-          },
-        });
+      async function loadComments() {
+        try {
+          const res = await fetch(
+            `http://localhost:8080/api/articles/${articleId}/comments`
+          );
+          if (!res.ok) throw new Error("Failed to load comments");
+
+          const comments = await res.json();
+          const list = document.getElementById("commentsList");
+          list.innerHTML = "";
+
+          if (comments.length === 0) {
+            list.innerHTML = `<li class="list-group-item">No comments yet</li>`;
+            return;
+          }
+
+          comments.forEach((c) => {
+            const li = document.createElement("li");
+            li.className = "list-group-item";
+            li.innerHTML = `<strong>${c.username}</strong>: ${c.text}`;
+            list.appendChild(li);
+          });
+        } catch (err) {
+          console.error(err);
+          document.getElementById(
+            "commentsList"
+          ).innerHTML = `<li class="list-group-item text-danger">Error loading comments</li>`;
+        }
       }
 
-      // Add comment
-      $("#addCommentBtn").on("click", function () {
-        const articleId = getArticleId();
-        const content = $("#commentInput").val().trim();
-        if (!content) return alert("Comment cannot be empty!");
+      // Post comment
+      document
+        .getElementById("commentForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const text = document.getElementById("commentText").value;
 
-        const token = localStorage.getItem("token");
-        $.ajax({
-          url: "http://localhost:8080/api/comments",
-          method: "POST",
-          headers: {
-            Authorization: "Bearer " + token,
-            "Content-Type": "application/json",
-          },
-          data: JSON.stringify({
-            articleId: parseInt(articleId),
-            content: content,
-          }),
-          success: function () {
-            $("#commentInput").val("");
-            loadComments(articleId);
-          },
-          error: function (xhr) {
-            console.error(xhr);
-            alert("Failed to post comment");
-          },
+          try {
+            const res = await fetch(
+              `http://localhost:8080/api/articles/${articleId}/comments`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ text }),
+              }
+            );
+            if (res.ok) {
+              document.getElementById("commentText").value = "";
+              loadComments();
+            } else {
+              alert("Failed to post comment");
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Error posting comment");
+          }
         });
-      });
 
-      // Logout
-      $("#logoutBtn").on("click", function () {
-        const token = localStorage.getItem("token");
-
-        $.ajax({
-          url: "http://localhost:8080/api/auth/logout",
-          method: "POST",
-          headers: { Authorization: "Bearer " + token },
-          success: function () {
-            alert("Logged out successfully!");
-            localStorage.removeItem("token");
-            window.location.href =
-              "/Frontend/pages/login-and-register/login-and-register.html";
-          },
-          error: function () {
-            alert("Logout failed");
-          },
-        });
-      });
-
-      // On page ready
-      $(document).ready(function () {
-        loadArticleDetail();
+      // Init
+      document.addEventListener("DOMContentLoaded", () => {
+        loadArticle();
+        loadComments();
       });
     </script>
   </body>
