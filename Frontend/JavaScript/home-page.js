@@ -47,7 +47,7 @@ function renderArticles(articles) {
 // Load articles from backend
 async function loadHomeArticles() {
   try {
-    const res = await fetch("http://localhost:8080/api/home/articles");
+    const res = await fetch("http://localhost:8080/api/articles/published");
     if (!res.ok) throw new Error("Network response was not ok");
 
     const data = await res.json();
@@ -64,24 +64,36 @@ async function loadHomeArticles() {
   }
 }
 
-// Logout functionality
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  // Clear saved auth data
-  localStorage.removeItem("token");
-  localStorage.removeItem("username");
-  localStorage.removeItem("email");
-  localStorage.removeItem("role");
+// ✅ Logout functionality
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  try {
+    const res = await fetch("http://localhost:8080/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
 
-  // Show Bootstrap toast
-  const toastEl = document.getElementById("logoutToast");
-  const toast = new bootstrap.Toast(toastEl);
-  toast.show();
+    // Always clear local storage + cookies reference
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("role");
 
-  // Redirect after short delay
-  setTimeout(() => {
-    window.location.href =
-      "/Frontend/pages/login-and-register/login-and-register.html";
-  }, 1500);
+    if (res.ok) {
+      const toastEl = document.getElementById("logoutToast");
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
+
+      setTimeout(() => {
+        window.location.href =
+          "/Frontend/pages/login-and-register/login-and-register.html";
+      }, 1500);
+    } else {
+      alert("Logout failed on server");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error logging out");
+  }
 });
 
 // Load articles when DOM is ready
