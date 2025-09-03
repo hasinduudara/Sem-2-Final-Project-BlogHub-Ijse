@@ -3,11 +3,143 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Admin Dashboard | BlogHub</title>
+    <link rel="icon" href="/Frontend/assets/image/blogging.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <style>
+      body {
+        background-color: #f0f2f5;
+        font-family: Arial, sans-serif;
+      }
+      .navbar {
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .card-link {
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      }
+      .card-link:hover .dashboard-card {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      }
+      .dashboard-card {
+        background-color: #ffffff;
+        border-radius: 15px;
+        transition: all 0.3s ease-in-out;
+      }
+      .icon-container {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        transition: background-color 0.3s ease-in-out;
+      }
+      .card-link:hover .icon-container {
+        background-color: #0d6efd;
+      }
+      .card-link:hover .icon-container i {
+        color: #ffffff;
+      }
+    </style>
   </head>
+
   <body>
-    <h1>Admin Dashboard</h1>
-    <button id="logoutBtn">Logout</button>
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-primary" href="#">
+          <i class="fas fa-chart-line me-2"></i>Admin Dashboard
+        </a>
+        <div class="d-flex">
+          <button id="logoutBtn" class="btn btn-outline-danger">
+            <i class="fas fa-sign-out-alt me-2"></i>Logout
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      <div
+        class="text-center mb-5 animate__animated animate__fadeInDown animate__slow"
+      >
+        <h1 class="display-4 fw-bold">Welcome, Admin!</h1>
+        <p class="lead text-muted">Manage your BlogHub platform efficiently.</p>
+      </div>
+
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        <div class="col animate__animated animate__fadeInUp animate__delay-1s">
+          <a href="./articles.html" class="card-link">
+            <div class="card p-4 text-center dashboard-card border-0">
+              <div class="mx-auto mb-3 icon-container">
+                <i class="fas fa-newspaper fa-2x text-muted"></i>
+              </div>
+              <h5 class="fw-bold">Manage Articles</h5>
+              <p class="text-muted mb-0">
+                Review and delete published articles
+              </p>
+            </div>
+          </a>
+        </div>
+
+        <div class="col animate__animated animate__fadeInUp animate__delay-2s">
+          <a href="./users.html" class="card-link">
+            <div class="card p-4 text-center dashboard-card border-0">
+              <div class="mx-auto mb-3 icon-container">
+                <i class="fas fa-users fa-2x text-muted"></i>
+              </div>
+              <h5 class="fw-bold">Users & Publishers</h5>
+              <p class="text-muted mb-0">
+                View and manage all registered accounts
+              </p>
+            </div>
+          </a>
+        </div>
+
+        <div class="col animate__animated animate__fadeInUp animate__delay-3s">
+          <a href="./payments.html" class="card-link">
+            <div class="card p-4 text-center dashboard-card border-0">
+              <div class="mx-auto mb-3 icon-container">
+                <i class="fas fa-credit-card fa-2x text-muted"></i>
+              </div>
+              <h5 class="fw-bold">Payments</h5>
+              <p class="text-muted mb-0">
+                Review payment history and statistics
+              </p>
+            </div>
+          </a>
+        </div>
+
+        <div class="col animate__animated animate__fadeInUp animate__delay-4s">
+          <a href="./admin-profile.html" class="card-link">
+            <div class="card p-4 text-center dashboard-card border-0">
+              <div class="mx-auto mb-3 icon-container">
+                <i class="fas fa-user-shield fa-2x text-muted"></i>
+              </div>
+              <h5 class="fw-bold">Admin Management</h5>
+              <p class="text-muted mb-0">Update profile and add new admins</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Frontend/JavaScript/Admin/admin-dashboard.js"></script>
   </body>
-  <script src="/Frontend/JavaScript/Admin/admin-dashboard.js"></script>
 </html>

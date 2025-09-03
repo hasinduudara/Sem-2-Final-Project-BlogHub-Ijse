@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Management | Admin Panel</title>
+    <link rel="icon" href="/Frontend/assets/image/blogging.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background-color: #f0f2f5;
+      }
+      .navbar {
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .form-container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light mb-4">
+      <div class="container-fluid">
+        <a
+          class="navbar-brand fw-bold text-primary"
+          href="./admin-dashboard.html"
+        >
+          <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+        <h2 class="h5 mb-0">Admin Management</h2>
+        <button id="logoutBtn" class="btn btn-outline-danger">
+          <i class="fas fa-sign-out-alt me-2"></i>Logout
+        </button>
+      </div>
+    </nav>
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-6 offset-md-3 form-container p-4">
+          <h4 class="mb-4">Update My Profile</h4>
+          <form id="updateAdminProfileForm">
+            <div class="mb-3">
+              <label for="adminUsername" class="form-label">Username</label>
+              <input type="text" class="form-control" id="adminUsername" />
+            </div>
+            <div class="mb-3">
+              <label for="adminEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="adminEmail" />
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save me-2"></i>Update Profile
+            </button>
+          </form>
+          <hr class="my-4" />
+          <h4 class="mb-4">Add New Admin</h4>
+          <form id="addNewAdminForm">
+            <div class="mb-3">
+              <label for="newAdminUsername" class="form-label">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="newAdminUsername"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="newAdminEmail" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="newAdminEmail"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="newAdminPassword" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="newAdminPassword"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-success">
+              <i class="fas fa-user-plus me-2"></i>Add Admin
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Frontend/JavaScript/Admin/admin-profile.js"></script>
+  </body>
+</html>
