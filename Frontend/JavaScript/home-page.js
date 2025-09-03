@@ -66,23 +66,17 @@ async function loadHomeArticles() {
 }
 
 // Logout functionality
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-  try {
-    const res = await fetch("http://localhost:8080/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
-    if (res.ok) {
-      alert("Logged out successfully!");
-      window.location.href =
-        "/Frontend/pages/login-and-register/login-and-register.html";
-    } else {
-      alert("Logout failed");
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Error logging out");
-  }
+$("#logoutBtn").on("click", function () {
+  localStorage.removeItem("token");
+  localStorage.removeItem("username");
+  localStorage.removeItem("email");
+  localStorage.removeItem("role");
+
+  showNotification("Logged out successfully!");
+  setTimeout(() => {
+    window.location.href =
+      "/Frontend/pages/login-and-register/login-and-register.html";
+  }, 1000);
 });
 
 // Load articles when DOM is ready

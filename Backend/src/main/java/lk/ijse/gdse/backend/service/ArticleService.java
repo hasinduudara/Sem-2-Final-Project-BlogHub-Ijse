@@ -35,4 +35,3 @@ public interface ArticleService {
 
     void deleteArticle(Long publisherId, Long articleId);
 }
-
