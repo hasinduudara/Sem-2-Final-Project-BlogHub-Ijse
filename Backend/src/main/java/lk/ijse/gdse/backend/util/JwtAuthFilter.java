@@ -30,7 +30,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     // ✅ List of endpoints to skip JWT filter
     private static final List<String> EXCLUDED_URLS = List.of(
             "/auth/register",
-            "/auth/login"
+            "/auth/login",
+            "/api/auth/register",
+            "/api/auth/login"
     );
 
     // ✅ Skip filter for public endpoints

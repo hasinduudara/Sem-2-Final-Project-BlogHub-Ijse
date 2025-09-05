@@ -4,6 +4,7 @@ import lk.ijse.gdse.backend.util.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -38,6 +39,11 @@ public class SecurityConfig {
                                 .requestMatchers("/api/articles/published/**").permitAll()
                                 .requestMatchers("/api/home/**").permitAll()
                                 .requestMatchers("/api/articles/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/comments/**").authenticated()
+                                // ✅ Add likes permissions
+                                .requestMatchers(HttpMethod.GET, "/api/likes/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/likes/**").authenticated()
                                 .requestMatchers("/api/auth/register",
                                         "/api/auth/login",
                                         "/api/auth/logout").permitAll()

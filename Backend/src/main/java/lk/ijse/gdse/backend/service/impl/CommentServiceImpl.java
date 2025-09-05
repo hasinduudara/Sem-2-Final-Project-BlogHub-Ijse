@@ -25,7 +25,9 @@ public class CommentServiceImpl implements CommentService {
     public CommentDTO addComment(CommentDTO dto, String username) {
         ArticleEntity article = articleRepository.findById(dto.getArticleId())
                 .orElseThrow(() -> new RuntimeException("Article not found"));
-        UserEntity user = userRepository.findByUsername(username)
+
+        // FIXED: Since JWT stores email, search by email instead of username
+        UserEntity user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         CommentEntity comment = CommentEntity.builder()
@@ -47,7 +49,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDTO> getCommentsByArticle(Long articleId) {
-        return commentRepository.findByArticleId(articleId)
+        return commentRepository.findByArticle_Id(articleId)
                 .stream()
                 .map(c -> CommentDTO.builder()
                         .id(c.getId())

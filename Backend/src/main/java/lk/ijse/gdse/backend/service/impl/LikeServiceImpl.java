@@ -21,7 +21,9 @@ public class LikeServiceImpl implements LikeService {
     public String toggleLike(Long articleId, String username) {
         ArticleEntity article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new RuntimeException("Article not found"));
-        UserEntity user = userRepository.findByUsername(username)
+
+        // FIXED: Since JWT stores email, search by email instead of username
+        UserEntity user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return likeRepository.findByArticleIdAndUserId(articleId, user.getId())

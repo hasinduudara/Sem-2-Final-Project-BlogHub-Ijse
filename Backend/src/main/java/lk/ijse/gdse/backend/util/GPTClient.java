@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class GPTClient {
 
-    // Your new OpenRouter API Key
-    private static final String API_KEY = "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";
+    // ✅ Use your new OpenRouter API Key
+    private static final String API_KEY = "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";
 
     public static String generateArticleContent(String title) {
         try {
@@ -28,25 +28,25 @@ public class GPTClient {
             con.setRequestProperty("X-Title", "Your Site Name");
             con.setDoOutput(true);
 
-            // Construct the JSON payload based on the provided Gemini API code
-            String json = "{ \"model\": \"google/gemma-3n-e2b-it:free\", \"messages\": [{\"role\": \"user\", \"content\": \"Write a full article with the title: " + title + "\"}]}";
+            // ✅ Use DeepSeek R1 (Free) model
+            String json = "{ \"model\": \"deepseek/deepseek-r1:free\", " +
+                    "\"messages\": [{\"role\": \"user\", " +
+                    "\"content\": \"Write a full article with the title: " + title + "\"}]}";
 
-            try(OutputStream os = con.getOutputStream()) {
+            try (OutputStream os = con.getOutputStream()) {
                 byte[] input = json.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
 
             // Read the API response
-            try(BufferedReader br = new BufferedReader(
+            try (BufferedReader br = new BufferedReader(
                     new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
                 StringBuilder response = new StringBuilder();
                 String responseLine;
                 while ((responseLine = br.readLine()) != null) {
                     response.append(responseLine.trim());
                 }
-                // The response will be a JSON string. You'll likely need to parse this JSON
-                // to extract the actual article content. For now, it returns the raw JSON.
-                return response.toString();
+                return response.toString(); // return raw JSON
             }
         } catch (Exception e) {
             e.printStackTrace();
