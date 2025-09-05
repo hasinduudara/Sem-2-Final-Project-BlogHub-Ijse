@@ -25,10 +25,11 @@ public class UserController {
         String result = userService.registerUser(userDTO);
 
         if ("Registration Successful!".equals(result)) {
-            String token = jwtUtil.generateToken(userDTO.getEmail());
+            // ✅ Include role in JWT and response
+            String token = jwtUtil.generateToken(userDTO.getEmail(), userDTO.getRole());
             return ResponseEntity.ok(
                     new ApiResponse(201, "Registration Successful!",
-                            new LoginResponse(userDTO.getUsername(), token))
+                            new LoginResponse(userDTO.getUsername(), token, userDTO.getRole()))
             );
         }
 
@@ -44,7 +45,8 @@ public class UserController {
             return ResponseEntity.ok(new ApiResponse(401, "Login Failed", "Invalid email or password"));
         }
 
-        String token = jwtUtil.generateToken(user.getEmail());
+        // ✅ Include role in JWT
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
         return ResponseEntity.ok(
                 new ApiResponse(200, "Login Successful",
                         new LoginResponse(user.getUsername(), token))
