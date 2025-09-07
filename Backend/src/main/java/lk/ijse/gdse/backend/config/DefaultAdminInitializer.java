@@ -3,32 +3,58 @@ package lk.ijse.gdse.backend.config;
 import lk.ijse.gdse.backend.entity.UserEntity;
 import lk.ijse.gdse.backend.entity.UserRole;
 import lk.ijse.gdse.backend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
-@Configuration
-public class DefaultAdminInitializer {
+@Component
+public class DefaultAdminInitializer implements CommandLineRunner {
 
-    @Bean
-    public CommandLineRunner createDefaultAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        return args -> {
-            String adminEmail = "admin@gmail.com"; // ⚠️ Default admin email
-            String adminUsername = "admin";
+    @Autowired
+    private UserRepository userRepository;
 
-            if (userRepository.findByEmail(adminEmail).isEmpty()) {
-                UserEntity admin = new UserEntity();
-                admin.setUsername(adminUsername);
-                admin.setEmail(adminEmail);
-                admin.setPassword(passwordEncoder.encode("123")); // ⚠️ Default password
-                admin.setRole(UserRole.ADMIN);
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-                userRepository.save(admin);
-                System.out.println("✅ Default ADMIN user created: " + adminEmail);
-            } else {
-                System.out.println("ℹ️ ADMIN user already exists.");
-            }
-        };
+    @Override
+    public void run(String... args) throws Exception {
+        // Create admin user if it doesn't exist
+        String adminEmail = "admin@example.com";
+
+        if (userRepository.findByEmail(adminEmail).isEmpty()) {
+            System.out.println("Creating default admin user...");
+
+            UserEntity adminUser = new UserEntity();
+            adminUser.setUsername("admin");
+            adminUser.setEmail(adminEmail);
+            adminUser.setPassword(passwordEncoder.encode("admin123")); // Change this password!
+            adminUser.setRole(UserRole.ADMIN);
+
+            UserEntity savedAdmin = userRepository.save(adminUser);
+            System.out.println("Admin user created successfully!");
+            System.out.println("Email: " + savedAdmin.getEmail());
+            System.out.println("Username: " + savedAdmin.getUsername());
+            System.out.println("Role: " + savedAdmin.getRole().name());
+            System.out.println("ID: " + savedAdmin.getId());
+            System.out.println("Password: admin123 (CHANGE THIS IN PRODUCTION!)");
+        } else {
+            UserEntity existingAdmin = userRepository.findByEmail(adminEmail).get();
+            System.out.println("Admin user already exists:");
+            System.out.println("Email: " + existingAdmin.getEmail());
+            System.out.println("Username: " + existingAdmin.getUsername());
+            System.out.println("Role: " + existingAdmin.getRole().name());
+            System.out.println("ID: " + existingAdmin.getId());
+        }
+
+        // List all users for debugging
+        System.out.println("\n=== ALL USERS IN DATABASE ===");
+        userRepository.findAll().forEach(user -> {
+            System.out.println("ID: " + user.getId() +
+                    " | Email: " + user.getEmail() +
+                    " | Username: " + user.getUsername() +
+                    " | Role: " + user.getRole().name());
+        });
+        System.out.println("==============================\n");
     }
 }

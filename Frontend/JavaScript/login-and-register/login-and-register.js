@@ -1,5 +1,5 @@
 // ==========================
-// AUTH HANDLER SCRIPT (auth.js)
+// AUTH HANDLER SCRIPT (auth.js) - Enhanced with Debug
 // ==========================
 document.addEventListener("DOMContentLoaded", () => {
   const toggleButtons = document.querySelectorAll(".toggle-btn");
@@ -68,6 +68,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const password = document.getElementById("registerPassword").value.trim();
       const role = document.getElementById("role").value;
 
+      console.log("=== REGISTRATION ATTEMPT ===");
+      console.log("Username:", username);
+      console.log("Email:", email);
+      console.log("Role:", role);
+      console.log("Password provided:", password ? "Yes" : "No");
+
       try {
         const res = await fetch("http://localhost:8080/api/auth/register", {
           method: "POST",
@@ -77,22 +83,25 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         const data = await res.json();
+        console.log("Registration response:", data);
+
         if (res.ok && data.code === 201) {
           alert("Registration Successful! Please login.");
           // Switch to login form
           document.querySelector('.toggle-btn[data-form="login"]')?.click();
           document.getElementById("loginEmail").value = email; // pre-fill email
         } else {
+          console.error("Registration failed:", data);
           alert(data.data || "Registration failed");
         }
       } catch (err) {
-        console.error(err);
+        console.error("Registration error:", err);
         alert("An error occurred during registration.");
       }
     });
 
   // -----------------------
-  // LOGIN FORM HANDLER
+  // LOGIN FORM HANDLER - Enhanced with debugging
   // -----------------------
   document
     .getElementById("loginForm")
@@ -102,6 +111,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value.trim();
 
+      console.log("=== LOGIN ATTEMPT ===");
+      console.log("Email:", email);
+      console.log("Password provided:", password ? "Yes" : "No");
+      console.log("Password length:", password ? password.length : 0);
+
       try {
         const res = await fetch("http://localhost:8080/api/auth/login", {
           method: "POST",
@@ -110,95 +124,100 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify({ email, password }),
         });
 
-        let data;
-        try {
-          data = await res.json();
-        } catch (parseError) {
-          const text = await res.text();
-          console.error("Non-JSON response:", text);
-          throw parseError;
-        }
+        console.log("Response status:", res.status);
+        console.log("Response ok:", res.ok);
+
+        const data = await res.json();
+        console.log("Login response data:", data);
 
         if (res.ok && data.code === 200) {
           const token = data.data.token;
           const username = data.data.username;
+          const role = data.data.role;
 
-          // Show success message first
+          console.log("Login successful!");
+          console.log("Token received:", token ? "Yes" : "No");
+          console.log("Username:", username);
+          console.log("Role received:", role);
+
           alert("Login Successful!");
 
-          // ✅ Safe localStorage access
-          try {
-            localStorage.setItem("token", token);
-            localStorage.setItem("username", username);
-          } catch (e) {
-            console.warn("Cannot access localStorage:", e);
-          }
+          // Store all data in localStorage
+          localStorage.setItem("token", token);
+          localStorage.setItem("username", username);
+          localStorage.setItem("role", role);
+          localStorage.setItem("email", email);
 
-          // Fetch user role and redirect
-          try {
-            const userRole = await fetchUserRole(email, token);
-            if (userRole) {
-              redirectToDashboard(userRole.toUpperCase());
-            } else {
-              alert("Unable to determine user role.");
-            }
-          } catch (roleError) {
-            console.error("Error fetching user role:", roleError);
-            alert("Login successful but unable to redirect. Please try again.");
-          }
+          console.log("Data stored in localStorage:");
+          console.log(
+            "- Token:",
+            localStorage.getItem("token") ? "Stored" : "Not stored"
+          );
+          console.log("- Username:", localStorage.getItem("username"));
+          console.log("- Role:", localStorage.getItem("role"));
+          console.log("- Email:", localStorage.getItem("email"));
+
+          // Redirect based on role
+          console.log("Attempting to redirect with role:", role);
+          redirectToDashboard(role.toUpperCase());
         } else {
+          console.error("Login failed:");
+          console.error("- Code:", data.code);
+          console.error("- Message:", data.message);
+          console.error("- Data:", data.data);
           alert(data.message || "Login failed");
         }
       } catch (err) {
         console.error("Login error:", err);
-        alert("Something went wrong");
+        alert("Something went wrong: " + err.message);
       }
     });
 
   // -----------------------
-  // HELPER: Fetch user role
-  // -----------------------
-  async function fetchUserRole(email, token) {
-    try {
-      const res = await fetch(`http://localhost:8080/api/auth/users/${email}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        credentials: "include",
-      });
-
-      if (!res.ok) {
-        console.error("Failed to fetch user role, status:", res.status);
-        return null;
-      }
-
-      const userData = await res.json();
-      console.log("User data received:", userData);
-      return userData.role || null;
-    } catch (err) {
-      console.error("Error in fetchUserRole:", err);
-      return null;
-    }
-  }
-
-  // -----------------------
-  // HELPER: Redirect
+  // HELPER: Redirect with enhanced logging
   // -----------------------
   function redirectToDashboard(role) {
-    console.log("Redirecting with role:", role);
+    console.log("=== REDIRECT ATTEMPT ===");
+    console.log("Role for redirect:", role);
+    console.log("Role type:", typeof role);
 
     const baseUrl = "http://127.0.0.1:5500/Frontend/pages";
 
     if (role === "USER") {
-      console.log("Navigating to user profile");
+      console.log("Redirecting to USER dashboard");
       window.location.href = `${baseUrl}/home-page.html`;
     } else if (role === "PUBLISHER") {
-      console.log("Navigating to publisher dashboard");
+      console.log("Redirecting to PUBLISHER dashboard");
       window.location.href = `${baseUrl}/Publisher/publisher-dashboard.html`;
     } else if (role === "ADMIN") {
-      console.log("Navigating to admin dashboard");
+      console.log("Redirecting to ADMIN dashboard");
       window.location.href = `${baseUrl}/Admin/admin-dashboard.html`;
     } else {
       console.error("Unknown role received:", role);
-      alert("Unknown role: " + role);
+      console.log("Available roles should be: USER, PUBLISHER, ADMIN");
+      alert("Unknown role: " + role + ". Please contact support.");
     }
   }
+
+  // -----------------------
+  // DEBUG FUNCTION: Check all users (only for development)
+  // -----------------------
+  window.debugCheckUsers = async function () {
+    try {
+      const res = await fetch("http://localhost:8080/api/auth/debug/users", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+
+      const data = await res.json();
+      console.log("All users in database:", data);
+    } catch (err) {
+      console.error("Error fetching users:", err);
+    }
+  };
+
+  // Add debug info to console
+  console.log("Auth.js loaded successfully");
+  console.log("To debug users, run: debugCheckUsers()");
 });
