@@ -75,7 +75,10 @@ $(document).ready(function () {
   $(document).on("click", ".view-article-btn", function () {
     const articleId = $(this).data("id");
     // This will redirect to a public view page. You need to have this page ready.
-    window.open(`/Frontend/pages/article-view.html?id=${articleId}`, "_blank");
+    window.open(
+      `/Frontend/pages/article-detail.html?id=${articleId}`,
+      "_blank"
+    );
   });
 
   // Handle Delete button click (modal populating)
