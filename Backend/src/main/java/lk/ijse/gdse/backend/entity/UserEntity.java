@@ -23,6 +23,9 @@ public class UserEntity implements UserDetails {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false, updatable = false)
+    private java.time.LocalDateTime registeredAt = java.time.LocalDateTime.now();
+
     private String password;
 
     @Enumerated(EnumType.STRING)

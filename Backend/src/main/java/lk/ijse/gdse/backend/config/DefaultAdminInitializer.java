@@ -20,7 +20,7 @@ public class DefaultAdminInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // Create admin user if it doesn't exist
-        String adminEmail = "admin@example.com";
+        String adminEmail = "admin@gmail.com";
 
         if (userRepository.findByEmail(adminEmail).isEmpty()) {
             System.out.println("Creating default admin user...");
@@ -28,7 +28,7 @@ public class DefaultAdminInitializer implements CommandLineRunner {
             UserEntity adminUser = new UserEntity();
             adminUser.setUsername("admin");
             adminUser.setEmail(adminEmail);
-            adminUser.setPassword(passwordEncoder.encode("admin123")); // Change this password!
+            adminUser.setPassword(passwordEncoder.encode("123")); // Change this password!
             adminUser.setRole(UserRole.ADMIN);
 
             UserEntity savedAdmin = userRepository.save(adminUser);

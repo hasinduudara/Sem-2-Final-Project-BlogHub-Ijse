@@ -18,13 +18,20 @@ public class MailServiceImpl implements MailService {
     public void sendEmail(String to, String subject, String body) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(body, false);
+
+            // ✅ Send as HTML
+            helper.setText(body, true);
+
+            // (Optional) set from address
+            helper.setFrom("yourapp@gmail.com", "Admin Team");
+
             mailSender.send(message);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Failed to send email", e);
         }
     }
 }
+
