@@ -7,6 +7,7 @@ import lk.ijse.gdse.backend.entity.ArticleStatus;
 import lk.ijse.gdse.backend.entity.UserEntity;
 import lk.ijse.gdse.backend.repository.ArticleRepository;
 import lk.ijse.gdse.backend.repository.UserRepository;
+import lk.ijse.gdse.backend.service.MailService;
 import lk.ijse.gdse.backend.util.ImgBBClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,7 @@ public class ArticleServiceImpl implements lk.ijse.gdse.backend.service.ArticleS
     private final ArticleRepository articleRepo;
     private final UserRepository userRepo;
     private final ImgBBClient imgBBClient;
+    private final MailService mailService;
 
     @Override
     public ArticleDTO createArticle(Long publisherId, String title, String content, String category,
@@ -180,5 +183,32 @@ public class ArticleServiceImpl implements lk.ijse.gdse.backend.service.ArticleS
 
         articleRepo.delete(article);
     }
+
+    @Override
+    public List<ArticleDTO> getAllPublishedArticles() {
+        return articleRepo.findByStatusOrderByPublishAtDesc(ArticleStatus.PUBLISHED, Pageable.unpaged())
+                .stream()
+                .map(this::toDTO) // map entity -> DTO
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteArticleByAdmin(Long id, String reason) {
+        ArticleEntity article = articleRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Article not found"));
+
+        String publisherEmail = article.getPublisher().getEmail();
+
+        String subject = "Your Article Has Been Deleted";
+        String body = "Dear " + article.getPublisher().getName() + ",\n\n" +
+                "Your article titled \"" + article.getTitle() + "\" was deleted by the admin.\n" +
+                "Reason: " + reason + "\n\n" +
+                "Regards,\nBlogHub Team";
+
+        mailService.sendEmail(publisherEmail, subject, body);
+
+        articleRepo.delete(article);
+    }
+
 
 }

@@ -39,6 +39,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/articles/published/**").permitAll()
                                 .requestMatchers("/api/home/**").permitAll()
                                 .requestMatchers("/api/articles/**").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/api/articles/admin/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/comments/**").authenticated()
                                 // ✅ Add likes permissions

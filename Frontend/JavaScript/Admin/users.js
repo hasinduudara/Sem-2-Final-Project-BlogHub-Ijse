@@ -1,8 +1,12 @@
 $(document).ready(function () {
   const API_BASE = "http://localhost:8080/api";
 
-  const token = localStorage.getItem("adminToken");
-  if (!token) {
+  // Check for proper admin authentication on page load
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+
+  if (!token || !role || role !== "ADMIN") {
+    alert("Access denied. Please log in as an admin.");
     window.location.href =
       "/Frontend/pages/login-and-register/login-and-register.html";
     return;

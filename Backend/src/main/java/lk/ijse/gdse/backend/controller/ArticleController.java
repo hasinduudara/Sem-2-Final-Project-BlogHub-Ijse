@@ -1,5 +1,6 @@
 package lk.ijse.gdse.backend.controller;
 
+import lk.ijse.gdse.backend.dto.AdminDeleteRequest;
 import lk.ijse.gdse.backend.dto.ApiResponse;
 import lk.ijse.gdse.backend.dto.ArticleDTO;
 import lk.ijse.gdse.backend.dto.GeneratedArticleDTO;
@@ -30,6 +31,13 @@ public class ArticleController {
     @GetMapping("/published")
     public ResponseEntity<List<ArticleDTO>> getAllPublishedArticles() {
         List<ArticleDTO> articles = articleService.listAllPublished();
+        return ResponseEntity.ok(articles);
+    }
+
+    // Admin endpoint to get all articles
+    @GetMapping("/all")
+    public ResponseEntity<List<ArticleDTO>> getAllArticles() {
+        List<ArticleDTO> articles = articleService.getAllPublishedArticles();
         return ResponseEntity.ok(articles);
     }
 
@@ -130,6 +138,16 @@ public class ArticleController {
         ApiResponse response = new ApiResponse(200, "Article content generated successfully", dto);
 
         return ResponseEntity.ok(response);
+    }
+
+    // ---- Admin Delete ----
+    @DeleteMapping("/admin/{id}")
+    public ResponseEntity<ApiResponse> deleteByAdmin(
+            @PathVariable Long id,
+            @RequestBody AdminDeleteRequest request
+    ) {
+        articleService.deleteArticleByAdmin(id, request.getReason());
+        return ResponseEntity.ok(new ApiResponse(200, "Article deleted successfully and publisher notified", null));
     }
 
 }

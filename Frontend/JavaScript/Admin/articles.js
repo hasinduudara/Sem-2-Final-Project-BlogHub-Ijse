@@ -1,9 +1,21 @@
+$.ajaxSetup({
+  beforeSend: function (xhr) {
+    const token = localStorage.getItem("authToken"); // or however you store it
+    if (token) {
+      xhr.setRequestHeader("Authorization", "Bearer " + token);
+    }
+  },
+});
+
 $(document).ready(function () {
   const API_BASE = "http://localhost:8080/api";
 
-  // Check for admin token on page load
-  const token = localStorage.getItem("adminToken");
-  if (!token) {
+  // Check for proper admin authentication on page load
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+
+  if (!token || !role || role !== "ADMIN") {
+    alert("Access denied. Please log in as an admin.");
     window.location.href =
       "/Frontend/pages/login-and-register/login-and-register.html";
     return;
@@ -26,8 +38,12 @@ $(document).ready(function () {
                 <tr>
                   <td>${index + 1}</td>
                   <td>${article.title}</td>
-                  <td>${article.authorName}</td>
-                  <td>${new Date(article.publishedAt).toLocaleDateString()}</td>
+                  <td>${article.publisherName}</td>
+                  <td>${
+                    article.publishAt
+                      ? new Date(article.publishAt).toLocaleDateString()
+                      : "N/A"
+                  }</td>
                   <td class="text-center">
                     <button class="btn btn-sm btn-outline-info view-article-btn" data-id="${
                       article.id
@@ -80,12 +96,12 @@ $(document).ready(function () {
     }
 
     $.ajax({
-      url: API_BASE + `/articles/${articleId}`,
+      url: API_BASE + `/articles/admin/${articleId}`,
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + token,
+        "Content-Type": "application/json",
       },
-      contentType: "application/json",
       data: JSON.stringify({ reason: reason }),
       success: function (response) {
         alert("Article deleted successfully and publisher has been notified.");

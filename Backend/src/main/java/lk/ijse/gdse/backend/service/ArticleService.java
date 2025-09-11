@@ -34,4 +34,8 @@ public interface ArticleService {
                              MultipartFile image);
 
     void deleteArticle(Long publisherId, Long articleId);
+
+    List<ArticleDTO> getAllPublishedArticles();
+
+    void deleteArticleByAdmin(Long id, String reason);
 }

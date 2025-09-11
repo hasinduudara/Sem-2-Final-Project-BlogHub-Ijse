@@ -1,8 +1,12 @@
 $(document).ready(function () {
   const API_BASE = "http://localhost:8080/api";
 
-  const token = localStorage.getItem("adminToken");
-  if (!token) {
+  // Check for proper admin authentication on page load
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+
+  if (!token || !role || role !== "ADMIN") {
+    alert("Access denied. Please log in as an admin.");
     window.location.href =
       "/Frontend/pages/login-and-register/login-and-register.html";
     return;
@@ -11,8 +15,8 @@ $(document).ready(function () {
   // Load current admin profile data
   // (This requires a backend endpoint to get admin details)
   // For now, we can just display the stored info if available.
-  const adminUsername = localStorage.getItem("adminUsername");
-  const adminEmail = localStorage.getItem("adminEmail");
+  const adminUsername = localStorage.getItem("username");
+  const adminEmail = localStorage.getItem("email");
   if (adminUsername) {
     $("#adminUsername").val(adminUsername);
   }

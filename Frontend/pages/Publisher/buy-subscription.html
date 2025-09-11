@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BlogHub - AI Generator Subscription</title>
     <link rel="icon" href="/Frontend/assets/image/blogging.png" />
+
+    <!-- Content Security Policy -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval'
+        https://cdnjs.cloudflare.com
+        https://cdn.jsdelivr.net
+        https://www.payhere.lk;
+      style-src 'self' 'unsafe-inline'
+        https://cdn.jsdelivr.net
+        https://fonts.googleapis.com;
+      font-src 'self'
+        https://fonts.gstatic.com;
+      img-src 'self' data: https:;
+      frame-src 'self'
+        https://sandbox.payhere.lk
+        https://www.payhere.lk;
+      connect-src 'self'
+        https://api.payhere.lk
+        https://sandbox.payhere.lk
+        http://localhost:8080;
+    "
+    />
+
     <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -18,57 +44,46 @@
     <style>
       body {
         font-family: "Inter", sans-serif;
-        background-color: #000000; /* Solid black background */
+        background-color: #000000;
         display: flex;
         flex-direction: column;
-        justify-content: center; /* සියලුම අන්තර්ගතයන් තිරයේ මැදට පෙළගැසීමට */
-        align-items: center; /* Center content horizontally */
+        justify-content: center;
+        align-items: center;
         min-height: 100vh;
         margin: 0;
-        overflow: auto; /* අන්තර්ගතය දිග වැඩි නම් scroll කිරීමට ඉඩ දෙන්න */
-        color: #f0f0f0; /* Light text for visibility */
+        overflow: auto;
+        color: #f0f0f0;
       }
-
-      /* 3D Canvas Styles */
       #three-canvas {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        z-index: 0; /* Behind the content */
-        opacity: 0.7; /* Make it subtle */
+        z-index: 0;
+        opacity: 0.7;
       }
-
       .content-wrapper {
         position: relative;
-        z-index: 1; /* Above 3D background */
+        z-index: 1;
         padding: 40px 20px;
         max-width: 1200px;
         width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center; /* අන්තර්ගතය සිරස් අතට මැදට පෙළගැසීමට */
+        justify-content: center;
         text-align: center;
-        box-sizing: border-box; /* Padding තිරයේ ප්‍රමාණයට බලපෑමට ඉඩ නොදීමට */
       }
-
       h1 {
         color: #ffffff;
         font-weight: 700;
         letter-spacing: 1px;
-        text-shadow: 0 0 8px rgba(255, 255, 255, 0.3); /* Subtle glow */
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
         margin-bottom: 40px;
       }
-
       .subscription-card {
-        background: rgba(
-          255,
-          255,
-          255,
-          0.08
-        ); /* Subtle white translucent background */
+        background: rgba(255, 255, 255, 0.08);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border-radius: 20px;
@@ -83,9 +98,8 @@
         flex-direction: column;
         justify-content: space-between;
         transition: all 0.3s ease-in-out;
-        animation: floatEffect 5s ease-in-out infinite; /* Gentle floating animation */
+        animation: floatEffect 5s ease-in-out infinite;
       }
-
       @keyframes floatEffect {
         0% {
           transform: translateY(0px);
@@ -97,20 +111,17 @@
           transform: translateY(0px);
         }
       }
-
       .subscription-card:hover {
         transform: translateY(-5px) scale(1.02);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
         border-color: rgba(255, 255, 255, 0.3);
       }
-
       .plan-title {
         font-size: 1.8rem;
         font-weight: 700;
         margin-bottom: 15px;
         color: #ffffff;
       }
-
       .plan-price {
         font-size: 2.5rem;
         font-weight: 800;
@@ -118,21 +129,18 @@
         margin-bottom: 20px;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
       }
-
       .plan-price small {
         font-size: 1rem;
         font-weight: 400;
         color: #cccccc;
       }
-
       .plan-features {
         list-style: none;
         padding: 0;
         margin-bottom: 30px;
         text-align: left;
-        flex-grow: 1; /* Make features take available space */
+        flex-grow: 1;
       }
-
       .plan-features li {
         margin-bottom: 10px;
         font-size: 1.05rem;
@@ -140,21 +148,19 @@
         display: flex;
         align-items: center;
       }
-
       .plan-features li::before {
-        content: "✓"; /* Checkmark icon */
-        color: #ffffff; /* White checkmark */
+        content: "✓";
+        color: #ffffff;
         font-weight: bold;
         margin-right: 10px;
         font-size: 1.2rem;
       }
-
       .btn-subscribe {
-        background-color: #333333; /* Dark gray button */
+        background-color: #333333;
         color: white;
         padding: 12px 25px;
         border: none;
-        border-radius: 30px; /* Pill-shaped button */
+        border-radius: 30px;
         cursor: pointer;
         font-size: 1.1rem;
         width: 100%;
@@ -163,14 +169,12 @@
         transition: all 0.3s ease;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       }
-
       .btn-subscribe:hover {
-        background-color: #555555; /* Medium gray on hover */
-        transform: translateY(-3px) scale(1.02); /* Lift and slight scale effect */
+        background-color: #555555;
+        transform: translateY(-3px) scale(1.02);
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-        color: white; /* Keep text white on hover */
+        color: white;
       }
-
       .btn-free-access {
         background: transparent;
         color: #ffffff;
@@ -184,18 +188,15 @@
         letter-spacing: 0.8px;
         transition: all 0.3s ease;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        text-decoration: none; /* Remove underline from link */
-        display: inline-block; /* Treat link like a block element */
-        margin-top: 15px; /* Spacing between buttons */
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 15px;
       }
-
       .btn-free-access:hover {
         background-color: rgba(255, 255, 255, 0.1);
         transform: translateY(-3px) scale(1.02);
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
       }
-
-      /* Modal styling */
       .modal {
         display: none;
         position: fixed;
@@ -310,8 +311,10 @@
 
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- PayHere JS -->
+    <script src="https://www.payhere.lk/lib/payhere.js"></script>
     <script>
-      // --- Three.js for 3D background ---
+      // --- Three.js background setup ---
       let scene, camera, renderer, icosahedron, particles, lines;
       let mouseX = 0,
         mouseY = 0;
@@ -319,10 +322,7 @@
       let windowHalfY = window.innerHeight / 2;
 
       function initThreeJS() {
-        // Scene
         scene = new THREE.Scene();
-
-        // Camera
         camera = new THREE.PerspectiveCamera(
           75,
           window.innerWidth / window.innerHeight,
@@ -331,7 +331,6 @@
         );
         camera.position.z = 5;
 
-        // Renderer
         renderer = new THREE.WebGLRenderer({
           canvas: document.getElementById("three-canvas"),
           alpha: true,
@@ -340,27 +339,25 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
 
-        // Icosahedron (main geometric shape)
-        const icoGeometry = new THREE.IcosahedronGeometry(2.5, 1); // Slightly larger
+        const icoGeometry = new THREE.IcosahedronGeometry(2.5, 1);
         const icoMaterial = new THREE.MeshBasicMaterial({
-          color: 0xcccccc, // Light gray
+          color: 0xcccccc,
           wireframe: true,
           transparent: true,
-          opacity: 0.15, // A bit more subtle
+          opacity: 0.15,
           blending: THREE.AdditiveBlending,
         });
         icosahedron = new THREE.Mesh(icoGeometry, icoMaterial);
         scene.add(icosahedron);
 
-        // Particles
-        const particleCount = 700; // More particles
+        const particleCount = 700;
         const particleGeometry = new THREE.BufferGeometry();
         const particlePositions = new Float32Array(particleCount * 3);
         const particleColors = new Float32Array(particleCount * 3);
-        const particleColor = new THREE.Color(0x888888); // Medium gray particles
+        const particleColor = new THREE.Color(0x888888);
 
         for (let i = 0; i < particleCount; i++) {
-          const r = 4 + Math.random() * 4; // Radius from 4 to 8
+          const r = 4 + Math.random() * 4;
           const theta = Math.random() * Math.PI * 2;
           const phi = Math.acos(Math.random() * 2 - 1);
           particlePositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
@@ -378,7 +375,7 @@
         );
 
         const particleMaterial = new THREE.PointsMaterial({
-          size: 0.04, // Slightly smaller particles
+          size: 0.04,
           vertexColors: true,
           transparent: true,
           opacity: 0.4,
@@ -388,11 +385,10 @@
         particles = new THREE.Points(particleGeometry, particleMaterial);
         scene.add(particles);
 
-        // Dynamic Connecting Lines between particles
         const lineMaterial = new THREE.LineBasicMaterial({
-          color: 0x666666, // Darker gray for lines
+          color: 0x666666,
           transparent: true,
-          opacity: 0.04, // Even more subtle lines
+          opacity: 0.04,
           blending: THREE.AdditiveBlending,
         });
         const lineGeometry = new THREE.BufferGeometry();
@@ -405,7 +401,6 @@
         lines = new THREE.LineSegments(lineGeometry, lineMaterial);
         scene.add(lines);
 
-        // Event Listeners for interactivity and responsiveness
         window.addEventListener("resize", onWindowResizeThreeJS, false);
         document.addEventListener(
           "mousemove",
@@ -454,26 +449,19 @@
 
       function animateThreeJS() {
         requestAnimationFrame(animateThreeJS);
-
-        // Rotate icosahedron
         icosahedron.rotation.x += 0.0003;
         icosahedron.rotation.y += 0.0006;
-
-        // Rotate particles system
         particles.rotation.y += 0.0004;
         particles.rotation.x += 0.0001;
 
-        // Update dynamic lines
         const currentLinePositions = lines.geometry.attributes.position.array;
         let lineIndex = 0;
         const particlePositionsArray =
           particles.geometry.attributes.position.array;
         const tempParticle1 = new THREE.Vector3();
         const tempParticle2 = new THREE.Vector3();
-
-        for (let i = 0; i < currentLinePositions.length; i++) {
+        for (let i = 0; i < currentLinePositions.length; i++)
           currentLinePositions[i] = 0;
-        }
 
         for (let i = 0; i < particlePositionsArray.length / 3; i++) {
           tempParticle1
@@ -494,11 +482,9 @@
               .applyMatrix4(particles.matrixWorld);
 
             if (tempParticle1.distanceTo(tempParticle2) < 0.8) {
-              // Adjust connection distance
               currentLinePositions[lineIndex++] = tempParticle1.x;
               currentLinePositions[lineIndex++] = tempParticle1.y;
               currentLinePositions[lineIndex++] = tempParticle1.z;
-
               currentLinePositions[lineIndex++] = tempParticle2.x;
               currentLinePositions[lineIndex++] = tempParticle2.y;
               currentLinePositions[lineIndex++] = tempParticle2.z;
@@ -508,46 +494,142 @@
         lines.geometry.attributes.position.needsUpdate = true;
         lines.geometry.setDrawRange(0, lineIndex);
 
-        // Camera movement based on mouse/touch
         camera.position.x += (mouseX * 0.0003 - camera.position.x) * 0.05;
         camera.position.y += (-mouseY * 0.0003 - camera.position.y) * 0.05;
         camera.lookAt(scene.position);
-
         renderer.render(scene, camera);
       }
 
-      // --- PayHere Integration Placeholder ---
+      // --- PayHere Integration ---
       function initiatePayHere(plan) {
+        // Get user data from localStorage
+        let user = JSON.parse(localStorage.getItem("user"));
+
+        // If no user found, create a demo user with email
+        if (!user || !user.email) {
+          const demoUser = {
+            id: Date.now(),
+            name: "Demo User",
+            email: "demo@bloghub.com",
+            role: "PUBLISHER",
+          };
+          localStorage.setItem("user", JSON.stringify(demoUser));
+          user = demoUser;
+        }
+
+        const payment = {
+          sandbox: true, // Use sandbox for testing
+          merchant_id: "1231966", // Your provided Merchant ID
+          return_url:
+            window.location.origin +
+            "/Frontend/pages/Publisher/AI-generated-article.html",
+          cancel_url: window.location.href,
+          notify_url: "http://localhost:8080/api/subscription/notify",
+          order_id: "BLOGHUB_SUB_" + new Date().getTime(),
+          items: "BlogHub Premium AI Generator Subscription",
+          amount: 4999.0,
+          currency: "LKR",
+          first_name: user.name || "BlogHub User",
+          last_name: "",
+          email: user.email,
+          phone: "",
+          address: "",
+          city: "",
+          country: "Sri Lanka",
+        };
+
+        // PayHere event handlers
+        payhere.onCompleted = function onCompleted(orderId) {
+          console.log("Payment completed. OrderID:" + orderId);
+          showModal("🎉 Payment successful! Activating your subscription...");
+
+          // Call backend to activate subscription
+          activateSubscriptionAfterPayment(user.email, plan, orderId);
+        };
+
+        payhere.onDismissed = function onDismissed() {
+          console.log("Payment dismissed");
+          showModal(
+            "Payment was cancelled. Please try again if you wish to subscribe."
+          );
+        };
+
+        payhere.onError = function onError(error) {
+          console.log("Payment error:" + error);
+          showModal("❌ Payment failed. Please try again.");
+        };
+
+        // Start the payment
+        payhere.startPayment(payment);
+      }
+
+      // Function to activate subscription after successful payment
+      async function activateSubscriptionAfterPayment(email, plan, orderId) {
+        try {
+          const response = await fetch(
+            `http://localhost:8080/api/subscription/${email}?plan=${plan}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                orderId: orderId,
+                paymentStatus: "COMPLETED",
+              }),
+            }
+          );
+
+          const result = await response.json();
+
+          if (response.ok) {
+            // Update user with premium status
+            let user = JSON.parse(localStorage.getItem("user"));
+            user.isPremium = true;
+            user.subscriptionPlan = plan;
+            localStorage.setItem("user", JSON.stringify(user));
+
+            showModal("✨ Subscription activated successfully! Redirecting...");
+
+            // Redirect after 3 seconds
+            setTimeout(() => {
+              window.location.href =
+                "/Frontend/pages/Publisher/AI-generated-article.html";
+            }, 3000);
+          } else {
+            showModal(
+              "❌ " + (result.message || "Failed to activate subscription.")
+            );
+          }
+        } catch (error) {
+          console.error("Subscription activation error:", error);
+          showModal("❌ Network error. Please contact support.");
+        }
+      }
+
+      // Show modal with message
+      function showModal(message) {
         const modal = document.getElementById("messageModal");
         const modalText = document.getElementById("modal-text");
-        modalText.textContent =
-          "Initiating PayHere subscription for the " +
-          plan +
-          " plan! (This is a placeholder)";
+        modalText.textContent = message;
         modal.style.display = "block";
       }
 
-      // Modal close functionality
+      // Modal functionality
       const modal = document.getElementById("messageModal");
       const span = document.getElementsByClassName("close-btn")[0];
-
-      span.onclick = function () {
-        modal.style.display = "none";
+      if (span) {
+        span.onclick = () => (modal.style.display = "none");
+      }
+      window.onclick = (event) => {
+        if (event.target === modal) modal.style.display = "none";
       };
 
-      window.onclick = function (event) {
-        if (event.target == modal) {
-          modal.style.display = "none";
-        }
-      };
-
-      // Initialize Three.js when the window loads
-      window.onload = function () {
+      window.onload = () => {
         initThreeJS();
         animateThreeJS();
       };
     </script>
-    <!-- Bootstrap JS CDN (optional, for components that require JS) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
