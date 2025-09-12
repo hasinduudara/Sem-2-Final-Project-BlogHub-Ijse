@@ -5,10 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleButtons = document.querySelectorAll(".toggle-btn");
   const loginForm = document.querySelector(".login-form");
   const registerForm = document.querySelector(".register-form");
-  const forgotPasswordLink = document.getElementById("forgotPasswordLink");
-  const forgotPasswordModal = document.getElementById("forgotPasswordModal");
-  const closeBtn = forgotPasswordModal?.querySelector(".close");
-  const forgotPasswordForm = document.getElementById("forgotPasswordForm");
 
   // -----------------------
   // FORM TOGGLE (Login <-> Register)
@@ -26,33 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
         loginForm.classList.remove("active");
       }
     });
-  });
-
-  // -----------------------
-  // FORGOT PASSWORD MODAL
-  // -----------------------
-  forgotPasswordLink?.addEventListener("click", (e) => {
-    e.preventDefault();
-    forgotPasswordModal.style.display = "block";
-  });
-
-  closeBtn?.addEventListener("click", () => {
-    forgotPasswordModal.style.display = "none";
-  });
-
-  window.addEventListener("click", (e) => {
-    if (e.target === forgotPasswordModal) {
-      forgotPasswordModal.style.display = "none";
-    }
-  });
-
-  forgotPasswordForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("forgotEmail").value.trim();
-    alert(
-      "Password reset link has been sent to your email if it exists in our system."
-    );
-    forgotPasswordModal.style.display = "none";
   });
 
   // -----------------------

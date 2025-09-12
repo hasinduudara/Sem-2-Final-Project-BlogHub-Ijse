@@ -1,117 +1,129 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Get all elements
-    const usernameStep = document.getElementById('usernameStep');
-    const emailStep = document.getElementById('emailStep');
-    const otpStep = document.getElementById('otpStep');
-    const newPasswordStep = document.getElementById('newPasswordStep');
-    
-    const usernameInput = document.getElementById('username');
-    const userEmailSpan = document.getElementById('userEmail');
-    const otpInput = document.getElementById('otp');
-    const newPasswordInput = document.getElementById('newPassword');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
+const API_BASE = "http://localhost:8080/api/forgot-password";
+let currentEmail = "";
 
-    const findEmailBtn = document.getElementById('findEmailBtn');
-    const sendOtpBtn = document.getElementById('sendOtpBtn');
-    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
-    const updatePasswordBtn = document.getElementById('updatePasswordBtn');
+function showStep(stepId) {
+  document
+    .querySelectorAll(".form-step")
+    .forEach((step) => step.classList.remove("active"));
+  document.getElementById(stepId).classList.add("active");
+}
 
-    // Function to show error message
-    function showError(message, element) {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.textContent = message;
-        element.parentElement.insertBefore(errorDiv, element.nextSibling);
-        
-        // Remove error message after 3 seconds
-        setTimeout(() => {
-            errorDiv.remove();
-        }, 3000);
+async function validateEmail() {
+  const email = document.getElementById("emailInput").value.trim();
+  if (!email) {
+    alert("Please enter your email address.");
+    return;
+  }
+
+  // Basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  try {
+    // Check if user exists with this email
+    const res = await fetch(
+      `${API_BASE}/validate-email/${encodeURIComponent(email)}`
+    );
+    if (!res.ok) {
+      if (res.status === 404) {
+        throw new Error("No account found with this email address.");
+      }
+      throw new Error("Error validating email. Please try again.");
     }
 
-    // Function to hide all steps except the active one
-    function showStep(step) {
-        [usernameStep, emailStep, otpStep, newPasswordStep].forEach(s => s.classList.remove('active'));
-        step.classList.add('active');
+    currentEmail = email;
+    document.getElementById("confirmEmail").innerText = email;
+    showStep("confirmStep");
+    document.getElementById("message").innerText = "";
+  } catch (err) {
+    document.getElementById("message").innerText = err.message;
+  }
+}
+
+async function sendOtp() {
+  if (!currentEmail) return;
+
+  try {
+    const res = await fetch(
+      `${API_BASE}/send-otp?email=${encodeURIComponent(currentEmail)}`,
+      {
+        method: "POST",
+      }
+    );
+    if (!res.ok) throw new Error("Failed to send OTP. Please try again.");
+
+    document.getElementById("message").innerText =
+      "OTP sent to your email. Please check your inbox.";
+    showStep("otpStep");
+  } catch (err) {
+    document.getElementById("message").innerText = err.message;
+  }
+}
+
+async function verifyOtp() {
+  const otp = document.getElementById("otp").value.trim();
+  if (!otp) {
+    alert("Please enter the OTP.");
+    return;
+  }
+
+  if (otp.length !== 6 || !/^\d+$/.test(otp)) {
+    alert("Please enter a valid 6-digit OTP.");
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      `${API_BASE}/verify-otp?email=${encodeURIComponent(currentEmail)}&otp=${otp}`,
+      { method: "POST" }
+    );
+    if (!res.ok) {
+      if (res.status === 400) {
+        throw new Error("Invalid or expired OTP. Please try again.");
+      }
+      throw new Error("Error verifying OTP. Please try again.");
     }
 
-    // Find Email button click handler
-    findEmailBtn.addEventListener('click', () => {
-        const username = usernameInput.value.trim();
-        if (!username) {
-            showError('Please enter a username', usernameInput);
-            return;
-        }
+    document.getElementById("message").innerText = "OTP verified successfully!";
+    showStep("newPasswordStep");
+  } catch (err) {
+    document.getElementById("message").innerText = err.message;
+  }
+}
 
-        // Simulate API call - you would replace this with actual API call
-        simulateApiCall(username, (email) => {
-            userEmailSpan.textContent = email;
-            showStep(emailStep);
-        });
-    });
+async function resetPassword() {
+  const newPassword = document.getElementById("newPassword").value.trim();
+  if (!newPassword) {
+    alert("Please enter a new password.");
+    return;
+  }
 
-    // Send OTP button click handler
-    sendOtpBtn.addEventListener('click', () => {
-        // Simulate API call - you would replace this with actual API call
-        simulateApiCall('sendOtp', (otp) => {
-            // Store OTP in localStorage for verification
-            localStorage.setItem('forgotPasswordOtp', otp);
-            showStep(otpStep);
-        });
-    });
+  // if (newPassword.length < 6) {
+  //   alert("Password must be at least 6 characters long.");
+  //   return;
+  // }
 
-    // Verify OTP button click handler
-    verifyOtpBtn.addEventListener('click', () => {
-        const enteredOtp = otpInput.value.trim();
-        const storedOtp = localStorage.getItem('forgotPasswordOtp');
+  try {
+    const res = await fetch(
+      `${API_BASE}/reset-password?email=${encodeURIComponent(
+        currentEmail
+      )}&newPassword=${encodeURIComponent(newPassword)}`,
+      { method: "POST" }
+    );
+    if (!res.ok) throw new Error("Failed to reset password. Please try again.");
 
-        if (enteredOtp !== storedOtp) {
-            showError('Invalid OTP', otpInput);
-            return;
-        }
+    document.getElementById("message").innerText =
+      "Password updated successfully! You can now log in with your new password.";
 
-        showStep(newPasswordStep);
-    });
-
-    // Update Password button click handler
-    updatePasswordBtn.addEventListener('click', () => {
-        const newPassword = newPasswordInput.value.trim();
-        const confirmPassword = confirmPasswordInput.value.trim();
-
-        if (!newPassword || !confirmPassword) {
-            showError('Please enter both password fields', newPasswordInput);
-            return;
-        }
-
-        if (newPassword !== confirmPassword) {
-            showError('Passwords do not match', confirmPasswordInput);
-            return;
-        }
-
-        // Simulate API call - you would replace this with actual API call
-        simulateApiCall('updatePassword', () => {
-            // Redirect to login page
-            window.location.href = '/Frontend/pages/login-and-register/login-and-register.html';
-        });
-    });
-
-    // Simulate API call function (replace with actual API calls)
-    function simulateApiCall(type, callback) {
-        setTimeout(() => {
-            switch (type) {
-                case 'user@example.com':
-                    callback('user@example.com');
-                    break;
-                case 'sendOtp':
-                    const otp = Math.floor(100000 + Math.random() * 900000);
-                    callback(otp.toString());
-                    break;
-                case 'updatePassword':
-                    callback();
-                    break;
-                default:
-                    callback('user@example.com');
-            }
-        }, 1000);
-    }
-});
+    // Optionally redirect to login page after a delay
+    setTimeout(() => {
+      window.location.href =
+        "/Frontend/pages/login-and-register/login-and-register.html";
+    }, 3000);
+  } catch (err) {
+    document.getElementById("message").innerText = err.message;
+  }
+}
