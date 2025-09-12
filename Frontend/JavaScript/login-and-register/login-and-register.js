@@ -132,11 +132,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (res.ok && data.code === 200) {
           const token = data.data.token;
+          const userId = data.data.userId;  // ✅ Extract userId from response
           const username = data.data.username;
           const role = data.data.role;
 
           console.log("Login successful!");
           console.log("Token received:", token ? "Yes" : "No");
+          console.log("User ID:", userId);  // ✅ Log userId
           console.log("Username:", username);
           console.log("Role received:", role);
 
@@ -144,6 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           // Store all data in localStorage
           localStorage.setItem("token", token);
+          localStorage.setItem("userId", userId);  // ✅ Store userId
           localStorage.setItem("username", username);
           localStorage.setItem("role", role);
           localStorage.setItem("email", email);
@@ -153,6 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "- Token:",
             localStorage.getItem("token") ? "Stored" : "Not stored"
           );
+          console.log("- User ID:", localStorage.getItem("userId"));  // ✅ Log stored userId
           console.log("- Username:", localStorage.getItem("username"));
           console.log("- Role:", localStorage.getItem("role"));
           console.log("- Email:", localStorage.getItem("email"));
