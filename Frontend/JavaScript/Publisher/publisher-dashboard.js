@@ -311,12 +311,54 @@ function loadMyArticles(status) {
   });
 }
 
+// Function to load and display publisher profile image
+function loadPublisherProfileImage() {
+  const token = localStorage.getItem("token");
+  const email = localStorage.getItem("email");
+
+  if (!token || !email) {
+    return; // Use default image if no auth data
+  }
+
+  // Try to get cached image URL first
+  const cachedImageUrl = localStorage.getItem("publisherLogoUrl");
+  if (cachedImageUrl) {
+    updateProfileImage(cachedImageUrl);
+  }
+
+  // Fetch latest profile data from API
+  $.ajax({
+    url: API_BASE + "/publishers/profile/" + email,
+    method: "GET",
+    headers: { Authorization: "Bearer " + token },
+    success: function (response) {
+      if (response.code === 200 && response.data.logoUrl) {
+        updateProfileImage(response.data.logoUrl);
+        // Cache the image URL
+        localStorage.setItem("publisherLogoUrl", response.data.logoUrl);
+      }
+    },
+    error: function (xhr) {
+      console.log("Could not load profile image:", xhr.statusText);
+      // Keep using default image on error
+    },
+  });
+}
+
+// Function to update the profile image element
+function updateProfileImage(imageUrl) {
+  if (imageUrl && imageUrl.trim() !== "") {
+    $(".profile-img").attr("src", imageUrl);
+  }
+}
+
 // 🔹 Initial load
 $(document).ready(function () {
   const token = getAuthToken();
   if (!token) return;
 
   refreshArticles();
+  loadPublisherProfileImage();
 
   $("#generateArticleBtn").on("click", function () {
     showNotification("Article generation feature coming soon!", "info");

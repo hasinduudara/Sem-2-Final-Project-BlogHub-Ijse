@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Publisher Profile</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #000000; /* Solid black background */
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden; /* Hide scrollbars for the canvas */
+        color: #f0f0f0; /* Light text for visibility */
+      }
+
+      /* 3D Canvas Styles */
+      #three-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0; /* Behind the content */
+        opacity: 0.7; /* Make it subtle */
+      }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        width: 450px; /* Slightly wider for new fields */
+        color: #f0f0f0;
+        position: relative;
+        z-index: 1;
+        animation: floatEffect 5s ease-in-out infinite;
+      }
+
+      @keyframes floatEffect {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+
+      .profile-pic {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #f0f0f0;
+        margin-bottom: 15px;
+        transition: transform 0.3s ease-in-out;
+      }
+      .profile-pic:hover {
+        transform: scale(1.05) rotate(5deg);
+      }
+
+      .form-control,
+      .form-control:focus {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid transparent;
+        color: #f0f0f0;
+        outline: none;
+        box-shadow: none;
+      }
+      .form-control::placeholder {
+        color: #cccccc;
+      }
+      .form-control:focus {
+        border: 1px solid #f0f0f0;
+        background: rgba(255, 255, 255, 0.15);
+      }
+      textarea.form-control {
+        resize: vertical;
+      }
+
+      .btn-custom {
+        border-radius: 30px;
+        padding: 8px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        letter-spacing: 0.5px;
+      }
+      .btn-light-custom {
+        background-color: #ffffff;
+        color: #000000;
+        border: 1px solid #ffffff;
+      }
+      .btn-light-custom:hover {
+        background-color: #e0e0e0;
+        border-color: #e0e0e0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+      }
+      .btn-dark-custom {
+        background-color: #333333;
+        color: #ffffff;
+        border: 1px solid #333333;
+      }
+      .btn-dark-custom:hover {
+        background-color: #555555;
+        border-color: #555555;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+      }
+      .btn-secondary-custom {
+        background-color: #6c757d;
+        color: #ffffff;
+        border: 1px solid #6c757d;
+      }
+      .btn-secondary-custom:hover {
+        background-color: #5a6268;
+        border-color: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+      label {
+        font-weight: 500;
+        color: #f8f8f8;
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="three-canvas"></canvas>
+
+    <div class="glass-card text-center">
+      <img
+        src="https://placehold.co/120x120/808080/FFFFFF?text=LOGO"
+        alt="Publisher Logo"
+        class="profile-pic"
+        id="profileImage"
+      />
+      <div class="mb-3">
+        <label for="imageUpload" class="form-label">Upload New Logo</label>
+        <input
+          type="file"
+          class="form-control form-control-sm"
+          id="imageUpload"
+          accept="image/*"
+        />
+      </div>
+      <form>
+        <div class="mb-3 text-start">
+          <label for="publisherName">Publisher Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="publisherName"
+            placeholder="e.g., Awesome Books Inc."
+            value="Awesome Books Inc."
+            readonly
+          />
+        </div>
+
+        <div class="mb-3 text-start">
+          <label for="contactEmail">Contact Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="contactEmail"
+            placeholder="Enter contact email"
+            value="contact@awesomebooks.com"
+            readonly
+          />
+        </div>
+
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-light-custom btn-custom">
+            Edit
+          </button>
+          <button type="submit" class="btn btn-dark-custom btn-custom">
+            Save
+          </button>
+        </div>
+
+        <div class="mt-3">
+          <a
+            href="/Frontend/pages/login-and-register/forgot-password.html"
+            class="btn btn-secondary-custom btn-sm btn-custom"
+            >Forgot Password?</a
+          >
+        </div>
+      </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      // NOTE: The Three.js background animation script is identical to the one in your
+      // original file and has been omitted here for brevity. You should include it here.
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/Frontend/JavaScript/Publisher/publisher-profile.js"></script>
+  </body>
+</html>
