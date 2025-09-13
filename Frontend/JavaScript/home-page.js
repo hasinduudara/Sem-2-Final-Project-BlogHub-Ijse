@@ -51,16 +51,61 @@ async function loadHomeArticles() {
     if (!res.ok) throw new Error("Network response was not ok");
 
     const data = await res.json();
+    console.log("Loaded articles:", data);
     renderArticles(data);
-  } catch (err) {
-    console.error(err);
-    document.getElementById("articlesRow").innerHTML = `
+  } catch (error) {
+    console.error("Error loading articles:", error);
+    const row = document.getElementById("articlesRow");
+    row.innerHTML = `
             <div class="col-12 text-center">
               <div class="alert alert-danger">
-                <i class="fas fa-exclamation-triangle me-2"></i>Error loading articles
+                <i class="fas fa-exclamation-triangle me-2"></i>Error loading articles: ${error.message}
               </div>
             </div>
           `;
+  }
+}
+
+// Load user profile image for navigation bar
+async function loadUserProfileImage() {
+  try {
+    // Get user email from localStorage
+    const userEmail = localStorage.getItem('email');
+    const token = localStorage.getItem('token');
+
+    if (!userEmail || !token) {
+      console.log('No user authentication found, using default profile image');
+      return;
+    }
+
+    console.log('Loading profile image for user:', userEmail);
+
+    const response = await fetch(`http://localhost:8080/api/auth/profile/${userEmail}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+
+      if (result.code === 200 && result.data.profileImageUrl) {
+        const profileImg = document.querySelector('.profile-image');
+        if (profileImg) {
+          profileImg.src = result.data.profileImageUrl;
+          console.log('Profile image loaded:', result.data.profileImageUrl);
+        }
+      } else {
+        console.log('No profile image found for user');
+      }
+    } else {
+      console.log('Failed to load user profile:', response.status);
+    }
+  } catch (error) {
+    console.error('Error loading user profile image:', error);
+    // Keep default image on error
   }
 }
 
@@ -96,5 +141,8 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
   }
 });
 
-// Load articles when DOM is ready
-document.addEventListener("DOMContentLoaded", loadHomeArticles);
+// Load articles and user profile image when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  loadHomeArticles();
+  loadUserProfileImage();
+});

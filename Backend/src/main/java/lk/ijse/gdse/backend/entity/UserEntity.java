@@ -28,6 +28,9 @@ public class UserEntity implements UserDetails {
 
     private String password;
 
+    @Column(length = 500)
+    private String profileImageUrl; // Store ImgBB image URL
+
     @Enumerated(EnumType.STRING)
     private UserRole role;
 

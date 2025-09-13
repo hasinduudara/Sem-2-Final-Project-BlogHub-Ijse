@@ -35,7 +35,10 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ enable cors
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll()
+                        auth.requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/logout").permitAll()
+                                .requestMatchers("/api/auth/profile/**").authenticated() // Profile endpoints require authentication
+                                .requestMatchers("/api/auth/validate-password/**").authenticated() // Password validation requires authentication
+                                .requestMatchers("/api/auth/debug/**").permitAll() // Debug endpoints
                                 .requestMatchers("/api/forgot-password/**").permitAll() // ✅ Allow forgot password endpoints
                                 .requestMatchers("/api/articles/published/**").permitAll()
                                 .requestMatchers("/api/home/**").permitAll()
@@ -46,9 +49,6 @@ public class SecurityConfig {
                                 // ✅ Add likes permissions
                                 .requestMatchers(HttpMethod.GET, "/api/likes/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/likes/**").authenticated()
-                                .requestMatchers("/api/auth/register",
-                                        "/api/auth/login",
-                                        "/api/auth/logout").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )

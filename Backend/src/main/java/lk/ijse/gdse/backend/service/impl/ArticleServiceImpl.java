@@ -7,6 +7,8 @@ import lk.ijse.gdse.backend.entity.ArticleStatus;
 import lk.ijse.gdse.backend.entity.UserEntity;
 import lk.ijse.gdse.backend.repository.ArticleRepository;
 import lk.ijse.gdse.backend.repository.UserRepository;
+import lk.ijse.gdse.backend.repository.CommentRepository;
+import lk.ijse.gdse.backend.repository.LikeRepository;
 import lk.ijse.gdse.backend.service.MailService;
 import lk.ijse.gdse.backend.util.ImgBBClient;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,8 @@ public class ArticleServiceImpl implements lk.ijse.gdse.backend.service.ArticleS
 
     private final ArticleRepository articleRepo;
     private final UserRepository userRepo;
+    private final CommentRepository commentRepo;
+    private final LikeRepository likeRepo;
     private final ImgBBClient imgBBClient;
     private final MailService mailService;
 
@@ -181,6 +185,14 @@ public class ArticleServiceImpl implements lk.ijse.gdse.backend.service.ArticleS
             throw new RuntimeException("You are not allowed to delete this article");
         }
 
+        // Delete related data first to avoid foreign key constraint violations
+        // Delete all comments for this article
+        commentRepo.deleteByArticleId(articleId);
+
+        // Delete all likes for this article
+        likeRepo.deleteByArticleId(articleId);
+
+        // Now we can safely delete the article
         articleRepo.delete(article);
     }
 
@@ -207,6 +219,14 @@ public class ArticleServiceImpl implements lk.ijse.gdse.backend.service.ArticleS
 
         mailService.sendEmail(publisherEmail, subject, body);
 
+        // Delete related data first to avoid foreign key constraint violations
+        // Delete all comments for this article
+        commentRepo.deleteByArticleId(id);
+
+        // Delete all likes for this article
+        likeRepo.deleteByArticleId(id);
+
+        // Now we can safely delete the article
         articleRepo.delete(article);
     }
 
