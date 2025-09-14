@@ -6,76 +6,252 @@
     <title>Login & Register</title>
     <link rel="icon" href="/Frontend/assets/image/blogging.png" />
     <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
       rel="stylesheet"
       href="/Frontend/css/login-and-register/login-and-register.css"
     />
   </head>
   <body>
+    <div class="floating-elements">
+      <div class="floating-element"></div>
+      <div class="floating-element"></div>
+      <div class="floating-element"></div>
+    </div>
+
     <div class="container">
+      <div class="brand-header">
+        <div class="brand-logo"><i class="fas fa-blog"></i> BlogHub</div>
+        <p class="brand-tagline">Welcome back to your story</p>
+      </div>
+
       <div class="form-container">
         <div class="form-toggle">
-          <button class="toggle-btn active" data-form="login">Login</button>
-          <button class="toggle-btn" data-form="register">Register</button>
+          <button class="toggle-btn active" data-form="login">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </button>
+          <button class="toggle-btn" data-form="register">
+            <i class="fas fa-user-plus"></i> Register
+          </button>
         </div>
 
         <!-- Login Form -->
         <form class="login-form active" id="loginForm">
-          <h2>Login</h2>
+          <h2><i class="fas fa-user-circle"></i> Login</h2>
           <div class="form-group">
-            <label for="loginEmail">Email</label>
-            <input type="email" id="loginEmail" name="email" required />
+            <label for="loginEmail">
+              <i class="fas fa-envelope"></i> Email
+            </label>
+            <input
+              type="email"
+              id="loginEmail"
+              name="email"
+              required
+              placeholder="Enter your email"
+            />
           </div>
           <div class="form-group">
-            <label for="loginPassword">Password</label>
+            <label for="loginPassword">
+              <i class="fas fa-lock"></i> Password
+            </label>
             <input
               type="password"
               id="loginPassword"
               name="password"
               required
+              placeholder="Enter your password"
             />
           </div>
           <div class="forgot-password">
             <a
               href="/Frontend/pages/login-and-register/forgot-password.html"
               id="forgotPasswordLink"
-              >Forgot Password?</a
             >
+              <i class="fas fa-question-circle"></i> Forgot Password?
+            </a>
           </div>
-          <button type="submit" class="submit-btn">Login</button>
+          <button type="submit" class="submit-btn">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </button>
         </form>
 
         <!-- Register Form -->
         <form class="register-form" id="registerForm">
-          <h2>Register</h2>
+          <h2><i class="fas fa-user-plus"></i> Register</h2>
           <div class="form-group">
-            <label for="registerUsername">Username</label>
-            <input type="text" id="registerUsername" name="username" required />
+            <label for="registerUsername">
+              <i class="fas fa-user"></i> Username
+            </label>
+            <input
+              type="text"
+              id="registerUsername"
+              name="username"
+              required
+              placeholder="Choose a username"
+            />
           </div>
           <div class="form-group">
-            <label for="registerEmail">Email</label>
-            <input type="email" id="registerEmail" name="email" required />
+            <label for="registerEmail">
+              <i class="fas fa-envelope"></i> Email
+            </label>
+            <input
+              type="email"
+              id="registerEmail"
+              name="email"
+              required
+              placeholder="Enter your email"
+            />
           </div>
           <div class="form-group">
-            <label for="registerPassword">Password</label>
+            <label for="registerPassword">
+              <i class="fas fa-lock"></i> Password
+            </label>
             <input
               type="password"
               id="registerPassword"
               name="password"
               required
+              placeholder="Create a password"
             />
           </div>
           <div class="form-group">
-            <label for="role">Role</label>
+            <label for="role"> <i class="fas fa-user-tag"></i> Role </label>
             <select id="role" name="role" required>
               <option value="">Select Role</option>
               <option value="user">User</option>
               <option value="publisher">Publisher</option>
             </select>
           </div>
-          <button type="submit" class="submit-btn">Register</button>
+          <button type="submit" class="submit-btn">
+            <i class="fas fa-user-plus"></i> Register
+          </button>
         </form>
       </div>
     </div>
+
+    <script>
+      // Form toggle functionality
+      document.querySelectorAll(".toggle-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const formType = btn.getAttribute("data-form");
+
+          // Update button states
+          document
+            .querySelectorAll(".toggle-btn")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          // Update form visibility
+          document
+            .querySelectorAll("form")
+            .forEach((form) => form.classList.remove("active"));
+          document.querySelector(`.${formType}-form`).classList.add("active");
+        });
+      });
+
+      // Enhanced form submission with loading state
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const btn = this.querySelector(".submit-btn");
+          btn.classList.add("loading");
+          btn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+
+          // Simulate API call
+          setTimeout(() => {
+            btn.classList.remove("loading");
+            btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+          }, 2000);
+        });
+
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const btn = this.querySelector(".submit-btn");
+          btn.classList.add("loading");
+          btn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+
+          // Simulate API call
+          setTimeout(() => {
+            btn.classList.remove("loading");
+            btn.innerHTML = '<i class="fas fa-user-plus"></i> Register';
+          }, 2000);
+        });
+
+      // Enhanced input focus effects
+      document.querySelectorAll("input, select").forEach((input) => {
+        input.addEventListener("focus", function () {
+          this.parentElement.style.transform = "translateY(-2px)";
+        });
+
+        input.addEventListener("blur", function () {
+          this.parentElement.style.transform = "translateY(0)";
+        });
+      });
+
+      // Add typing effect to brand tagline
+      const tagline = document.querySelector(".brand-tagline");
+      const text = tagline.textContent;
+      tagline.textContent = "";
+
+      setTimeout(() => {
+        let i = 0;
+        const typeWriter = () => {
+          if (i < text.length) {
+            tagline.textContent += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 50);
+          }
+        };
+        typeWriter();
+      }, 1000);
+
+      // Add particle effect on button hover
+      document.querySelectorAll(".submit-btn").forEach((btn) => {
+        btn.addEventListener("mouseenter", function (e) {
+          const rect = this.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          const ripple = document.createElement("span");
+          ripple.style.position = "absolute";
+          ripple.style.left = x + "px";
+          ripple.style.top = y + "px";
+          ripple.style.width = "0";
+          ripple.style.height = "0";
+          ripple.style.borderRadius = "50%";
+          ripple.style.background = "rgba(255,255,255,0.3)";
+          ripple.style.transform = "translate(-50%, -50%)";
+          ripple.style.animation = "ripple 0.6s linear";
+          ripple.style.pointerEvents = "none";
+
+          this.appendChild(ripple);
+
+          setTimeout(() => {
+            ripple.remove();
+          }, 600);
+        });
+      });
+
+      // Add ripple animation
+      const style = document.createElement("style");
+      style.textContent = `
+        @keyframes ripple {
+          to {
+            width: 100px;
+            height: 100px;
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    </script>
     <script src="/Frontend/JavaScript/login-and-register/login-and-register.js"></script>
   </body>
 </html>
