@@ -1,59 +1,83 @@
-/* Hero Section */
-.hero {
-    position: relative;
-    height: 100vh;
-    width: 100%;
-    overflow: hidden;
+body {
+  font-family: "Inter", sans-serif;
+  overflow: hidden; /* Prevent scrollbars due to canvas */
+  background-color: #1a1a1a; /* Dark gray for black & white theme */
+  color: #f0f0f0; /* Light gray for contrast */
+}
+#webgl-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+}
+.content-overlay {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+  text-align: center;
+}
+.card-custom {
+  background-color: rgba(
+    34,
+    34,
+    34,
+    0.8
+  ); /* Slightly lighter dark gray for card */
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(100, 100, 100, 0.5); /* Gray border */
+  transition: transform 0.5s ease-in-out;
+}
+.card-custom:hover {
+  transform: scale(1.05);
 }
 
-.hero-video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 1;
-    filter: brightness(0.8);
+/* Custom gradient text and pulse animation for black & white theme */
+.gradient-text {
+  background-image: linear-gradient(
+    to right,
+    #cccccc,
+    #999999
+  ); /* Light gray to darker gray */
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: pulse-slow 3s infinite ease-in-out;
 }
 
-.hero-content {
-    position: relative;
-    z-index: 2;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
-.hero-content h1 {
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    font-weight: 700;
-    margin-bottom: 1.5rem;
+/* Custom gradient button for black & white theme */
+.btn-gradient-custom {
+  background-image: linear-gradient(
+    to right,
+    #808080,
+    #555555
+  ); /* Medium gray to dark gray */
+  border: none;
+  color: #ffffff; /* White text on button */
+  transition: all 0.3s ease-in-out;
 }
-
-.hero-content p {
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    font-size: 1.25rem;
-    margin-bottom: 2rem;
-}
-
-.hero-content .btn-primary {
-    background-color: rgba(13, 110, 253, 0.9);
-    border: none;
-    padding: 0.75rem 1.5rem;
-    font-size: 1.1rem;
-    border-radius: 0.375rem;
-    transition: all 0.3s ease;
-    min-width: 150px;
-}
-
-.hero-content .btn-primary:hover {
-    background-color: rgba(11, 94, 215, 0.9);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(13, 110, 253, 0.4);
+.btn-gradient-custom:hover {
+  background-image: linear-gradient(
+    to right,
+    #666666,
+    #333333
+  ); /* Darker shades on hover */
+  transform: scale(1.1);
+  box-shadow: 0 0 0 0.25rem rgba(128, 128, 128, 0.5); /* Gray focus ring effect */
 }
