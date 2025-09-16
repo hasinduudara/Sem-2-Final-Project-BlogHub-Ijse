@@ -1,28 +1,107 @@
-.article-card {
-  transition: transform 0.2s;
-  margin-bottom: 20px;
+/* General body and background */
+body {
+  background-color: #ffffff; /* White background */
+  color: #333333; /* Dark gray for text */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
 }
-.article-card:hover {
-  transform: translateY(-5px);
+
+/* Navbar */
+.navbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 1rem 0;
 }
-.article-image {
-  height: 200px;
-  object-fit: cover;
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #000000; /* Black for the brand name */
 }
-.logout-btn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-}
-.logout-btn:hover {
-  background-color: #c82333;
-  transform: scale(1.05);
-}
+
+/* User profile image in the navbar */
 .profile-image {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid #e0e0e0;
+  transition: border-color 0.3s ease;
+}
+
+.profile-image:hover {
+  border-color: #007bff; /* Blue hover accent */
+}
+
+/* Logout button */
+.logout-btn {
+  background-color: #dc3545; /* Red for the logout button */
+  color: #ffffff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 50px; /* Fully rounded pill shape */
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #c82333; /* Darker red on hover */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Article cards */
+.article-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.article-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.article-image {
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-title {
+  color: #000000; /* Black for the title */
+  font-weight: 600;
+}
+
+.card-text {
+  color: #6c757d; /* Gray for the excerpt */
+}
+
+.btn-primary {
+  background-color: #007bff; /* Blue for the primary button */
+  border-color: #007bff;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  border-color: #0056b3;
+}
+
+/* Alert messages */
+.alert-info {
+  color: #0c5460;
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+  border-radius: 8px;
+}
+
+.alert-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  border-radius: 8px;
 }
