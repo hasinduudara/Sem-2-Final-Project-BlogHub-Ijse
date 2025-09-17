@@ -1,0 +1,143 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f9fafb;
+  color: #333;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Remove top spacing */
+.navbar {
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 0;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.navbar-brand {
+  color: #0d6efd !important;
+}
+
+/* Headings */
+h4 {
+  color: #0d6efd; /* blue heading */
+  font-weight: bold;
+}
+
+/* Form Container */
+.form-container {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  margin-top: 0;
+  padding: 1.5rem;
+}
+
+/* Inputs */
+.form-control {
+  background-color: #ffffff;
+  color: #333;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease-in-out;
+}
+.form-control:focus {
+  background-color: #ffffff;
+  color: #333;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.2);
+}
+
+/* Labels */
+.form-label {
+  color: #444;
+  font-weight: 500;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+}
+.btn-success:hover {
+  background-color: #157347;
+  border-color: #146c43;
+}
+
+.btn-outline-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+/* Table */
+.table {
+  background-color: #ffffff;
+  color: #333;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.table thead {
+  background-color: #0d6efd;
+  color: #fff;
+}
+.table-hover tbody tr:hover {
+  background-color: #f1f5f9;
+}
+#adminTable {
+  margin-top: 15px;
+}
+#adminTable th,
+#adminTable td {
+  vertical-align: middle;
+}
+
+/* Card */
+.card {
+  margin-top: 30px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+/* Modal */
+.modal-content {
+  background-color: #ffffff !important;
+  color: #333 !important;
+  border-radius: 10px;
+}
+.modal-header {
+  border-bottom: 1px solid #e5e7eb;
+}
+.modal-title {
+  color: #0d6efd;
+  font-weight: bold;
+}
+
+/* Custom adjustments to remove top space */
+.container {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.navbar-expand-lg .navbar-collapse {
+  margin-top: 0;
+}
