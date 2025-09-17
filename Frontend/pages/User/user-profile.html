@@ -4,69 +4,56 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Profile</title>
-    <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <!-- Inter Font -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <style>
+      :root {
+        --primary-color: #0d6efd; /* Blue */
+        --success-color: #198754; /* Green */
+        --danger-color: #dc3545; /* Red */
+        --light-gray: #f8f9fa;
+        --medium-gray: #e9ecef;
+        --dark-gray: #6c757d;
+        --text-color: #212529;
+      }
+
       body {
         font-family: "Inter", sans-serif;
-        background-color: #000000; /* Solid black background */
+        background-color: #ffffff; /* White background */
         height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
-        overflow: hidden; /* Hide scrollbars for the canvas */
-        color: #f0f0f0; /* Light text for visibility */
+        color: var(--text-color);
       }
 
-      /* 3D Canvas Styles */
-      #three-canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0; /* Behind the content */
-        opacity: 0.7; /* Make it subtle */
+      .profile-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        width: 420px;
+        text-align: center;
+        border: 1px solid var(--medium-gray);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-color: #212529;
+      }
+      .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
       }
 
-      .glass-card {
-        background: rgba(
-          255,
-          255,
-          255,
-          0.08
-        ); /* Very subtle white for glass effect */
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); /* Darker shadow */
-        width: 400px;
-        color: #f0f0f0; /* Light text */
-        position: relative; /* Ensure card is above canvas */
-        z-index: 1; /* Above the canvas */
-        /* Add subtle animation to the card itself */
-        animation: floatEffect 5s ease-in-out infinite;
-      }
-
-      @keyframes floatEffect {
-        0% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-10px);
-        }
-        100% {
-          transform: translateY(0px);
-        }
+      .profile-pic-container {
+        position: relative;
+        margin: 0 auto 20px auto;
+        width: 120px;
+        height: 120px;
       }
 
       .profile-pic {
@@ -74,95 +61,121 @@
         height: 120px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid #f0f0f0; /* White border */
-        margin-bottom: 15px;
+        border: 4px solid var(--primary-color);
         transition: transform 0.3s ease-in-out;
       }
       .profile-pic:hover {
-        transform: scale(1.05) rotate(5deg);
+        transform: scale(1.05);
       }
 
-      .form-control {
-        background: rgba(
-          255,
-          255,
-          255,
-          0.1
-        ); /* Subtle white input background */
+      /* Modern File Input */
+      .form-control[type="file"] {
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+      .form-control[type="file"]::file-selector-button {
+        background-color: var(--medium-gray);
+        color: var(--text-color);
         border: none;
-        color: #f0f0f0; /* Light text in input */
-        outline: none; /* Remove default outline */
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-right: 10px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+      .form-control[type="file"]::file-selector-button:hover {
+        background-color: #d8dbe0;
+      }
+
+      /* Form Input styles */
+      .form-control {
+        background-color: var(--light-gray);
+        border: 1px solid var(--medium-gray);
+        color: var(--text-color);
+        border-radius: 8px;
+        padding: 12px 15px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
       }
       .form-control::placeholder {
-        color: #cccccc; /* Lighter placeholder text */
+        color: var(--dark-gray);
       }
       .form-control:focus {
-        box-shadow: none;
-        border: 1px solid #f0f0f0; /* White border on focus */
-        background: rgba(255, 255, 255, 0.15); /* Slightly brighter on focus */
-        color: #ffffff; /* Pure white text on focus */
+        background-color: #fff;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+        color: var(--text-color);
       }
-      .btn-custom {
-        border-radius: 30px;
-        padding: 8px 20px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        letter-spacing: 0.5px; /* Slightly more spaced letters */
+      .form-control:read-only {
+        background-color: #e9ecef;
+        cursor: not-allowed;
       }
-      .btn-light-custom {
-        background-color: #ffffff;
-        color: #000000;
-        border: 1px solid #ffffff;
-      }
-      .btn-light-custom:hover {
-        background-color: #e0e0e0;
-        color: #000000;
-        border-color: #e0e0e0;
-        transform: translateY(-2px); /* Lift effect on hover */
-        box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
-      }
-      .btn-dark-custom {
-        background-color: #333333;
-        color: #ffffff;
-        border: 1px solid #333333;
-      }
-      .btn-dark-custom:hover {
-        background-color: #555555;
-        color: #ffffff;
-        border-color: #555555;
-        transform: translateY(-2px); /* Lift effect on hover */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-      }
-      .btn-secondary-custom {
-        background-color: #6c757d;
-        color: #ffffff;
-        border: 1px solid #6c757d;
-      }
-      .btn-secondary-custom:hover {
-        background-color: #5a6268;
-        color: #ffffff;
-        border-color: #5a6268;
-        transform: translateY(-2px); /* Lift effect on hover */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      }
+
       label {
         font-weight: 500;
-        color: #f8f8f8; /* Very light gray label */
-        margin-bottom: 5px;
+        color: #495057;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+      }
+
+      .btn-custom {
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        letter-spacing: 0.5px;
+        border: none;
+        width: 48%; /* For two buttons in a row */
+      }
+      .btn-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      /* Blue Edit Button */
+      .btn-edit {
+        background-color: var(--primary-color);
+        color: #ffffff;
+      }
+      .btn-edit:hover {
+        background-color: #0b5ed7;
+        color: #ffffff;
+      }
+
+      /* Green Save Button */
+      .btn-save {
+        background-color: var(--success-color);
+        color: #ffffff;
+      }
+      .btn-save:hover {
+        background-color: #157347;
+        color: #ffffff;
+      }
+
+      /* Red 'Forgot Password' Link */
+      .forgot-password-link {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--danger-color);
+        text-decoration: none;
+        transition: text-decoration 0.2s ease;
+      }
+      .forgot-password-link:hover {
+        text-decoration: underline;
+        color: #b02a37;
       }
     </style>
   </head>
   <body>
-    <!-- 3D Canvas -->
-    <canvas id="three-canvas"></canvas>
+    <div class="profile-card">
+      <div class="profile-pic-container">
+        <img
+          src="https://placehold.co/120x120/0d6efd/FFFFFF?text=JD"
+          alt="Profile"
+          class="profile-pic"
+          id="profileImage"
+        />
+      </div>
 
-    <div class="glass-card text-center">
-      <img
-        src="https://placehold.co/120x120/808080/FFFFFF?text=PROFILE"
-        alt="Profile"
-        class="profile-pic"
-        id="profileImage"
-      />
       <div class="mb-3">
         <input
           type="file"
@@ -171,6 +184,7 @@
           accept="image/*"
         />
       </div>
+
       <form>
         <div class="mb-3 text-start">
           <label for="username">User Name</label>
@@ -183,7 +197,7 @@
             readonly
           />
         </div>
-        <div class="mb-3 text-start">
+        <div class="mb-4 text-start">
           <label for="email">Email</label>
           <input
             type="email"
@@ -195,252 +209,55 @@
           />
         </div>
         <div class="d-flex justify-content-between">
-          <button type="button" class="btn btn-light-custom btn-custom">
-            Edit
-          </button>
-          <button type="submit" class="btn btn-dark-custom btn-custom">
-            Save
-          </button>
+          <button type="button" class="btn btn-edit btn-custom">Edit</button>
+          <button type="submit" class="btn btn-save btn-custom">Save</button>
         </div>
-        <div class="mt-3">
+        <div class="mt-4">
           <a
             href="/Frontend/pages/login-and-register/forgot-password.html"
-            class="btn btn-secondary-custom btn-sm btn-custom"
+            class="forgot-password-link"
             >Forgot Password?</a
           >
         </div>
       </form>
     </div>
 
-    <!-- Three.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
       // Image preview function
-      function previewImage(event) {
-        const reader = new FileReader();
-        reader.onload = function () {
-          document.getElementById("profileImage").src = reader.result;
-        };
-        reader.readAsDataURL(event.target.files[0]);
-      }
+      const imageUpload = document.getElementById("imageUpload");
+      const profileImage = document.getElementById("profileImage");
+      const usernameInput = document.getElementById("username");
+      const emailInput = document.getElementById("email");
+      const editButton = document.querySelector(".btn-edit");
 
-      // --- Three.js for 3D background ---
-      let scene, camera, renderer, icosahedron, particles, lines;
-      let mouseX = 0,
-        mouseY = 0;
-      let windowHalfX = window.innerWidth / 2;
-      let windowHalfY = window.innerHeight / 2;
-
-      function initThreeJS() {
-        // Scene
-        scene = new THREE.Scene();
-
-        // Camera
-        camera = new THREE.PerspectiveCamera(
-          75,
-          window.innerWidth / window.innerHeight,
-          0.1,
-          1000
-        );
-        camera.position.z = 5;
-
-        // Renderer
-        renderer = new THREE.WebGLRenderer({
-          canvas: document.getElementById("three-canvas"),
-          alpha: true,
-          antialias: true,
-        });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-
-        // Icosahedron (main geometric shape)
-        const icoGeometry = new THREE.IcosahedronGeometry(2, 1); // Radius 2, 1 subdivision for slightly more detail
-        const icoMaterial = new THREE.MeshBasicMaterial({
-          color: 0xcccccc, // Light gray
-          wireframe: true,
-          transparent: true,
-          opacity: 0.2,
-          blending: THREE.AdditiveBlending, // For a subtle glow
-        });
-        icosahedron = new THREE.Mesh(icoGeometry, icoMaterial);
-        scene.add(icosahedron);
-
-        // Particles
-        const particleCount = 500;
-        const particleGeometry = new THREE.BufferGeometry();
-        const particlePositions = new Float32Array(particleCount * 3);
-        const particleColors = new Float32Array(particleCount * 3);
-        const particleColor = new THREE.Color(0x888888); // Medium gray particles
-
-        for (let i = 0; i < particleCount; i++) {
-          // Position particles randomly around the icosahedron
-          const r = 3 + Math.random() * 3; // Radius from 3 to 6
-          const theta = Math.random() * Math.PI * 2;
-          const phi = Math.acos(Math.random() * 2 - 1);
-          particlePositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-          particlePositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-          particlePositions[i * 3 + 2] = r * Math.cos(phi);
-          particleColor.toArray(particleColors, i * 3);
+      imageUpload.addEventListener("change", function (event) {
+        if (event.target.files && event.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            profileImage.src = e.target.result;
+          };
+          reader.readAsDataURL(event.target.files[0]);
         }
-        particleGeometry.setAttribute(
-          "position",
-          new THREE.BufferAttribute(particlePositions, 3)
-        );
-        particleGeometry.setAttribute(
-          "color",
-          new THREE.BufferAttribute(particleColors, 3)
-        );
+      });
 
-        const particleMaterial = new THREE.PointsMaterial({
-          size: 0.05,
-          vertexColors: true,
-          transparent: true,
-          opacity: 0.5,
-          blending: THREE.AdditiveBlending,
-          sizeAttenuation: true,
-        });
-        particles = new THREE.Points(particleGeometry, particleMaterial);
-        scene.add(particles);
+      // Edit button functionality
+      editButton.addEventListener("click", function () {
+        usernameInput.readOnly = !usernameInput.readOnly;
+        emailInput.readOnly = !emailInput.readOnly;
 
-        // Dynamic Connecting Lines between particles
-        const lineMaterial = new THREE.LineBasicMaterial({
-          color: 0x666666, // Darker gray for lines
-          transparent: true,
-          opacity: 0.05, // Very subtle lines
-          blending: THREE.AdditiveBlending,
-        });
-        const lineGeometry = new THREE.BufferGeometry();
-        // Estimate max possible lines for allocation (each particle connects to a few others)
-        const maxLineInstances = particleCount * 4;
-        const linePositions = new Float32Array(maxLineInstances * 2 * 3); // 2 points per line, 3 coords per point
-        lineGeometry.setAttribute(
-          "position",
-          new THREE.BufferAttribute(linePositions, 3)
-        );
-        lines = new THREE.LineSegments(lineGeometry, lineMaterial);
-        scene.add(lines);
-
-        // Event Listeners for interactivity and responsiveness
-        window.addEventListener("resize", onWindowResizeThreeJS, false);
-        document.addEventListener(
-          "mousemove",
-          onDocumentMouseMoveThreeJS,
-          false
-        );
-        document.addEventListener(
-          "touchstart",
-          onDocumentTouchStartThreeJS,
-          false
-        );
-        document.addEventListener(
-          "touchmove",
-          onDocumentTouchMoveThreeJS,
-          false
-        );
-      }
-
-      function onWindowResizeThreeJS() {
-        windowHalfX = window.innerWidth / 2;
-        windowHalfY = window.innerHeight / 2;
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      }
-
-      function onDocumentMouseMoveThreeJS(event) {
-        mouseX = event.clientX - windowHalfX;
-        mouseY = event.clientY - windowHalfY;
-      }
-
-      function onDocumentTouchStartThreeJS(event) {
-        if (event.touches.length === 1) {
-          mouseX = event.touches[0].pageX - windowHalfX;
-          mouseY = event.touches[0].pageY - windowHalfY;
+        // Add a visual cue that fields are editable
+        if (!usernameInput.readOnly) {
+          usernameInput.focus();
+          usernameInput.style.backgroundColor = "#fff";
+          emailInput.style.backgroundColor = "#fff";
+        } else {
+          usernameInput.style.backgroundColor = ""; // Revert to stylesheet default
+          emailInput.style.backgroundColor = "";
         }
-      }
-
-      function onDocumentTouchMoveThreeJS(event) {
-        if (event.touches.length === 1) {
-          event.preventDefault();
-          mouseX = event.touches[0].pageX - windowHalfX;
-          mouseY = event.touches[0].pageY - windowHalfY;
-        }
-      }
-
-      function animateThreeJS() {
-        requestAnimationFrame(animateThreeJS);
-
-        // Rotate icosahedron
-        icosahedron.rotation.x += 0.0005;
-        icosahedron.rotation.y += 0.001;
-
-        // Rotate particles system
-        particles.rotation.y += 0.0007;
-        particles.rotation.x += 0.0002;
-
-        // Update dynamic lines
-        const currentLinePositions = lines.geometry.attributes.position.array;
-        let lineIndex = 0;
-        const particlePositionsArray =
-          particles.geometry.attributes.position.array;
-        const tempParticle1 = new THREE.Vector3();
-        const tempParticle2 = new THREE.Vector3();
-
-        // Clear existing lines
-        for (let i = 0; i < currentLinePositions.length; i++) {
-          currentLinePositions[i] = 0; // Resetting to zero effectively hides them
-        }
-
-        for (let i = 0; i < particlePositionsArray.length / 3; i++) {
-          tempParticle1
-            .set(
-              particlePositionsArray[i * 3],
-              particlePositionsArray[i * 3 + 1],
-              particlePositionsArray[i * 3 + 2]
-            )
-            .applyMatrix4(particles.matrixWorld); // Get world position of particle
-
-          for (let j = i + 1; j < particlePositionsArray.length / 3; j++) {
-            tempParticle2
-              .set(
-                particlePositionsArray[j * 3],
-                particlePositionsArray[j * 3 + 1],
-                particlePositionsArray[j * 3 + 2]
-              )
-              .applyMatrix4(particles.matrixWorld); // Get world position of particle
-
-            // Connect if particles are close enough
-            if (tempParticle1.distanceTo(tempParticle2) < 0.8) {
-              // Adjust connection distance
-              currentLinePositions[lineIndex++] = tempParticle1.x;
-              currentLinePositions[lineIndex++] = tempParticle1.y;
-              currentLinePositions[lineIndex++] = tempParticle1.z;
-
-              currentLinePositions[lineIndex++] = tempParticle2.x;
-              currentLinePositions[lineIndex++] = tempParticle2.y;
-              currentLinePositions[lineIndex++] = tempParticle2.z;
-            }
-          }
-        }
-        lines.geometry.attributes.position.needsUpdate = true;
-        lines.geometry.setDrawRange(0, lineIndex); // Only draw actual lines used
-
-        // Camera movement based on mouse/touch
-        camera.position.x += (mouseX * 0.0005 - camera.position.x) * 0.05;
-        camera.position.y += (-mouseY * 0.0005 - camera.position.y) * 0.05;
-        camera.lookAt(scene.position);
-
-        renderer.render(scene, camera);
-      }
-
-      // Initialize Three.js when the window loads
-      window.onload = function () {
-        initThreeJS();
-        animateThreeJS();
-      };
+      });
     </script>
-    <!-- Bootstrap JS CDN (optional, for components that require JS) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/Frontend/JavaScript/User/user-profile.js"></script>
   </body>
 </html>
