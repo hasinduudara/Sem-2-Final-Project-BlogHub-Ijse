@@ -12,12 +12,12 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="/Frontend/css/article-detail.css" />
+    <link rel="stylesheet" href="/Frontend/css/article-detaile.css" />
   </head>
-  <body>
+  <body class="bg-white text-dark">
     <div class="container my-5">
       <div id="articleContainer">
-        <div class="alert alert-info border-0 rounded-0 text-center">
+        <div class="alert alert-info border-0 rounded-3 shadow-sm text-center">
           <i class="fas fa-spinner fa-spin me-2"></i>Loading article...
         </div>
       </div>
@@ -25,12 +25,14 @@
       <hr class="my-5" />
 
       <div class="comments-section">
-        <h4 class="mb-4">Comments</h4>
-        <ul class="list-group mb-4" id="commentsList">
-          <li class="list-group-item border-0 text-center">Loading comments...</li>
+        <h4 class="mb-4 fw-bold">Comments</h4>
+        <ul class="list-group mb-4 shadow-sm rounded-3" id="commentsList">
+          <li class="list-group-item border-0 text-center">
+            Loading comments...
+          </li>
         </ul>
 
-        <form id="commentForm">
+        <form id="commentForm" class="shadow-sm p-3 rounded-3 bg-light">
           <div class="mb-3">
             <textarea
               class="form-control"

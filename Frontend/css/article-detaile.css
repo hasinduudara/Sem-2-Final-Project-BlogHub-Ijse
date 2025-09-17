@@ -1,8 +1,8 @@
 body {
   background-color: #fff;
-  color: #212529;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  color: #000;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.6;
 }
 
 h1,
@@ -11,113 +11,125 @@ h3,
 h4,
 h5,
 h6 {
-  color: #212529;
-  font-weight: 600;
+  color: #000;
+  font-weight: 700;
 }
 
 .card {
   border: none;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   background-color: #fff;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
 }
 
 .article-image {
   max-height: 450px;
   object-fit: cover;
   width: 100%;
-  border-radius: 0.5rem 0.5rem 0 0;
+  border-radius: 1.25rem 1.25rem 0 0;
 }
 
 .card-body {
-  padding: 2rem;
+  padding: 2.5rem;
 }
 
-.text-muted {
-  color: #6c757d !important;
-  font-size: 0.9rem;
-}
-
-.like-btn {
-  background-color: #0d6efd;
+/* Buttons */
+.like-btn,
+.share-btn {
   border: none;
   color: #fff;
-  padding: 10px 24px;
+  padding: 10px 26px;
   border-radius: 50px;
   cursor: pointer;
   font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  font-weight: 600;
+  margin-right: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease, transform 0.15s ease;
 }
 
+/* Blue Like */
+.like-btn {
+  background: linear-gradient(135deg, #0d6efd, #004bce);
+}
 .like-btn:hover {
-  background-color: #0b5ed7;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
-.like-btn:active {
-  transform: translateY(0);
+/* Green Share */
+.share-btn {
+  background: linear-gradient(135deg, #198754, #0b5134);
+}
+.share-btn:hover {
+  transform: translateY(-3px);
 }
 
+/* Comment Section */
 .comments-section {
   max-width: 800px;
   margin: 0 auto;
 }
 
 .list-group-item {
-  background-color: #f8f9fa;
   border: none;
-  border-radius: 0.25rem;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  display: inline-block;
+  max-width: 70%;
+  word-wrap: break-word;
 }
 
-.list-group-item:last-child {
-  margin-bottom: 0;
+/* Chat bubble style */
+.list-group-item:nth-child(odd) {
+  background-color: #e9f3ff;
+  color: #0d6efd;
+  align-self: flex-start;
+}
+
+.list-group-item:nth-child(even) {
+  background-color: #e8f7ed;
+  color: #198754;
+  align-self: flex-end;
+}
+
+/* Comment form */
+#commentForm {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 .form-control {
-  border-radius: 0.25rem;
+  border-radius: 0.75rem;
   border: 1px solid #ced4da;
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-
 .form-control:focus {
   border-color: #0d6efd;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
+/* Submit button */
 .btn-primary {
-  background-color: #0d6efd;
-  border-color: #0d6efd;
-  font-weight: 500;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.25rem;
-  transition: background-color 0.2s ease;
+  background: linear-gradient(135deg, #0d6efd, #004bce);
+  border: none;
+  font-weight: 600;
+  padding: 0.8rem 1.5rem;
+  border-radius: 0.75rem;
+  transition: transform 0.2s ease;
 }
-
 .btn-primary:hover {
-  background-color: #0b5ed7;
-  border-color: #0b5ed7;
-}
-
-.alert-info {
-  background-color: #e0f0ff;
-  color: #0d6efd;
-  border-left: 4px solid #0d6efd;
-}
-
-.alert-danger {
-  background-color: #f8d7da;
-  color: #721c24;
-  border-left: 4px solid #dc3545;
-}
-
-.text-danger {
-  color: #dc3545 !important;
-}
-
-.text-success {
-  color: #198754 !important;
+  transform: translateY(-2px);
 }

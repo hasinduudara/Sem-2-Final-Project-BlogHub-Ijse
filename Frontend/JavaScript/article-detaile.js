@@ -24,6 +24,9 @@ function loadArticle() {
             <button class="like-btn mt-3" id="likeBtn">
               <i class="fas fa-thumbs-up me-1"></i> Like (<span id="likeCount">0</span>)
             </button>
+            <button class="share-btn mt-3" id="shareBtn">
+              <i class="fas fa-share-alt me-1"></i> Share
+            </button>
           </div>
         </div>
       `);
@@ -157,6 +160,22 @@ $("#commentForm").submit(function (e) {
       alert(msg);
     },
   });
+});
+
+$("#shareBtn").click(function () {
+  const shareUrl = window.location.href;
+  if (navigator.share) {
+    navigator
+      .share({
+        title: document.title,
+        url: shareUrl,
+      })
+      .catch(console.error);
+  } else {
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      alert("Link copied to clipboard!");
+    });
+  }
 });
 
 // Init
