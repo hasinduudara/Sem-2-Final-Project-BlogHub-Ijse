@@ -17,141 +17,42 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
     />
-    <style>
-      body {
-        background-color: #1a1a1a;
-        font-family: Arial, sans-serif;
-        overflow-x: hidden;
-        position: relative;
-        color: #e0e0e0;
-      }
-      .navbar {
-        background-color: #1c1c1c;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-        position: relative;
-        z-index: 10;
-      }
-      .navbar-brand {
-        color: #f0f0f0 !important;
-      }
-      .card-link {
-        text-decoration: none;
-        color: inherit;
-        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-      }
-      .card-link:hover .dashboard-card {
-        transform: translateY(-10px);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
-      }
-      .dashboard-card {
-        background-color: rgba(36, 36, 36, 0.8);
-        backdrop-filter: blur(5px);
-        border-radius: 15px;
-        transition: all 0.3s ease-in-out;
-        color: #f0f0f0;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        position: relative;
-        overflow: hidden; /* This is crucial for the glow effect */
-      }
-      .icon-container {
-        width: 60px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        background-color: rgba(51, 51, 51, 0.8);
-        transition: background-color 0.3s ease-in-out;
-        z-index: 1; /* Ensure icon is above the glow effect */
-      }
-      .icon-container i {
-        color: #e0e0e0;
-      }
-      .card-link:hover .icon-container {
-        background-color: #0d6efd;
-      }
-      .card-link:hover .icon-container i {
-        color: #ffffff;
-      }
-      h1,
-      h5 {
-        color: #f0f0f0;
-      }
-      .lead,
-      .text-muted {
-        color: #b0b0b0 !important;
-      }
-
-      /* Card Hover Glow Effect */
-      .dashboard-card::before {
-        content: "";
-        position: absolute;
-        top: 30%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: radial-gradient(
-          circle,
-          rgba(1, 102, 255, 0.2),
-          /* Blue glow color */ transparent 70%
-        );
-        transition: all 0.7s ease-out;
-        transform: translate(-50%, -50%);
-        z-index: 0;
-      }
-      .card-link:hover .dashboard-card::before {
-        width: 350px; /* Expand the glow size */
-        height: 350px;
-        opacity: 1;
-      }
-
-      /* Particle Network Background */
-      #p5-canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: -1;
-      }
-
-      /* Main content z-index */
-      .container,
-      .navbar {
-        position: relative;
-        z-index: 1;
-      }
-    </style>
+    <link rel="stylesheet" href="/Frontend/css/Admin/admin-dashboard.css" />
   </head>
   <body>
     <canvas id="p5-canvas"></canvas>
 
     <nav class="navbar navbar-expand-lg navbar-light">
       <div class="container-fluid">
-        <a class="navbar-brand fw-bold text-primary" href="#">
+        <a class="navbar-brand fw-bold" href="#">
           <i class="fas fa-chart-line me-2"></i>Admin Dashboard
         </a>
-        <div class="d-flex">
-          <button id="logoutBtn" class="btn btn-outline-danger">
+        <div class="d-flex align-items-center">
+          <span class="text-white me-3 d-none d-md-block"
+            >Welcome, <span id="userDisplay">Admin</span></span
+          >
+          <button id="logoutBtn" class="btn">
             <i class="fas fa-sign-out-alt me-2"></i>Logout
           </button>
         </div>
       </div>
     </nav>
 
-    <div class="container mt-5">
-      <div
-        class="text-center mb-5 animate__animated animate__fadeInDown animate__slow"
-      >
-        <h1 class="display-4 fw-bold">Welcome, Admin!</h1>
-        <p class="lead text-muted">Manage your BlogHub platform efficiently.</p>
+    <div class="container mt-4">
+      <div class="welcome-section animate__animated animate__fadeInDown">
+        <h1 class="display-4 fw-bold text-center">Welcome, Admin!</h1>
+        <p class="lead text-muted text-center">
+          Manage your BlogHub platform efficiently with powerful tools and
+          insights.
+        </p>
       </div>
 
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-        <div class="col animate__animated animate__fadeInUp animate__delay-1s">
+        <div class="col animate__animated animate__fadeInUp">
           <a href="./articles.html" class="card-link">
-            <div class="card p-4 text-center dashboard-card border-0">
+            <div class="card p-4 text-center dashboard-card">
               <div class="mx-auto mb-3 icon-container">
-                <i class="fas fa-newspaper fa-2x text-muted"></i>
+                <i class="fas fa-newspaper fa-2x text-primary"></i>
               </div>
               <h5 class="fw-bold">Manage Articles</h5>
               <p class="text-muted mb-0">
@@ -161,11 +62,11 @@
           </a>
         </div>
 
-        <div class="col animate__animated animate__fadeInUp animate__delay-2s">
+        <div class="col animate__animated animate__fadeInUp">
           <a href="./users.html" class="card-link">
-            <div class="card p-4 text-center dashboard-card border-0">
+            <div class="card p-4 text-center dashboard-card">
               <div class="mx-auto mb-3 icon-container">
-                <i class="fas fa-users fa-2x text-muted"></i>
+                <i class="fas fa-users fa-2x text-primary"></i>
               </div>
               <h5 class="fw-bold">Users & Publishers</h5>
               <p class="text-muted mb-0">
@@ -175,11 +76,11 @@
           </a>
         </div>
 
-        <div class="col animate__animated animate__fadeInUp animate__delay-3s">
+        <div class="col animate__animated animate__fadeInUp">
           <a href="./payments.html" class="card-link">
-            <div class="card p-4 text-center dashboard-card border-0">
+            <div class="card p-4 text-center dashboard-card">
               <div class="mx-auto mb-3 icon-container">
-                <i class="fas fa-credit-card fa-2x text-muted"></i>
+                <i class="fas fa-credit-card fa-2x text-primary"></i>
               </div>
               <h5 class="fw-bold">Payments</h5>
               <p class="text-muted mb-0">
@@ -189,11 +90,11 @@
           </a>
         </div>
 
-        <div class="col animate__animated animate__fadeInUp animate__delay-4s">
+        <div class="col animate__animated animate__fadeInUp">
           <a href="./admin-profile.html" class="card-link">
-            <div class="card p-4 text-center dashboard-card border-0">
+            <div class="card p-4 text-center dashboard-card">
               <div class="mx-auto mb-3 icon-container">
-                <i class="fas fa-user-shield fa-2x text-muted"></i>
+                <i class="fas fa-user-shield fa-2x text-primary"></i>
               </div>
               <h5 class="fw-bold">Admin Management</h5>
               <p class="text-muted mb-0">Update profile and add new admins</p>
@@ -203,93 +104,38 @@
       </div>
     </div>
 
+    <footer class="admin-footer">
+      <p class="mb-0">© 2025 BlogHub Admin Dashboard. All rights reserved.</p>
+    </footer>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-      let particles = [];
-      const numParticles = 100;
-      const connectionDistance = 150;
-
+      // Background animation with p5.js
       function setup() {
-        let canvas = createCanvas(windowWidth, windowHeight);
-        canvas.id("p5-canvas");
-        canvas.style("display", "block");
-        canvas.style("position", "fixed");
-        canvas.style("top", "0");
-        canvas.style("left", "0");
+        const canvas = createCanvas(windowWidth, windowHeight);
+        canvas.position(0, 0);
         canvas.style("z-index", "-1");
-
-        for (let i = 0; i < numParticles; i++) {
-          particles.push(new Particle());
-        }
+        background(248, 249, 250);
       }
 
       function draw() {
-        background("#1a1a1a");
-        for (let i = 0; i < particles.length; i++) {
-          particles[i].update();
-          particles[i].show();
-          for (let j = i + 1; j < particles.length; j++) {
-            let d = dist(
-              particles[i].x,
-              particles[i].y,
-              particles[j].x,
-              particles[j].y
-            );
-            if (d < connectionDistance) {
-              let alpha = map(d, 0, connectionDistance, 20, 0);
-              stroke(255, 255, 255, alpha);
-              strokeWeight(0.5);
-              line(
-                particles[i].x,
-                particles[i].y,
-                particles[j].x,
-                particles[j].y
-              );
-            }
-          }
-        }
-      }
-
-      class Particle {
-        constructor() {
-          this.x = random(width);
-          this.y = random(height);
-          this.vx = random(-0.5, 0.5);
-          this.vy = random(-0.5, 0.5);
-          this.r = random(1, 3);
-          this.color = 255;
-        }
-
-        update() {
-          this.x += this.vx;
-          this.y += this.vy;
-
-          if (this.x < 0 || this.x > width) {
-            this.vx *= -1;
-          }
-          if (this.y < 0 || this.y > height) {
-            this.vy *= -1;
-          }
-        }
-
-        show() {
-          noStroke();
-          fill(this.color);
-          ellipse(this.x, this.y, this.r * 2);
+        noStroke();
+        fill(200, 220, 255, 20);
+        // Create subtle moving particles for background
+        for (let i = 0; i < 5; i++) {
+          let x = noise(frameCount * 0.001 * i) * width;
+          let y = noise(frameCount * 0.001 * i + 100) * height;
+          let size = noise(frameCount * 0.001 * i + 200) * 15;
+          ellipse(x, y, size, size);
         }
       }
 
       function windowResized() {
         resizeCanvas(windowWidth, windowHeight);
       }
-    </script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/Frontend/JavaScript/Admin/admin-dashboard.js"></script>
-
-    <script>
-      // Add this script to your admin-dashboard.html
+      // Authentication check
       document.addEventListener("DOMContentLoaded", function () {
         // Check if user is authenticated and is an admin
         const token = localStorage.getItem("token");
@@ -317,7 +163,7 @@
 
         // Display username in the UI
         const userDisplayElement = document.getElementById("userDisplay");
-        if (userDisplayElement) {
+        if (userDisplayElement && username) {
           userDisplayElement.textContent = username;
         }
 

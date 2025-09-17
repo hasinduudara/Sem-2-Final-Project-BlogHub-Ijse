@@ -1,0 +1,221 @@
+/* ===== Color Variables ===== */
+      :root {
+        --primary: #4361ee;
+        --secondary: #3a0ca3;
+        --success: #4cc9f0;
+        --info: #7209b7;
+        --warning: #f72585;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --card-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        --sidebar-width: 250px;
+        --header-height: 70px;
+        --transition: all 0.3s ease;
+      }
+
+      /* ===== Global Styles ===== */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa;
+        color: var(--dark);
+        overflow-x: hidden;
+        min-height: 100vh;
+        position: relative;
+      }
+
+      /* ===== Background Canvas ===== */
+      #p5-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+      }
+
+      /* ===== Navbar ===== */
+      .navbar {
+        background: var(--bg-gradient);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        height: var(--header-height);
+        padding: 0.5rem 1rem;
+      }
+
+      .navbar-brand {
+        color: white !important;
+        font-weight: 700;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .navbar-brand i {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 10px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      #logoutBtn {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+      }
+
+      #logoutBtn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      /* ===== Main Content ===== */
+      .container {
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+      }
+
+      .welcome-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .welcome-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--bg-gradient);
+      }
+
+      .display-4 {
+        background: var(--bg-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+      }
+
+      /* ===== Dashboard Cards ===== */
+      .dashboard-card {
+        background: var(--card-gradient);
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        transition: var(--transition);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .dashboard-card::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--bg-gradient);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+      }
+
+      .card-link:hover .dashboard-card {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-link:hover .dashboard-card::after {
+        transform: scaleX(1);
+      }
+
+      .icon-container {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: var(--transition);
+        margin-bottom: 1.5rem;
+      }
+
+      .card-link:hover .icon-container {
+        transform: scale(1.1);
+        background: var(--bg-gradient);
+      }
+
+      .card-link:hover .icon-container i {
+        color: white !important;
+      }
+
+      .dashboard-card h5 {
+        color: var(--dark);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .dashboard-card p {
+        color: #6c757d;
+        font-size: 0.9rem;
+      }
+
+      /* ===== Animations ===== */
+      .animate__animated.animate__delay-1s {
+        animation-delay: 0.2s;
+      }
+
+      .animate__animated.animate__delay-2s {
+        animation-delay: 0.4s;
+      }
+
+      .animate__animated.animate__delay-3s {
+        animation-delay: 0.6s;
+      }
+
+      .animate__animated.animate__delay-4s {
+        animation-delay: 0.8s;
+      }
+
+      /* ===== Footer ===== */
+      .admin-footer {
+        background: var(--dark);
+        color: white;
+        text-align: center;
+        padding: 1rem;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+
+      /* ===== Responsive Adjustments ===== */
+      @media (max-width: 768px) {
+        .display-4 {
+          font-size: 2.5rem;
+        }
+
+        .welcome-section {
+          padding: 1.5rem;
+        }
+
+        .icon-container {
+          width: 70px;
+          height: 70px;
+        }
+      }
