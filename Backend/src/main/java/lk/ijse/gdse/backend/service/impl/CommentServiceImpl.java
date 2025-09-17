@@ -38,10 +38,16 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.save(comment);
 
+        String displayUsername = user.getUsername();
+        // If username contains '@', it's likely an email address, so extract the username part
+        if (displayUsername != null && displayUsername.contains("@")) {
+            displayUsername = displayUsername.substring(0, displayUsername.indexOf("@"));
+        }
+
         return CommentDTO.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
-                .username(user.getUsername())
+                .username(displayUsername)
                 .articleId(article.getId())
                 .createdAt(comment.getCreatedAt())
                 .build();

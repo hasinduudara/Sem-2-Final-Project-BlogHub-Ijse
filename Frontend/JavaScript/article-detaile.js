@@ -12,26 +12,24 @@ function loadArticle() {
         <div class="card">
           ${
             article.imageUrl
-              ? `<img src="${article.imageUrl}" class="card-img-top article-image" alt="">`
+              ? `<img src="${article.imageUrl}" class="card-img-top article-image" alt="Article Image">`
               : ""
           }
           <div class="card-body">
-            <h2>${article.title}</h2>
-            <p class="text-muted">By ${article.publisherName} | ${new Date(
-        article.publishAt
-      ).toLocaleDateString()}</p>
-            <p>${article.content}</p>
-            <button class="like-btn" id="likeBtn">
+            <h2 class="card-title">${article.title}</h2>
+            <p class="text-muted">By <strong>${
+              article.publisherName
+            }</strong> | ${new Date(article.publishAt).toLocaleDateString()}</p>
+            <p class="card-text mt-4">${article.content}</p>
+            <button class="like-btn mt-3" id="likeBtn">
               <i class="fas fa-thumbs-up me-1"></i> Like (<span id="likeCount">0</span>)
             </button>
           </div>
         </div>
       `);
 
-      // Load like count after article loads
       loadLikeCount();
 
-      // Like button click handler
       $("#likeBtn").click(function () {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -40,12 +38,11 @@ function loadArticle() {
         }
 
         $.ajax({
-          url: `http://localhost:8080/api/likes/${articleId}`, // ✅ Fixed URL
+          url: `http://localhost:8080/api/likes/${articleId}`,
           method: "POST",
           headers: { Authorization: "Bearer " + token },
           success: function (apiResponse) {
             console.log("Like response:", apiResponse);
-            // Reload like count after successful like/unlike
             loadLikeCount();
           },
           error: function (xhr) {
@@ -62,8 +59,8 @@ function loadArticle() {
     error: function (xhr) {
       console.error("Failed to load article", xhr.status);
       $("#articleContainer").html(`
-        <div class="alert alert-danger">
-          <i class="fas fa-exclamation-triangle me-2"></i>Failed to load article
+        <div class="alert alert-danger rounded-0 text-center">
+          <i class="fas fa-exclamation-triangle me-2"></i>Failed to load article.
         </div>
       `);
     },
@@ -73,7 +70,7 @@ function loadArticle() {
 // Load like count
 function loadLikeCount() {
   $.ajax({
-    url: `http://localhost:8080/api/likes/${articleId}`, // ✅ Fixed URL
+    url: `http://localhost:8080/api/likes/${articleId}`,
     method: "GET",
     success: function (apiResponse) {
       const likeCount = apiResponse.data || 0;
@@ -102,20 +99,24 @@ function loadComments() {
       list.empty();
 
       if (comments.length === 0) {
-        list.html(`<li class="list-group-item">No comments yet</li>`);
+        list.html(
+          `<li class="list-group-item text-center">No comments yet.</li>`
+        );
         return;
       }
 
       comments.forEach((c) => {
+        // Ensure username is displayed properly, with fallback for edge cases
+        const displayName = c.username || "Anonymous User";
         list.append(
-          `<li class="list-group-item"><strong>${c.username}</strong>: ${c.content}</li>`
+          `<li class="list-group-item"><strong>${displayName}</strong>: ${c.content}</li>`
         );
       });
     },
     error: function (xhr) {
       console.error("Error loading comments", xhr.status);
       $("#commentsList").html(
-        `<li class="list-group-item text-danger">Error loading comments</li>`
+        `<li class="list-group-item text-danger text-center">Error loading comments.</li>`
       );
     },
   });
@@ -150,7 +151,7 @@ $("#commentForm").submit(function (e) {
     },
     error: function (xhr) {
       console.error("Post comment failed", xhr.status, xhr.responseText);
-      let msg = "Failed to post comment";
+      let msg = "Failed to post comment.";
       if (xhr.responseJSON && xhr.responseJSON.status)
         msg = xhr.responseJSON.status;
       alert(msg);
