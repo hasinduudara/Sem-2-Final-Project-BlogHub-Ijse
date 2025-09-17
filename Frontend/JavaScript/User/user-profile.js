@@ -237,10 +237,29 @@ class UserProfileManager {
 
             if (result.code === 200) {
                 this.showSuccess('Profile updated successfully!');
+
+                // Update the current user email immediately to prevent 403 errors
                 this.currentUserEmail = result.data.email;
-                this.toggleEditMode(); // This will reset the UI state
-                localStorage.setItem('email', result.data.email); // Use consistent key
+                localStorage.setItem('email', result.data.email);
                 localStorage.setItem('username', result.data.username);
+
+                // Exit edit mode without reloading profile to avoid 403 error
+                this.isEditMode = false;
+                const usernameInput = document.getElementById('username');
+                const emailInput = document.getElementById('email');
+                const editBtn = document.querySelector('.btn-edit');
+
+                if (usernameInput) usernameInput.setAttribute('readonly', true);
+                if (emailInput) emailInput.setAttribute('readonly', true);
+                if (editBtn) editBtn.textContent = 'Edit';
+
+                // Populate form with the updated data instead of reloading
+                this.populateForm(result.data);
+
+                // If email was changed, show a notice about re-authentication
+                if (result.data.email !== JSON.parse(atob(token.split(".")[1])).sub) {
+                    this.showWarning("Email updated. Please log out and log back in for full functionality.");
+                }
             } else {
                 this.showError('Update failed: ' + (result.message || 'Unknown error'));
             }

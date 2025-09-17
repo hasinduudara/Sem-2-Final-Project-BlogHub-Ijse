@@ -15,7 +15,8 @@ class PublisherProfileManager {
   }
 
   bindEventListeners() {
-    const editBtn = document.querySelector(".btn-light-custom");
+    // Updated selector to match the new blue button class
+    const editBtn = document.querySelector(".btn-edit");
     const form = document.querySelector("form");
     const imageUpload = document.getElementById("imageUpload");
 
@@ -70,7 +71,6 @@ class PublisherProfileManager {
 
     try {
       this.showInfo("Loading profile...");
-
       const response = await fetch(
         `${this.baseUrl}/profile/${this.currentUserEmail}`,
         {
@@ -85,9 +85,7 @@ class PublisherProfileManager {
       if (!response.ok) {
         throw new Error(`Failed to fetch profile. Status: ${response.status}`);
       }
-
       const result = await response.json();
-
       if (result.code === 200) {
         this.populateForm(result.data);
         this.showSuccess("Profile loaded successfully");
@@ -106,72 +104,57 @@ class PublisherProfileManager {
       this.setPublisherDataFromStorage();
       return;
     }
-
     const publisherNameElement = document.getElementById("publisherName");
     const contactEmailElement = document.getElementById("contactEmail");
     const profileImageElement = document.getElementById("profileImage");
 
     if (publisherNameElement) {
-      // Display the exact username from registration, just like user profile does
       const publisherName = data.publisherName || "";
       publisherNameElement.value = publisherName;
-
-      // Store the original username without modification
       if (publisherName) {
         localStorage.setItem("publisherName", publisherName);
         localStorage.setItem("username", publisherName);
       }
     }
-
     if (contactEmailElement) {
       contactEmailElement.value = data.email || "";
       if (data.email) {
         localStorage.setItem("email", data.email);
       }
     }
-
     if (data.logoUrl && profileImageElement) {
       profileImageElement.src = data.logoUrl;
       localStorage.setItem("publisherLogoUrl", data.logoUrl);
+    } else {
+      const storedLogo = localStorage.getItem("publisherLogoUrl");
+      if (profileImageElement && storedLogo)
+        profileImageElement.src = storedLogo;
     }
   }
 
   setPublisherDataFromStorage() {
-    const publisherNameElement = document.getElementById("publisherName");
-    const contactEmailElement = document.getElementById("contactEmail");
-    const profileImageElement = document.getElementById("profileImage");
-
-    const publisherName = localStorage.getItem("publisherName") ||
-                         localStorage.getItem("username") ||
-                         "";
+    const publisherName =
+      localStorage.getItem("publisherName") ||
+      localStorage.getItem("username") ||
+      "";
     const email = localStorage.getItem("email") || "";
     const logoUrl = localStorage.getItem("publisherLogoUrl");
 
-    if (publisherNameElement) {
-      publisherNameElement.value = publisherName;
-    }
-
-    if (contactEmailElement) {
-      contactEmailElement.value = email;
-    }
-
-    if (logoUrl && profileImageElement) {
-      profileImageElement.src = logoUrl;
-    }
+    document.getElementById("publisherName").value = publisherName;
+    document.getElementById("contactEmail").value = email;
+    if (logoUrl) document.getElementById("profileImage").src = logoUrl;
   }
 
   toggleEditMode() {
     this.isEditMode = !this.isEditMode;
     const inputs = document.querySelectorAll(".form-control");
-    const editBtn = document.querySelector(".btn-light-custom");
+    // Updated selector to match the new blue button class
+    const editBtn = document.querySelector(".btn-edit");
 
     inputs.forEach((input) => {
-      if (input.id !== "imageUpload") {
-        if (this.isEditMode) {
-          input.removeAttribute("readonly");
-        } else {
-          input.setAttribute("readonly", true);
-        }
+      if (input.type !== "file") {
+        // Exclude the file input
+        input.readOnly = !this.isEditMode;
       }
     });
 
@@ -180,7 +163,7 @@ class PublisherProfileManager {
       this.showInfo("Edit mode enabled.");
     } else {
       editBtn.textContent = "Edit";
-      this.loadPublisherProfile();
+      this.loadPublisherProfile(); // Revert changes on cancel
     }
   }
 
@@ -201,17 +184,13 @@ class PublisherProfileManager {
     const currentPassword = prompt(
       "Please enter your current password to save changes:"
     );
+    if (currentPassword === null) return; // User cancelled
     if (!currentPassword) {
       this.showWarning("Password is required to save changes.");
       return;
     }
 
-    const updateData = {
-      publisherName,
-      email,
-      currentPassword,
-    };
-
+    const updateData = { publisherName, email, currentPassword };
     const token = localStorage.getItem("token");
 
     try {
@@ -227,18 +206,38 @@ class PublisherProfileManager {
           body: JSON.stringify(updateData),
         }
       );
-
       const result = await response.json();
 
       if (result.code === 200) {
         this.showSuccess("Profile updated successfully!");
-        this.currentUserEmail = result.data.email;
 
+        // Update the current user email immediately to prevent 403 errors
+        this.currentUserEmail = result.data.email;
         localStorage.setItem("email", result.data.email);
         localStorage.setItem("publisherName", result.data.publisherName);
 
-        this.toggleEditMode();
+        // Exit edit mode without reloading profile to avoid 403 error
+        this.isEditMode = false;
+        const inputs = document.querySelectorAll(".form-control");
+        const editBtn = document.querySelector(".btn-edit");
+
+        inputs.forEach((input) => {
+          if (input.type !== "file") {
+            input.readOnly = true;
+          }
+        });
+
+        if (editBtn) {
+          editBtn.textContent = "Edit";
+        }
+
+        // Populate form with the updated data instead of reloading
         this.populateForm(result.data);
+
+        // If email was changed, show a notice about re-authentication
+        if (result.data.email !== JSON.parse(atob(token.split(".")[1])).sub) {
+          this.showWarning("Email updated. Please log out and log back in for full functionality.");
+        }
       } else {
         throw new Error(result.message || "Failed to update profile.");
       }
@@ -252,11 +251,25 @@ class PublisherProfileManager {
     const file = event.target.files[0];
     if (!file) return;
 
+    // --- 1. Instant Preview ---
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      document.getElementById("profileImage").src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    // --- 2. Validation ---
     if (file.size > 5 * 1024 * 1024) {
+      // 5MB limit
       this.showError("Image size must be less than 5MB.");
       return;
     }
+    if (!file.type.startsWith("image/")) {
+      this.showError("Please select a valid image file.");
+      return;
+    }
 
+    // --- 3. Upload ---
     const formData = new FormData();
     formData.append("image", file);
     const token = localStorage.getItem("token");
@@ -271,7 +284,6 @@ class PublisherProfileManager {
           body: formData,
         }
       );
-
       const result = await response.json();
       if (result.code === 200) {
         document.getElementById("profileImage").src = result.data;
@@ -283,9 +295,14 @@ class PublisherProfileManager {
     } catch (error) {
       console.error("Error uploading image:", error);
       this.showError(error.message);
+      // Revert to old image on failure
+      document.getElementById("profileImage").src =
+        localStorage.getItem("publisherLogoUrl") ||
+        "https://placehold.co/120x120/0d6efd/FFFFFF?text=LOGO";
     }
   }
 
+  // --- UI Feedback Methods ---
   showToast(message, type = "info") {
     const toast = document.createElement("div");
     const bootstrapClass =
@@ -297,20 +314,8 @@ class PublisherProfileManager {
       }[type] || "info";
 
     toast.className = `alert alert-${bootstrapClass} position-fixed`;
-    toast.style.cssText = `
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            min-width: 300px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: slideInRight 0.3s ease-out;
-        `;
-    toast.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center">
-                <span>${message}</span>
-                <button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()"></button>
-            </div>
-        `;
+    toast.style.cssText = `top: 20px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideInRight 0.3s ease-out;`;
+    toast.innerHTML = `<div class="d-flex justify-content-between align-items-center"><span>${message}</span><button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()"></button></div>`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 5000);
   }
@@ -318,15 +323,12 @@ class PublisherProfileManager {
   showSuccess(message) {
     this.showToast(message, "success");
   }
-
   showError(message) {
     this.showToast(message, "error");
   }
-
   showWarning(message) {
     this.showToast(message, "warning");
   }
-
   showInfo(message) {
     this.showToast(message, "info");
   }
@@ -336,3 +338,13 @@ class PublisherProfileManager {
 document.addEventListener("DOMContentLoaded", () => {
   new PublisherProfileManager();
 });
+
+// Add animation keyframes for toast notifications
+const style = document.createElement("style");
+style.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+`;
+document.head.appendChild(style);

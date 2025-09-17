@@ -9,56 +9,44 @@
       rel="stylesheet"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <style>
+      :root {
+        --primary-color: #0d6efd; /* Blue */
+        --success-color: #198754; /* Green */
+        --danger-color: #dc3545; /* Red */
+        --light-gray: #f8f9fa;
+        --medium-gray: #e9ecef;
+        --dark-gray: #6c757d;
+        --text-color: #212529;
+      }
+
       body {
         font-family: "Inter", sans-serif;
-        background-color: #000000; /* Solid black background */
+        background-color: #ffffff; /* White background */
         height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
-        overflow: hidden; /* Hide scrollbars for the canvas */
-        color: #f0f0f0; /* Light text for visibility */
+        color: var(--text-color);
       }
 
-      /* 3D Canvas Styles */
-      #three-canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0; /* Behind the content */
-        opacity: 0.7; /* Make it subtle */
+      .profile-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        width: 450px; /* Wider for publisher fields */
+        text-align: center;
+        border: 1px solid var(--medium-gray);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-color: #212529;
       }
-
-      .glass-card {
-        background: rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        width: 450px; /* Slightly wider for new fields */
-        color: #f0f0f0;
-        position: relative;
-        z-index: 1;
-        animation: floatEffect 5s ease-in-out infinite;
-      }
-
-      @keyframes floatEffect {
-        0% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-10px);
-        }
-        100% {
-          transform: translateY(0px);
-        }
+      .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
       }
 
       .profile-pic {
@@ -66,92 +54,123 @@
         height: 120px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid #f0f0f0;
-        margin-bottom: 15px;
+        border: 4px solid var(--primary-color);
+        margin-bottom: 20px;
         transition: transform 0.3s ease-in-out;
       }
       .profile-pic:hover {
-        transform: scale(1.05) rotate(5deg);
+        transform: scale(1.05);
       }
 
-      .form-control,
-      .form-control:focus {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid transparent;
-        color: #f0f0f0;
-        outline: none;
-        box-shadow: none;
+      /* Modern File Input */
+      .form-control[type="file"] {
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+      .form-control[type="file"]::file-selector-button {
+        background-color: var(--medium-gray);
+        color: var(--text-color);
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-right: 10px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+      .form-control[type="file"]::file-selector-button:hover {
+        background-color: #d8dbe0;
+      }
+
+      /* Form Input styles */
+      .form-control {
+        background-color: var(--light-gray);
+        border: 1px solid var(--medium-gray);
+        color: var(--text-color);
+        border-radius: 8px;
+        padding: 12px 15px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
       }
       .form-control::placeholder {
-        color: #cccccc;
+        color: var(--dark-gray);
       }
       .form-control:focus {
-        border: 1px solid #f0f0f0;
-        background: rgba(255, 255, 255, 0.15);
+        background-color: #fff;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+        color: var(--text-color);
       }
-      textarea.form-control {
-        resize: vertical;
+      .form-control:read-only {
+        background-color: var(--medium-gray);
+        cursor: not-allowed;
+      }
+
+      label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
       }
 
       .btn-custom {
-        border-radius: 30px;
-        padding: 8px 20px;
+        border-radius: 8px;
+        padding: 10px 20px;
         font-weight: 600;
         transition: all 0.3s ease;
         letter-spacing: 0.5px;
+        border: none;
+        width: 48%;
       }
-      .btn-light-custom {
-        background-color: #ffffff;
-        color: #000000;
-        border: 1px solid #ffffff;
-      }
-      .btn-light-custom:hover {
-        background-color: #e0e0e0;
-        border-color: #e0e0e0;
+      .btn-custom:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       }
-      .btn-dark-custom {
-        background-color: #333333;
+
+      /* Blue Edit Button */
+      .btn-edit {
+        background-color: var(--primary-color);
         color: #ffffff;
-        border: 1px solid #333333;
       }
-      .btn-dark-custom:hover {
-        background-color: #555555;
-        border-color: #555555;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-      }
-      .btn-secondary-custom {
-        background-color: #6c757d;
+      .btn-edit:hover {
+        background-color: #0b5ed7;
         color: #ffffff;
-        border: 1px solid #6c757d;
       }
-      .btn-secondary-custom:hover {
-        background-color: #5a6268;
-        border-color: #5a6268;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+      /* Green Save Button */
+      .btn-save {
+        background-color: var(--success-color);
+        color: #ffffff;
       }
-      label {
+      .btn-save:hover {
+        background-color: #157347;
+        color: #ffffff;
+      }
+
+      /* Red 'Forgot Password' Link */
+      .forgot-password-link {
+        font-size: 0.9rem;
         font-weight: 500;
-        color: #f8f8f8;
-        margin-bottom: 5px;
+        color: var(--danger-color);
+        text-decoration: none;
+        transition: text-decoration 0.2s ease;
+      }
+      .forgot-password-link:hover {
+        text-decoration: underline;
+        color: #b02a37;
       }
     </style>
   </head>
   <body>
-    <canvas id="three-canvas"></canvas>
-
-    <div class="glass-card text-center">
+    <div class="profile-card">
       <img
-        src="https://placehold.co/120x120/808080/FFFFFF?text=LOGO"
+        src="https://placehold.co/120x120/0d6efd/FFFFFF?text=LOGO"
         alt="Publisher Logo"
         class="profile-pic"
         id="profileImage"
       />
       <div class="mb-3">
-        <label for="imageUpload" class="form-label">Upload New Logo</label>
+        <label for="imageUpload" class="form-label visually-hidden"
+          >Upload New Logo</label
+        >
         <input
           type="file"
           class="form-control form-control-sm"
@@ -167,47 +186,37 @@
             class="form-control"
             id="publisherName"
             placeholder="e.g., Awesome Books Inc."
-            value="Awesome Books Inc."
+            value=""
             readonly
           />
         </div>
 
-        <div class="mb-3 text-start">
+        <div class="mb-4 text-start">
           <label for="contactEmail">Contact Email</label>
           <input
             type="email"
             class="form-control"
             id="contactEmail"
             placeholder="Enter contact email"
-            value="contact@awesomebooks.com"
+            value=""
             readonly
           />
         </div>
 
         <div class="d-flex justify-content-between">
-          <button type="button" class="btn btn-light-custom btn-custom">
-            Edit
-          </button>
-          <button type="submit" class="btn btn-dark-custom btn-custom">
-            Save
-          </button>
+          <button type="button" class="btn btn-edit btn-custom">Edit</button>
+          <button type="submit" class="btn btn-save btn-custom">Save</button>
         </div>
 
-        <div class="mt-3">
+        <div class="mt-4">
           <a
             href="/Frontend/pages/login-and-register/forgot-password.html"
-            class="btn btn-secondary-custom btn-sm btn-custom"
+            class="forgot-password-link"
             >Forgot Password?</a
           >
         </div>
       </form>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-      // NOTE: The Three.js background animation script is identical to the one in your
-      // original file and has been omitted here for brevity. You should include it here.
-    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/Frontend/JavaScript/Publisher/publisher-profile.js"></script>
