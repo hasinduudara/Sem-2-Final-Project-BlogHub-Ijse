@@ -244,59 +244,64 @@ $(document).ready(function () {
       return;
     }
 
-    // First try the AdminUserController endpoint
+    // Try the debug endpoint first as it's more likely to work
     $.ajax({
-      url: API_BASE + "/admin/users?role=ADMIN",
+      url: API_BASE + "/auth/debug/users",
       method: "GET",
       headers: {
         "Authorization": "Bearer " + token,
         "Content-Type": "application/json"
       },
       timeout: 15000,
-      success: function (res) {
-        console.log("Admins loaded successfully:", res);
+      success: function (debugRes) {
+        console.log("Debug endpoint response:", debugRes);
         tbody.empty();
-        if (!res || res.length === 0) {
+
+        // Filter for admin users from the debug response
+        let adminUsers = [];
+        if (debugRes.data && Array.isArray(debugRes.data)) {
+          adminUsers = debugRes.data.filter(user => user.role === 'ADMIN');
+        } else if (Array.isArray(debugRes)) {
+          adminUsers = debugRes.filter(user => user.role === 'ADMIN');
+        }
+
+        if (adminUsers.length === 0) {
           tbody.append('<tr><td colspan="4" class="text-center text-muted">No admins found</td></tr>');
           return;
         }
 
-        res.forEach((a) => {
+        adminUsers.forEach((a) => {
           tbody.append(`
-                  <tr>
-                    <td>${a.id || 'N/A'}</td>
-                    <td>${a.username || 'N/A'}</td>
-                    <td>${a.email || 'N/A'}</td>
-                    <td>
-                      <button class="btn btn-sm btn-danger delete-admin" data-id="${a.id}">
-                        <i class="fas fa-trash-alt"></i>
-                      </button>
-                    </td>
-                  </tr>
-                `);
+            <tr>
+              <td>${a.id || 'N/A'}</td>
+              <td>${a.username || 'N/A'}</td>
+              <td>${a.email || 'N/A'}</td>
+              <td>
+                <button class="btn btn-sm btn-danger delete-admin" data-id="${a.id}" ${a.id == adminId ? 'disabled title="Cannot delete yourself"' : ''}>
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+          `);
         });
       },
       error: function (xhr, status, error) {
-        console.error("AdminUserController endpoint failed, trying debug endpoint...");
+        console.error("Debug endpoint failed, trying admin users endpoint...");
 
-        // If the first endpoint fails, try the debug endpoint from UserController
+        // If debug endpoint fails, try the admin users endpoint
         $.ajax({
-          url: API_BASE + "/auth/debug/users",
+          url: API_BASE + "/admin/users?role=ADMIN",
           method: "GET",
           headers: {
             "Authorization": "Bearer " + token,
             "Content-Type": "application/json"
           },
           timeout: 15000,
-          success: function (debugRes) {
-            console.log("Debug endpoint response:", debugRes);
+          success: function (res) {
+            console.log("Admin users endpoint response:", res);
             tbody.empty();
 
-            // Filter for admin users from the debug response
-            let adminUsers = [];
-            if (debugRes.data && Array.isArray(debugRes.data)) {
-              adminUsers = debugRes.data.filter(user => user.role === 'ADMIN');
-            }
+            let adminUsers = Array.isArray(res) ? res : (res.data || []);
 
             if (adminUsers.length === 0) {
               tbody.append('<tr><td colspan="4" class="text-center text-muted">No admins found</td></tr>');
@@ -305,23 +310,23 @@ $(document).ready(function () {
 
             adminUsers.forEach((a) => {
               tbody.append(`
-                      <tr>
-                        <td>${a.id || 'N/A'}</td>
-                        <td>${a.username || 'N/A'}</td>
-                        <td>${a.email || 'N/A'}</td>
-                        <td>
-                          <button class="btn btn-sm btn-danger delete-admin" data-id="${a.id}">
-                            <i class="fas fa-trash-alt"></i>
-                          </button>
-                        </td>
-                      </tr>
-                    `);
+                <tr>
+                  <td>${a.id || 'N/A'}</td>
+                  <td>${a.username || 'N/A'}</td>
+                  <td>${a.email || 'N/A'}</td>
+                  <td>
+                    <button class="btn btn-sm btn-danger delete-admin" data-id="${a.id}" ${a.id == adminId ? 'disabled title="Cannot delete yourself"' : ''}>
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
+                </tr>
+              `);
             });
           },
           error: function (xhr2, status2, error2) {
             console.error("Both endpoints failed:", {
-              adminUsersError: {status: status, error: error, statusCode: xhr.status},
-              debugError: {status: status2, error: error2, statusCode: xhr2.status}
+              debugError: {status: status, error: error, statusCode: xhr.status},
+              adminUsersError: {status: status2, error: error2, statusCode: xhr2.status}
             });
 
             let errorMessage = "Failed to load admins list.";
@@ -333,7 +338,7 @@ $(document).ready(function () {
               window.location.href = "/Frontend/pages/login-and-register/login-and-register.html";
               return;
             } else if (xhr2.status === 403) {
-              errorMessage += " Access denied. Your admin account may not have sufficient permissions.";
+              errorMessage += " Access denied. You may not have sufficient permissions to view admin users.";
             } else if (xhr2.status === 404) {
               errorMessage += " API endpoint not found. Please check the backend server.";
             } else if (xhr2.status >= 500) {
@@ -341,7 +346,18 @@ $(document).ready(function () {
             }
 
             tbody.html(`<tr><td colspan="4" class="text-center text-danger">${errorMessage}</td></tr>`);
-            alert(errorMessage + "\n\nTried endpoints:\n- /admin/users?role=ADMIN (failed with " + xhr.status + ")\n- /auth/debug/users (failed with " + xhr2.status + ")");
+            console.error("Detailed error info:", {
+              debugEndpoint: {
+                url: API_BASE + "/auth/debug/users",
+                status: xhr.status,
+                response: xhr.responseText
+              },
+              adminEndpoint: {
+                url: API_BASE + "/admin/users?role=ADMIN",
+                status: xhr2.status,
+                response: xhr2.responseText
+              }
+            });
           }
         });
       },
@@ -351,10 +367,20 @@ $(document).ready(function () {
   // Load admins after a short delay to ensure DOM is ready
   setTimeout(loadAllAdmins, 500);
 
-  // ✅ Delete admin - use the AdminUserController endpoint
+  // ✅ Delete admin functionality
   $(document).on("click", ".delete-admin", function () {
     const id = $(this).data("id");
-    if (confirm("Are you sure you want to delete this admin?")) {
+
+    // Prevent admin from deleting themselves
+    if (id == adminId) {
+      alert("You cannot delete your own admin account.");
+      return false;
+    }
+
+    if (confirm("Are you sure you want to delete this admin? This action cannot be undone.")) {
+      const deleteButton = $(this);
+      deleteButton.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+
       $.ajax({
         url: API_BASE + "/admin/users/" + id,
         method: "DELETE",
@@ -365,18 +391,28 @@ $(document).ready(function () {
         data: JSON.stringify({
           reason: "Deleted by admin from admin management panel"
         }),
-        success: function () {
+        success: function (response) {
+          console.log("Admin deleted successfully:", response);
           alert("Admin deleted successfully!");
-          loadAllAdmins();
+          loadAllAdmins(); // Reload the admin list
         },
         error: function (xhr, status, error) {
           console.error("Failed to delete admin:", xhr.responseText);
+          deleteButton.prop('disabled', false).html('<i class="fas fa-trash-alt"></i>');
+
           if (xhr.status === 401 || xhr.status === 403) {
             alert("Session expired or access denied. Please log in again.");
             localStorage.clear();
             window.location.href = "/Frontend/pages/login-and-register/login-and-register.html";
           } else {
-            alert("Failed to delete admin: " + (xhr.responseJSON?.message || xhr.responseText || "Unknown error"));
+            let errorMessage = "Failed to delete admin: ";
+            try {
+              const errorResponse = JSON.parse(xhr.responseText);
+              errorMessage += errorResponse.message || errorResponse.data || "Unknown error";
+            } catch (e) {
+              errorMessage += xhr.responseText || "Unknown error";
+            }
+            alert(errorMessage);
           }
         },
       });

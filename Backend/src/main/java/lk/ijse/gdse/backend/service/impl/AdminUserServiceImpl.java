@@ -64,20 +64,82 @@ public class AdminUserServiceImpl implements AdminUserService {
             articleRepository.deleteAll(userArticles);
         }
 
-        // 4. Send HTML email with reason
-        String subject = "Account Removal Notification";
-        String body = "<html><body style='font-family: Arial, sans-serif; color: #333;'>"
-                + "<h2 style='color: #d9534f;'>Account Removed</h2>"
-                + "<p>Dear <b>" + user.getName() + "</b>,</p>"
-                + "<p>Your account has been <b style='color:red;'>removed</b> by an administrator.</p>"
-                + "<p><b>Reason:</b> " + reason + "</p>"
-                + "<p>If you believe this was a mistake, please contact our support team.</p>"
-                + "<br><p>Regards,<br><b>Admin Team</b></p>"
-                + "</body></html>";
+        // 4. Send specific email based on user role
+        String subject;
+        String body;
 
-        mailService.sendEmail(user.getEmail(), subject, body);
+        if (user.getRole() == UserRole.ADMIN) {
+            // ✅ Enhanced email for admin removal
+            subject = "Admin Account Removal Notification";
+            body = "<html><body style='font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;'>"
+                    + "<div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;'>"
+                    + "<h1 style='color: white; margin: 0; font-size: 28px;'>Admin Account Removal</h1>"
+                    + "</div>"
+                    + "<div style='padding: 30px; background: #f8f9fa;'>"
+                    + "<p style='font-size: 18px; margin-bottom: 20px;'>Dear <strong style='color: #495057;'>" + user.getName() + "</strong>,</p>"
+                    + "<div style='background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 20px 0;'>"
+                    + "<p style='color: #856404; margin: 0; font-size: 16px;'><strong>⚠️ Important Notice:</strong></p>"
+                    + "<p style='color: #856404; margin: 10px 0 0 0;'>Your administrator account has been <strong>removed</strong> by another administrator.</p>"
+                    + "</div>"
+                    + "<div style='background: #f8f9fa; border-left: 4px solid #dc3545; padding: 15px; margin: 20px 0;'>"
+                    + "<h3 style='color: #dc3545; margin: 0 0 10px 0;'>Removal Reason:</h3>"
+                    + "<p style='margin: 0; font-size: 16px; color: #495057;'>" + reason + "</p>"
+                    + "</div>"
+                    + "<div style='background: #e9ecef; border-radius: 8px; padding: 20px; margin: 20px 0;'>"
+                    + "<h3 style='color: #495057; margin: 0 0 15px 0;'>What this means:</h3>"
+                    + "<ul style='color: #6c757d; line-height: 1.6; margin: 0; padding-left: 20px;'>"
+                    + "<li>Your admin privileges have been revoked immediately</li>"
+                    + "<li>You no longer have access to the admin panel</li>"
+                    + "<li>All your admin-related data has been securely removed</li>"
+                    + "<li>Any content you published has been handled according to our policies</li>"
+                    + "</ul>"
+                    + "</div>"
+                    + "<p style='color: #6c757d; line-height: 1.6;'>If you believe this action was taken in error or if you have any questions regarding this decision, please contact our support team immediately.</p>"
+                    + "<hr style='border: none; border-top: 1px solid #dee2e6; margin: 30px 0;'>"
+                    + "<p style='color: #6c757d; font-size: 14px; margin: 0;'>This is an automated notification. Please do not reply to this email.</p>"
+                    + "</div>"
+                    + "<div style='background: #343a40; padding: 20px; text-align: center;'>"
+                    + "<p style='color: #adb5bd; margin: 0; font-size: 14px;'>Best regards,<br><strong style='color: #fff;'>Administration Team</strong></p>"
+                    + "</div>"
+                    + "</body></html>";
+        } else {
+            // ✅ Enhanced email for regular user removal
+            subject = "Account Removal Notification";
+            body = "<html><body style='font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;'>"
+                    + "<div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;'>"
+                    + "<h1 style='color: white; margin: 0; font-size: 28px;'>Account Removal Notification</h1>"
+                    + "</div>"
+                    + "<div style='padding: 30px; background: #f8f9fa;'>"
+                    + "<p style='font-size: 18px; margin-bottom: 20px;'>Dear <strong style='color: #495057;'>" + user.getName() + "</strong>,</p>"
+                    + "<div style='background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 20px 0;'>"
+                    + "<p style='color: #856404; margin: 0; font-size: 16px;'><strong>⚠️ Account Status Update:</strong></p>"
+                    + "<p style='color: #856404; margin: 10px 0 0 0;'>Your account has been <strong>removed</strong> by an administrator.</p>"
+                    + "</div>"
+                    + "<div style='background: #f8f9fa; border-left: 4px solid #dc3545; padding: 15px; margin: 20px 0;'>"
+                    + "<h3 style='color: #dc3545; margin: 0 0 10px 0;'>Reason for Removal:</h3>"
+                    + "<p style='margin: 0; font-size: 16px; color: #495057;'>" + reason + "</p>"
+                    + "</div>"
+                    + "<p style='color: #6c757d; line-height: 1.6;'>If you believe this action was taken in error, please contact our support team for assistance.</p>"
+                    + "<hr style='border: none; border-top: 1px solid #dee2e6; margin: 30px 0;'>"
+                    + "<p style='color: #6c757d; font-size: 14px; margin: 0;'>This is an automated notification. Please do not reply to this email.</p>"
+                    + "</div>"
+                    + "<div style='background: #343a40; padding: 20px; text-align: center;'>"
+                    + "<p style='color: #adb5bd; margin: 0; font-size: 14px;'>Best regards,<br><strong style='color: #fff;'>Administration Team</strong></p>"
+                    + "</div>"
+                    + "</body></html>";
+        }
 
-        // 5. Finally delete the user
+        // 5. Send the email
+        try {
+            mailService.sendEmail(user.getEmail(), subject, body);
+            System.out.println("✅ Email notification sent successfully to: " + user.getEmail());
+        } catch (Exception e) {
+            System.err.println("❌ Failed to send email notification to: " + user.getEmail());
+            System.err.println("Error: " + e.getMessage());
+            // Continue with user deletion even if email fails
+        }
+
+        // 6. Finally delete the user
         userRepository.delete(user);
     }
 
