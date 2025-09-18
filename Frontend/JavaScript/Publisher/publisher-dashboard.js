@@ -386,9 +386,4 @@ $(document).ready(function () {
 
   refreshArticles(); // Load published and scheduled articles
   loadPublisherProfileImage(); // Load the publisher's profile image
-
-  // Placeholder notification for the 'Generate Article' button
-  $("#generateArticleBtn").on("click", function () {
-    showNotification("Article generation feature coming soon!", "info");
-  });
 });

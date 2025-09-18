@@ -20,7 +20,7 @@ function loadArticle() {
             <p class="text-muted">By <strong>${
               article.publisherName
             }</strong> | ${new Date(article.publishAt).toLocaleDateString()}</p>
-            <p class="card-text mt-4">${article.content}</p>
+            <div class="card-text mt-4 article-content">${article.content}</div>
             <button class="like-btn mt-3" id="likeBtn">
               <i class="fas fa-thumbs-up me-1"></i> Like (<span id="likeCount">0</span>)
             </button>

@@ -51,8 +51,11 @@ public class AiContentServiceImpl implements AiContentService {
                 throw new RuntimeException("AI response did not contain content.");
             }
 
-            // 4. Return the content in our DTO
-            return new GeneratedArticleDTO(title, generatedText);
+            // 4. Convert markdown formatting to HTML and preserve paragraph breaks
+            String formattedContent = convertMarkdownToHtml(generatedText);
+
+            // 5. Return the formatted content in our DTO
+            return new GeneratedArticleDTO(title, formattedContent);
 
         } catch (Exception e) {
             // Log the error for debugging
@@ -68,5 +71,48 @@ public class AiContentServiceImpl implements AiContentService {
 
             return new GeneratedArticleDTO(title, fallbackContent);
         }
+    }
+
+    /**
+     * Converts basic markdown formatting to HTML
+     * Handles: ### headers, **bold text**, paragraph breaks
+     */
+    private String convertMarkdownToHtml(String markdownText) {
+        if (markdownText == null || markdownText.trim().isEmpty()) {
+            return markdownText;
+        }
+
+        String htmlContent = markdownText;
+
+        // Convert headers (### to h3, ## to h2, # to h1)
+        htmlContent = htmlContent.replaceAll("### (.+)", "<h3>$1</h3>");
+        htmlContent = htmlContent.replaceAll("## (.+)", "<h2>$1</h2>");
+        htmlContent = htmlContent.replaceAll("# (.+)", "<h1>$1</h1>");
+
+        // Convert bold text (**text** to <strong>text</strong>)
+        htmlContent = htmlContent.replaceAll("\\*\\*(.+?)\\*\\*", "<strong>$1</strong>");
+
+        // Convert italic text (*text* to <em>text</em>)
+        htmlContent = htmlContent.replaceAll("(?<!\\*)\\*([^*]+?)\\*(?!\\*)", "<em>$1</em>");
+
+        // Handle paragraph breaks - split by double newlines and wrap in <p> tags
+        String[] paragraphs = htmlContent.split("\\n\\s*\\n");
+        StringBuilder formattedContent = new StringBuilder();
+
+        for (String paragraph : paragraphs) {
+            String trimmedParagraph = paragraph.trim();
+            if (!trimmedParagraph.isEmpty()) {
+                // Don't wrap headers in paragraph tags
+                if (trimmedParagraph.startsWith("<h1>") ||
+                    trimmedParagraph.startsWith("<h2>") ||
+                    trimmedParagraph.startsWith("<h3>")) {
+                    formattedContent.append(trimmedParagraph).append("\n\n");
+                } else {
+                    formattedContent.append("<p>").append(trimmedParagraph).append("</p>\n\n");
+                }
+            }
+        }
+
+        return formattedContent.toString().trim();
     }
 }

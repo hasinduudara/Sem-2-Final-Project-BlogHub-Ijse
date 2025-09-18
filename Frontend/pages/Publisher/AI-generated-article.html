@@ -17,6 +17,46 @@
         max-width: 800px;
         margin: 0 auto;
       }
+      /* Article content styling */
+      .article-preview {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1.5rem;
+        margin-top: 1rem;
+      }
+      .article-preview h1 {
+        color: #212529;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 0.5rem;
+      }
+      .article-preview h2 {
+        color: #495057;
+        font-size: 1.5rem;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+      .article-preview h3 {
+        color: #6c757d;
+        font-size: 1.25rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+      }
+      .article-preview p {
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        color: #212529;
+      }
+      .article-preview strong {
+        font-weight: 600;
+        color: #495057;
+      }
+      .article-preview em {
+        font-style: italic;
+        color: #6c757d;
+      }
     </style>
   </head>
   <body>
@@ -43,7 +83,7 @@
 
       <div id="generatedArticle" class="article-preview d-none">
         <h4 id="genTitle"></h4>
-        <p id="genContent"></p>
+        <div id="genContent"></div>
 
         <!-- Image Upload Section -->
         <div class="card mt-3 mb-3">
@@ -124,7 +164,8 @@
           success: function (res) {
             $("#loading").addClass("d-none");
             $("#genTitle").text(res.data.title);
-            $("#genContent").text(res.data.content);
+            // Use .html() instead of .text() to preserve formatting
+            $("#genContent").html(res.data.content);
             $("#generatedArticle").removeClass("d-none");
           },
           error: function (xhr) {
@@ -163,7 +204,8 @@
       // Publish button click
       $("#publishBtn").on("click", function () {
         const title = $("#genTitle").text();
-        const content = $("#genContent").text();
+        // Get HTML content instead of plain text
+        const content = $("#genContent").html();
         const imageFile = $("#articleImage")[0].files[0];
 
         // Create FormData object for multipart/form-data
