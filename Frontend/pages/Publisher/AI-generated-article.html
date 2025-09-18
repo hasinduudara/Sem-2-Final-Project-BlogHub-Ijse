@@ -218,6 +218,9 @@
           formData.append("image", imageFile);
         }
 
+        // Disable the publish button to prevent double submission
+        $("#publishBtn").prop("disabled", true).text("Publishing...");
+
         $.ajax({
           url: "http://localhost:8080/api/articles",
           method: "POST",
@@ -231,12 +234,23 @@
             $("#statusMsg").html(
               "<div class='alert alert-success'>Article published successfully!</div>"
             );
+
+            // Show popup message and navigate to dashboard
+            alert("Published");
+
+            // Navigate to publisher dashboard after a short delay
+            setTimeout(function() {
+              window.location.href = "/Frontend/pages/Publisher/publisher-dashboard.html";
+            }, 500);
           },
           error: function (xhr) {
             $("#statusMsg").html(
               "<div class='alert alert-danger'>Failed to publish article.</div>"
             );
             console.error(xhr);
+
+            // Re-enable the publish button on error
+            $("#publishBtn").prop("disabled", false).text("Publish Article");
           },
         });
       });
