@@ -85,6 +85,14 @@ $("#articleForm").on("submit", function (e) {
   const token = getAuthToken();
   if (!token) return; // Exit if not authenticated
 
+  // Get the submit button and show loading state
+  const submitBtn = $(this).find('button[type="submit"]');
+  const originalBtnText = submitBtn.html();
+
+  // Disable button and show loading spinner
+  submitBtn.prop('disabled', true);
+  submitBtn.html('<i class="fas fa-spinner fa-spin me-1"></i> Publishing...');
+
   $.ajax({
     url: API_BASE + "/articles",
     method: "POST",
@@ -134,6 +142,11 @@ $("#articleForm").on("submit", function (e) {
         );
       }
     },
+    complete: function() {
+      // Always restore button state when request completes (success or error)
+      submitBtn.prop('disabled', false);
+      submitBtn.html(originalBtnText);
+    }
   });
 });
 
@@ -207,6 +220,14 @@ $("#editArticleForm").on("submit", function (e) {
   const token = getAuthToken();
   if (!token) return;
 
+  // Get the submit button and show loading state
+  const submitBtn = $(this).find('button[type="submit"]');
+  const originalBtnText = submitBtn.html();
+
+  // Disable button and show loading spinner
+  submitBtn.prop('disabled', true);
+  submitBtn.html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
+
   // Update the existing article via PUT request
   $.ajax({
     url: API_BASE + "/articles/" + articleId,
@@ -227,6 +248,11 @@ $("#editArticleForm").on("submit", function (e) {
         "error"
       );
     },
+    complete: function() {
+      // Always restore button state when request completes (success or error)
+      submitBtn.prop('disabled', false);
+      submitBtn.html(originalBtnText);
+    }
   });
 });
 
