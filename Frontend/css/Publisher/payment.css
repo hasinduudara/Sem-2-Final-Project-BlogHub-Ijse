@@ -1,0 +1,137 @@
+:root {
+  --primary-blue: #1a73e8;
+  --secondary-blue: #4285f4;
+  --success-green: #34a853;
+  --warning-red: #ea4335;
+  --light-gray: #f8f9fa;
+  --border-color: #e0e0e0;
+  --text-primary: #202124;
+  --text-secondary: #5f6368;
+}
+
+body {
+  background: #ffffff;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--text-primary);
+}
+
+.container {
+  max-width: 800px;
+}
+
+h2 {
+  color: var(--text-primary);
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.booking-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-color);
+  border-color: #202124;
+}
+
+.booking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.booking-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-blue);
+  margin: 0;
+}
+
+.booking-price {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.subscription-details {
+  margin-bottom: 1.5rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.detail-item i {
+  color: var(--success-green);
+  margin-right: 0.8rem;
+  font-size: 1.1rem;
+}
+
+.detail-item span {
+  color: var(--text-secondary);
+}
+
+.payment-info {
+  background-color: var(--light-gray);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.payment-info p {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.payment-note {
+  background-color: rgba(234, 67, 53, 0.08);
+  border-left: 3px solid var(--warning-red);
+  padding: 0.8rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+}
+
+.payment-note p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+#payHereButton {
+  background-color: var(--primary-blue);
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+#payHereButton:hover {
+  background-color: #0d62d0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+}
+
+.secure-payment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.secure-payment i {
+  color: var(--success-green);
+  margin-right: 0.5rem;
+}
