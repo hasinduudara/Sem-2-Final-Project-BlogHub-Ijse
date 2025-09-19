@@ -211,24 +211,50 @@ public class ArticleServiceImpl implements lk.ijse.gdse.backend.service.ArticleS
 
         String publisherEmail = article.getPublisher().getEmail();
 
-        String subject = "Your Article Has Been Deleted";
-        String body = "Dear " + article.getPublisher().getName() + ",\n\n" +
-                "Your article titled \"" + article.getTitle() + "\" was deleted by the admin.\n" +
-                "Reason: " + reason + "\n\n" +
-                "Regards,\nBlogHub Team";
+        String subject = "Article Removal Notification";
 
-        mailService.sendEmail(publisherEmail, subject, body);
+        String body = "<html><body style='font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;'>"
+                + "<div style='background: linear-gradient(135deg, #ff6a00 0%, #ee0979 100%); padding: 30px; text-align: center;'>"
+                + "<h1 style='color: white; margin: 0; font-size: 26px;'>Article Removal Notification</h1>"
+                + "</div>"
+
+                + "<div style='padding: 25px; background: #f8f9fa;'>"
+                + "<p style='font-size: 16px;'>Dear <strong>" + article.getPublisher().getName() + "</strong>,</p>"
+                + "<p>We regret to inform you that your article titled <em>\"" + article.getTitle() + "\"</em> has been <strong>removed</strong> by an administrator.</p>"
+
+                + "<div style='background: #fff3cd; border: 1px solid #ffeeba; border-radius: 6px; padding: 15px; margin: 20px 0;'>"
+                + "<p style='margin: 0; color: #856404;'><strong>Reason for Removal:</strong></p>"
+                + "<p style='margin: 8px 0 0 0; color: #495057;'>" + reason + "</p>"
+                + "</div>"
+
+                + "<p style='color: #6c757d; line-height: 1.6;'>If you believe this action was taken in error or would like more details, "
+                + "please reply to this email or contact our support team at <a href='mailto:support@bloghub.com'>support@bloghub.com</a>.</p>"
+
+                + "<p>Thank you for your contributions to BlogHub.</p>"
+                + "<p style='margin-top: 20px;'>Best regards,<br><strong>The BlogHub Team</strong></p>"
+                + "<hr style='border: none; border-top: 1px solid #dee2e6; margin: 30px 0;'>"
+                + "<p style='color: #6c757d; font-size: 13px; margin: 0;'>This is an automated notification. Please do not reply directly to this message.</p>"
+                + "</div>"
+
+                + "<div style='background: #343a40; padding: 18px; text-align: center;'>"
+                + "<p style='color: #adb5bd; margin: 0; font-size: 14px;'>© 2025 BlogHub Team</p>"
+                + "</div>"
+                + "</body></html>";
+
+        try {
+            mailService.sendEmail(publisherEmail, subject, body);
+            System.out.println("✅ Removal email sent to: " + publisherEmail);
+        } catch (Exception e) {
+            System.err.println("❌ Failed to send removal email to: " + publisherEmail);
+            System.err.println("Error: " + e.getMessage());
+        }
 
         // Delete related data first to avoid foreign key constraint violations
-        // Delete all comments for this article
         commentRepo.deleteByArticleId(id);
-
-        // Delete all likes for this article
         likeRepo.deleteByArticleId(id);
 
         // Now we can safely delete the article
         articleRepo.delete(article);
     }
-
-
+    
 }
