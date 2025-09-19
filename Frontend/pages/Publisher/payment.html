@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Make Payment | ShareSphere</title>
+  <link rel="icon" href="/Frontend/assets/image/payment.png" />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      background: #f8f9fa;
+    }
+    .booking-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+    }
+    .booking-actions {
+      margin-top: 1rem;
+    }
+    .payment-success {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: #e8f9f0;
+      border: 1px solid #34c38f;
+      padding: 1rem;
+      border-radius: 10px;
+    }
+    .payment-success i {
+      color: #34c38f;
+      font-size: 2rem;
+    }
+    .payment-id {
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <h2 class="text-center mb-4">Complete Your Payment</h2>
+
+    <!-- Example booking card -->
+    <div class="booking-card" data-booking-id="ORDER123" data-receiver-id="USER456">
+      <h5 class="booking-item">Premium Subscription</h5>
+      <p class="booking-price" data-price="4999">Rs. 4,999.00</p>
+
+      <div class="booking-actions">
+        <button id="payHereButton"
+                class="btn btn-primary"
+                data-id="ORDER123">
+          Pay with PayHere
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PayHere SDK -->
+  <script type="text/javascript" src="https://www.payhere.lk/lib/payhere.js"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Payment JS -->
+  <script src="/Frontend/JavaScript/Publisher/payment.js"></script>
+</body>
+</html>

@@ -11,6 +11,7 @@ public interface UserService {
     String registerUser(UserDTO userDTO);
     UserEntity validateLogin(String email, String rawPassword);
     UserEntity findByEmail(String email);
+    UserEntity findById(Long id);
     List<UserEntity> getAllUsers();
 
     // New methods for user profile management

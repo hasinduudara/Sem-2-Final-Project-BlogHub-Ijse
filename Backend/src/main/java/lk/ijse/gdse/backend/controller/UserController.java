@@ -225,3 +225,35 @@ public class UserController {
         }
     }
 }
+
+// ✅ New controller for profile endpoints that match frontend expectations
+@RestController
+@RequestMapping("/getprofile")
+@RequiredArgsConstructor
+class ProfileController {
+
+    private final UserService userService;
+
+    @GetMapping("/getprofildetails")
+    public ResponseEntity<UserProfileResponseDTO> getProfileDetails(@RequestParam Long userId) {
+        try {
+            UserEntity user = userService.findById(userId);
+            if (user == null) {
+                throw new RuntimeException("User not found with ID: " + userId);
+            }
+
+            UserProfileResponseDTO profile = new UserProfileResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole().name(),
+                user.getRegisteredAt(),
+                user.getProfileImageUrl()
+            );
+
+            return ResponseEntity.ok(profile);
+        } catch (Exception e) {
+            throw new RuntimeException("Error retrieving profile: " + e.getMessage());
+        }
+    }
+}

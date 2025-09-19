@@ -261,11 +261,11 @@
             <li>API Access</li>
           </ul>
         </div>
-        <a href="../Publisher/payment.html" class="btn-free-access"
+        <a href="http://localhost:5500/Frontend/pages/Publisher/payment.html" class="btn-free-access"
           >Buy Subscription Now</a
         >
-        <a href="../Publisher/AI-generated-article.html" class="btn-free-access"
-          >Access Free Version</a
+        <a href="/Frontend/pages/Publisher/AI-generated-article.html" class="btn-free-access"
+          >Free Access</a
         >
       </div>
     </div>
@@ -279,6 +279,84 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 for better alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      // ✅ Check authentication status when page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        checkAuthenticationStatus();
 
+        // Add click handler for Buy Subscription button
+        document.querySelector('.btn-free-access[href*="payment.html"]').addEventListener('click', function(e) {
+          e.preventDefault();
+          handleSubscriptionPurchase();
+        });
+      });
+
+      function checkAuthenticationStatus() {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("userId");
+        const userRole = localStorage.getItem("role");
+
+        console.log("=== AUTHENTICATION CHECK ===");
+        console.log("Token:", token ? "Present" : "Missing");
+        console.log("UserId:", userId);
+        console.log("User Role:", userRole);
+        console.log("============================");
+
+        // Update button behavior based on authentication status
+        const buyButton = document.querySelector('.btn-free-access[href*="payment.html"]');
+        if (!token || !userId || userId === 'null' || userId === 'undefined') {
+          buyButton.textContent = "Login to Subscribe";
+          buyButton.style.backgroundColor = "#ff6b6b";
+        } else {
+          buyButton.textContent = "Buy Subscription Now";
+          buyButton.style.backgroundColor = "#333333";
+        }
+      }
+
+      function handleSubscriptionPurchase() {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("userId");
+        const userRole = localStorage.getItem("role");
+
+        if (!token || !userId || userId === 'null' || userId === 'undefined') {
+          // User not logged in - show login prompt
+          Swal.fire({
+            icon: 'info',
+            title: 'Login Required',
+            text: 'Please log in to purchase a subscription.',
+            showCancelButton: true,
+            confirmButtonText: 'Go to Login',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#333333'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Store the intended action in localStorage so we can redirect back after login
+              localStorage.setItem('redirectAfterLogin', 'subscription');
+              window.location.href = "http://localhost:5500/Frontend/pages/login-and-register/login-and-register.html";
+            }
+          });
+        } else if (userRole !== 'PUBLISHER') {
+          // User is logged in but not a publisher
+          Swal.fire({
+            icon: 'warning',
+            title: 'Publisher Account Required',
+            text: 'AI article generation is only available for Publisher accounts. Please create a Publisher account to continue.',
+            confirmButtonText: 'Create Publisher Account',
+            showCancelButton: true,
+            cancelButtonText: 'Cancel'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Redirect to registration page with publisher role pre-selected
+              window.location.href = "http://localhost:5500/Frontend/pages/login-and-register/login-and-register.html?role=publisher";
+            }
+          });
+        } else {
+          // User is properly authenticated as publisher - proceed to payment
+          window.location.href = "http://localhost:5500/Frontend/pages/Publisher/payment.html";
+        }
+      }
+    </script>
   </body>
 </html>

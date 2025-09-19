@@ -40,6 +40,8 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/validate-password/**").authenticated() // Password validation requires authentication
                                 .requestMatchers("/api/auth/debug/**").permitAll() // Debug endpoints
                                 .requestMatchers("/api/forgot-password/**").permitAll() // ✅ Allow forgot password endpoints
+                                .requestMatchers("/getprofile/**").authenticated() // ✅ Allow profile endpoints
+                                .requestMatchers("/payment/**").authenticated() // ✅ Allow payment endpoints
                                 .requestMatchers("/api/articles/published/**").permitAll()
                                 .requestMatchers("/api/home/**").permitAll()
                                 .requestMatchers("/api/articles/**").permitAll()
@@ -73,7 +75,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://127.0.0.1:5500")); // frontend origin
+        config.setAllowedOrigins(List.of("http://127.0.0.1:5500", "http://localhost:5500")); // frontend origins
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
