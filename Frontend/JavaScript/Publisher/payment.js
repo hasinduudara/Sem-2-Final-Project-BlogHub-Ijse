@@ -146,15 +146,7 @@ function getUserProfile(token) {
 payhere.onCompleted = function onCompleted(orderId) {
     console.log("✅ Payment completed for Order:", orderId);
 
-    Swal.fire({
-        icon: 'success',
-        title: 'Payment Successful',
-        text: `Your subscription has been activated!`,
-        timer: 2000,
-        showConfirmButton: false
-    });
-
-    // Send to backend to confirm
+    // Send to backend to confirm payment first
     const token = localStorage.getItem("token");
     const paymentData = {
         payerId: localStorage.getItem('userId'),
@@ -174,9 +166,38 @@ payhere.onCompleted = function onCompleted(orderId) {
         data: JSON.stringify(paymentData),
         success: function (response) {
             console.log("✅ Payment saved:", response);
+
+            // Show success alert and then navigate
+            Swal.fire({
+                icon: 'success',
+                title: 'Payment Successful!',
+                text: 'Your subscription has been activated! You will now be redirected to create AI articles.',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: true,
+                confirmButtonText: 'Continue to AI Articles',
+                allowOutsideClick: false
+            }).then((result) => {
+                // Navigate to AI article generation page
+                console.log("🚀 Navigating to AI article generation page...");
+                window.location.href = "http://localhost:5500/Frontend/pages/Publisher/AI-generated-article.html";
+            });
         },
         error: function (err) {
             console.error('Payment error (backend):', err);
+
+            // Even if backend fails, show success and navigate (payment was successful on PayHere)
+            Swal.fire({
+                icon: 'warning',
+                title: 'Payment Successful',
+                text: 'Your payment was successful, but there was an issue saving the record. You can still access AI article generation.',
+                confirmButtonText: 'Continue to AI Articles',
+                allowOutsideClick: false
+            }).then((result) => {
+                // Navigate to AI article generation page even if backend save failed
+                console.log("🚀 Navigating to AI article generation page (despite backend error)...");
+                window.location.href = "http://localhost:5500/Frontend/pages/Publisher/AI-generated-article.html";
+            });
         }
     });
 };
