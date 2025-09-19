@@ -42,6 +42,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/forgot-password/**").permitAll() // ✅ Allow forgot password endpoints
                                 .requestMatchers("/getprofile/**").authenticated() // ✅ Allow profile endpoints
                                 .requestMatchers("/payment/**").authenticated() // ✅ Allow payment endpoints
+                                .requestMatchers("/mybookings/**").authenticated() // ✅ Allow payment booking endpoints
                                 .requestMatchers("/api/articles/published/**").permitAll()
                                 .requestMatchers("/api/home/**").permitAll()
                                 .requestMatchers("/api/articles/**").permitAll()
