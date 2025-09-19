@@ -16,235 +16,12 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
-    <style>
-      body {
-        font-family: "Inter", sans-serif;
-        background-color: #000000;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        overflow: auto;
-        color: #f0f0f0;
-      }
-      #three-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        opacity: 0.7;
-      }
-      .content-wrapper {
-        position: relative;
-        z-index: 1;
-        padding: 40px 20px;
-        max-width: 1200px;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-      }
-      h1 {
-        color: #ffffff;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-        margin-bottom: 40px;
-      }
-      .subscription-card {
-        background: rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 30px;
-        margin-bottom: 30px;
-        color: #f0f0f0;
-        max-width: 400px;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        transition: all 0.3s ease-in-out;
-        animation: floatEffect 5s ease-in-out infinite;
-      }
-      @keyframes floatEffect {
-        0% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-10px);
-        }
-        100% {
-          transform: translateY(0px);
-        }
-      }
-      .subscription-card:hover {
-        transform: translateY(-5px) scale(1.02);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-        border-color: rgba(255, 255, 255, 0.3);
-      }
-      .plan-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        margin-bottom: 15px;
-        color: #ffffff;
-      }
-      .plan-price {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: #ffffff;
-        margin-bottom: 20px;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-      }
-      .plan-price small {
-        font-size: 1rem;
-        font-weight: 400;
-        color: #cccccc;
-      }
-      .plan-features {
-        list-style: none;
-        padding: 0;
-        margin-bottom: 30px;
-        text-align: left;
-        flex-grow: 1;
-      }
-      .plan-features li {
-        margin-bottom: 10px;
-        font-size: 1.05rem;
-        color: #e0e0e0;
-        display: flex;
-        align-items: center;
-      }
-      .plan-features li::before {
-        content: "✓";
-        color: #ffffff;
-        font-weight: bold;
-        margin-right: 10px;
-        font-size: 1.2rem;
-      }
-      .btn-subscribe {
-        background-color: #333333;
-        color: white;
-        padding: 12px 25px;
-        border: none;
-        border-radius: 30px;
-        cursor: pointer;
-        font-size: 1.1rem;
-        width: 100%;
-        font-weight: 600;
-        letter-spacing: 0.8px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      }
-      .btn-subscribe:hover {
-        background-color: #555555;
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-        color: white;
-      }
-      .btn-free-access {
-        background: transparent;
-        color: #ffffff;
-        padding: 12px 25px;
-        border: 1px solid #ffffff;
-        border-radius: 30px;
-        cursor: pointer;
-        font-size: 1.1rem;
-        width: 100%;
-        font-weight: 600;
-        letter-spacing: 0.8px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        text-decoration: none;
-        display: inline-block;
-        margin-top: 15px;
-      }
-      .btn-free-access:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-      }
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 10;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
-      }
-      .modal-content {
-        background: rgba(255, 255, 255, 0.1);
-        margin: 15% auto;
-        padding: 25px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        width: 80%;
-        max-width: 400px;
-        border-radius: 20px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-        animation-name: animatetop;
-        animation-duration: 0.4s;
-      }
-      .modal-content p {
-        color: #f0f0f0;
-        font-size: 1.1rem;
-        margin: 0;
-      }
-      @keyframes animatetop {
-        from {
-          top: -300px;
-          opacity: 0;
-        }
-        to {
-          top: 0;
-          opacity: 1;
-        }
-      }
-      .close-btn {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-      }
-      .close-btn:hover,
-      .close-btn:focus {
-        color: white;
-        text-decoration: none;
-        cursor: pointer;
-      }
-      @media (max-width: 768px) {
-        h1 {
-          font-size: 2rem;
-          margin-bottom: 30px;
-        }
-        .plan-title {
-          font-size: 1.5rem;
-        }
-        .plan-price {
-          font-size: 2rem;
-        }
-        .subscription-card {
-          padding: 20px;
-        }
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="/Frontend/css/Publisher/buy-subscription.css"
+    />
   </head>
   <body>
-    <!-- 3D Canvas -->
-    <canvas id="three-canvas"></canvas>
-
     <div class="content-wrapper">
       <h1 class="mb-5">Go Premium with AI Article Generation!</h1>
 
@@ -261,10 +38,14 @@
             <li>API Access</li>
           </ul>
         </div>
-        <a href="http://localhost:5500/Frontend/pages/Publisher/payment.html" class="btn-free-access"
+        <a
+          href="http://localhost:5500/Frontend/pages/Publisher/payment.html"
+          class="btn-subscribe"
           >Buy Subscription Now</a
         >
-        <a href="/Frontend/pages/Publisher/AI-generated-article.html" class="btn-free-access"
+        <a
+          href="/Frontend/pages/Publisher/AI-generated-article.html"
+          class="btn-free-access"
           >Free Access</a
         >
       </div>
@@ -283,14 +64,16 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       // ✅ Check authentication status when page loads
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener("DOMContentLoaded", function () {
         checkAuthenticationStatus();
 
         // Add click handler for Buy Subscription button
-        document.querySelector('.btn-free-access[href*="payment.html"]').addEventListener('click', function(e) {
-          e.preventDefault();
-          handleSubscriptionPurchase();
-        });
+        document
+          .querySelector(".btn-subscribe")
+          .addEventListener("click", function (e) {
+            e.preventDefault();
+            handleSubscriptionPurchase();
+          });
       });
 
       function checkAuthenticationStatus() {
@@ -305,13 +88,13 @@
         console.log("============================");
 
         // Update button behavior based on authentication status
-        const buyButton = document.querySelector('.btn-free-access[href*="payment.html"]');
-        if (!token || !userId || userId === 'null' || userId === 'undefined') {
+        const buyButton = document.querySelector(".btn-subscribe");
+        if (!token || !userId || userId === "null" || userId === "undefined") {
           buyButton.textContent = "Login to Subscribe";
           buyButton.style.backgroundColor = "#ff6b6b";
         } else {
           buyButton.textContent = "Buy Subscription Now";
-          buyButton.style.backgroundColor = "#333333";
+          buyButton.style.backgroundColor = "";
         }
       }
 
@@ -320,41 +103,44 @@
         const userId = localStorage.getItem("userId");
         const userRole = localStorage.getItem("role");
 
-        if (!token || !userId || userId === 'null' || userId === 'undefined') {
+        if (!token || !userId || userId === "null" || userId === "undefined") {
           // User not logged in - show login prompt
           Swal.fire({
-            icon: 'info',
-            title: 'Login Required',
-            text: 'Please log in to purchase a subscription.',
+            icon: "info",
+            title: "Login Required",
+            text: "Please log in to purchase a subscription.",
             showCancelButton: true,
-            confirmButtonText: 'Go to Login',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#333333'
+            confirmButtonText: "Go to Login",
+            cancelButtonText: "Cancel",
+            confirmButtonColor: "#333333",
           }).then((result) => {
             if (result.isConfirmed) {
               // Store the intended action in localStorage so we can redirect back after login
-              localStorage.setItem('redirectAfterLogin', 'subscription');
-              window.location.href = "http://localhost:5500/Frontend/pages/login-and-register/login-and-register.html";
+              localStorage.setItem("redirectAfterLogin", "subscription");
+              window.location.href =
+                "http://localhost:5500/Frontend/pages/login-and-register/login-and-register.html";
             }
           });
-        } else if (userRole !== 'PUBLISHER') {
+        } else if (userRole !== "PUBLISHER") {
           // User is logged in but not a publisher
           Swal.fire({
-            icon: 'warning',
-            title: 'Publisher Account Required',
-            text: 'AI article generation is only available for Publisher accounts. Please create a Publisher account to continue.',
-            confirmButtonText: 'Create Publisher Account',
+            icon: "warning",
+            title: "Publisher Account Required",
+            text: "AI article generation is only available for Publisher accounts. Please create a Publisher account to continue.",
+            confirmButtonText: "Create Publisher Account",
             showCancelButton: true,
-            cancelButtonText: 'Cancel'
+            cancelButtonText: "Cancel",
           }).then((result) => {
             if (result.isConfirmed) {
               // Redirect to registration page with publisher role pre-selected
-              window.location.href = "http://localhost:5500/Frontend/pages/login-and-register/login-and-register.html?role=publisher";
+              window.location.href =
+                "http://localhost:5500/Frontend/pages/login-and-register/login-and-register.html?role=publisher";
             }
           });
         } else {
           // User is properly authenticated as publisher - proceed to payment
-          window.location.href = "http://localhost:5500/Frontend/pages/Publisher/payment.html";
+          window.location.href =
+            "http://localhost:5500/Frontend/pages/Publisher/payment.html";
         }
       }
     </script>
