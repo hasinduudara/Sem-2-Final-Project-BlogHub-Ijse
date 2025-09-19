@@ -256,5 +256,5 @@ public class ArticleServiceImpl implements lk.ijse.gdse.backend.service.ArticleS
         // Now we can safely delete the article
         articleRepo.delete(article);
     }
-    
+
 }
