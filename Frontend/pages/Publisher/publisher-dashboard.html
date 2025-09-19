@@ -190,6 +190,23 @@
                   id="articleImage"
                   accept="image/*"
                 />
+                <!-- Image Preview Container -->
+                <div id="imagePreview" class="mt-2" style="display: none;">
+                  <img
+                    id="previewImg"
+                    src=""
+                    alt="Image Preview"
+                    class="img-fluid rounded"
+                    style="max-height: 200px; max-width: 100%"
+                  />
+                  <button
+                    type="button"
+                    id="removeImage"
+                    class="btn btn-sm btn-outline-danger mt-2"
+                  >
+                    <i class="fas fa-times"></i> Remove Image
+                  </button>
+                </div>
               </div>
               <div class="mb-3">
                 <label for="articleContent" class="form-label">Content</label>
@@ -290,6 +307,23 @@
                   id="editArticleImage"
                   accept="image/*"
                 />
+                <!-- Image Preview Container for Edit Modal -->
+                <div id="editImagePreview" class="mt-2" style="display: none;">
+                  <img
+                    id="editPreviewImg"
+                    src=""
+                    alt="Image Preview"
+                    class="img-fluid rounded"
+                    style="max-height: 200px; max-width: 100%"
+                  />
+                  <button
+                    type="button"
+                    id="removeEditImage"
+                    class="btn btn-sm btn-outline-danger mt-2"
+                  >
+                    <i class="fas fa-times"></i> Remove Image
+                  </button>
+                </div>
               </div>
               <div class="mb-3">
                 <label for="editArticleContent" class="form-label"

@@ -170,6 +170,15 @@ $(document).on("click", ".edit-article", function () {
       } else {
         $("#editPublishDate").val(""); // Clear if no schedule date
       }
+
+      // Show existing image preview if available
+      if (article.imageUrl) {
+        $("#editPreviewImg").attr("src", article.imageUrl);
+        $("#editImagePreview").show();
+      } else {
+        $("#editImagePreview").hide();
+      }
+
       $("#editArticleModal").modal("show"); // Show the edit modal
     },
     error: function () {
@@ -387,3 +396,95 @@ $(document).ready(function () {
   refreshArticles(); // Load published and scheduled articles
   loadPublisherProfileImage(); // Load the publisher's profile image
 });
+
+// 🔹 Image Preview Functionality for Create Article Modal
+$("#articleImage").on("change", function (e) {
+  const file = e.target.files[0];
+  const previewContainer = $("#imagePreview");
+  const previewImg = $("#previewImg");
+
+  if (file) {
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      showNotification("Please select a valid image file", "error");
+      $(this).val(""); // Clear the input
+      previewContainer.hide();
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      showNotification("Image size must be less than 5MB", "error");
+      $(this).val(""); // Clear the input
+      previewContainer.hide();
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      previewImg.attr("src", e.target.result);
+      previewContainer.show();
+    };
+    reader.readAsDataURL(file);
+  } else {
+    previewContainer.hide();
+  }
+});
+
+// Remove image button for create modal
+$("#removeImage").on("click", function () {
+  $("#articleImage").val("");
+  $("#imagePreview").hide();
+});
+
+// 🔹 Image Preview Functionality for Edit Article Modal
+$("#editArticleImage").on("change", function (e) {
+  const file = e.target.files[0];
+  const previewContainer = $("#editImagePreview");
+  const previewImg = $("#editPreviewImg");
+
+  if (file) {
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      showNotification("Please select a valid image file", "error");
+      $(this).val(""); // Clear the input
+      previewContainer.hide();
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      showNotification("Image size must be less than 5MB", "error");
+      $(this).val(""); // Clear the input
+      previewContainer.hide();
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      previewImg.attr("src", e.target.result);
+      previewContainer.show();
+    };
+    reader.readAsDataURL(file);
+  } else {
+    previewContainer.hide();
+  }
+});
+
+// Remove image button for edit modal
+$("#removeEditImage").on("click", function () {
+  $("#editArticleImage").val("");
+  $("#editImagePreview").hide();
+});
+
+// Clear preview when modals are closed
+$("#createArticleModal").on("hidden.bs.modal", function () {
+  $("#articleImage").val("");
+  $("#imagePreview").hide();
+});
+
+$("#editArticleModal").on("hidden.bs.modal", function () {
+  $("#editArticleImage").val("");
+  $("#editImagePreview").hide();
+});
+
