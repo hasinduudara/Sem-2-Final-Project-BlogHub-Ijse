@@ -79,6 +79,17 @@ public class PaymentBookingController {
         }
     }
 
+    @GetMapping("/payments")
+    public ResponseEntity<List<PaymentEntity>> getAllPayments() {
+        try {
+            List<PaymentEntity> payments = paymentService.getAllPayments();
+            return ResponseEntity.ok(payments);
+        } catch (Exception e) {
+            System.err.println("Error fetching all payments: " + e.getMessage());
+            return ResponseEntity.status(500).build();
+        }
+    }
+
     @GetMapping("/payments/{userId}")
     public ResponseEntity<List<PaymentEntity>> getUserPayments(@PathVariable Long userId) {
         try {
@@ -101,17 +112,6 @@ public class PaymentBookingController {
             }
         } catch (Exception e) {
             System.err.println("Error fetching payment by transaction ID: " + e.getMessage());
-            return ResponseEntity.status(500).build();
-        }
-    }
-
-    @GetMapping("/payments")
-    public ResponseEntity<List<PaymentEntity>> getAllPayments() {
-        try {
-            List<PaymentEntity> payments = paymentService.getAllPayments();
-            return ResponseEntity.ok(payments);
-        } catch (Exception e) {
-            System.err.println("Error fetching all payments: " + e.getMessage());
             return ResponseEntity.status(500).build();
         }
     }

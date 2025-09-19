@@ -1,5 +1,6 @@
 package lk.ijse.gdse.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -54,12 +55,14 @@ public class PaymentEntity {
     @Column
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    // Relationship with User (payer)
+    // Relationship with User (payer) - excluded from JSON to prevent serialization issues
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payer_id", insertable = false, updatable = false)
     private UserEntity payer;
 
-    // Relationship with User (receiver)
+    // Relationship with User (receiver) - excluded from JSON to prevent serialization issues
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id", insertable = false, updatable = false)
     private UserEntity receiver;
