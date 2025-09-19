@@ -98,6 +98,14 @@ $(document).ready(function () {
       return;
     }
 
+    // Get the submit button - it's outside the form but associated with it
+    const submitBtn = $('button[form="deleteArticleForm"]');
+    const originalBtnText = submitBtn.html();
+
+    // Disable button and show loading spinner
+    submitBtn.prop('disabled', true);
+    submitBtn.html('<i class="fas fa-spinner fa-spin me-1"></i> Deleting...');
+
     $.ajax({
       url: API_BASE + `/articles/admin/${articleId}`,
       method: "DELETE",
@@ -109,12 +117,18 @@ $(document).ready(function () {
       success: function (response) {
         alert("Article deleted successfully and publisher has been notified.");
         $("#deleteArticleModal").modal("hide");
+        $("#deleteReason").val(""); // Clear the reason field
         loadArticles(); // Reload the table
       },
       error: function (xhr) {
         console.error("Deletion error:", xhr);
         alert("Failed to delete article. " + xhr.statusText);
       },
+      complete: function() {
+        // Always restore button state when request completes (success or error)
+        submitBtn.prop('disabled', false);
+        submitBtn.html(originalBtnText);
+      }
     });
   });
 

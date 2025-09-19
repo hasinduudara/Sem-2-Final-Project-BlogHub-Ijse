@@ -77,6 +77,14 @@ $(document).ready(function () {
       return;
     }
 
+    // Get the submit button - it's outside the form but associated with it
+    const submitBtn = $('button[form="removeUserForm"]');
+    const originalBtnText = submitBtn.html();
+
+    // Disable button and show loading spinner
+    submitBtn.prop('disabled', true);
+    submitBtn.html('<i class="fas fa-spinner fa-spin me-1"></i> Removing...');
+
     $.ajax({
       url: API_BASE + `/admin/users/${userId}`,
       method: "DELETE",
@@ -88,6 +96,7 @@ $(document).ready(function () {
       success: function (response) {
         alert("User account removed and notified successfully.");
         $("#removeUserModal").modal("hide");
+        $("#removeReason").val(""); // Clear the reason field
         loadUsersByRole("USER");
         loadUsersByRole("PUBLISHER");
       },
@@ -95,6 +104,11 @@ $(document).ready(function () {
         console.error("Removal error:", xhr);
         alert("Failed to remove user. " + xhr.statusText);
       },
+      complete: function() {
+        // Always restore button state when request completes (success or error)
+        submitBtn.prop('disabled', false);
+        submitBtn.html(originalBtnText);
+      }
     });
   });
 

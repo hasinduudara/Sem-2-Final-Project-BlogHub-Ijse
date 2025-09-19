@@ -379,7 +379,11 @@ $(document).ready(function () {
 
     if (confirm("Are you sure you want to delete this admin? This action cannot be undone.")) {
       const deleteButton = $(this);
-      deleteButton.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+      const originalBtnText = deleteButton.html();
+
+      // Disable button and show loading spinner with text
+      deleteButton.prop('disabled', true);
+      deleteButton.html('<i class="fas fa-spinner fa-spin me-1"></i> Removing...');
 
       $.ajax({
         url: API_BASE + "/admin/users/" + id,
@@ -393,19 +397,18 @@ $(document).ready(function () {
         }),
         success: function (response) {
           console.log("Admin deleted successfully:", response);
-          alert("Admin deleted successfully!");
+          alert("Admin removed successfully!");
           loadAllAdmins(); // Reload the admin list
         },
         error: function (xhr, status, error) {
           console.error("Failed to delete admin:", xhr.responseText);
-          deleteButton.prop('disabled', false).html('<i class="fas fa-trash-alt"></i>');
 
           if (xhr.status === 401 || xhr.status === 403) {
             alert("Session expired or access denied. Please log in again.");
             localStorage.clear();
             window.location.href = "/Frontend/pages/login-and-register/login-and-register.html";
           } else {
-            let errorMessage = "Failed to delete admin: ";
+            let errorMessage = "Failed to remove admin: ";
             try {
               const errorResponse = JSON.parse(xhr.responseText);
               errorMessage += errorResponse.message || errorResponse.data || "Unknown error";
@@ -415,6 +418,11 @@ $(document).ready(function () {
             alert(errorMessage);
           }
         },
+        complete: function() {
+          // Always restore button state when request completes (success or error)
+          deleteButton.prop('disabled', false);
+          deleteButton.html(originalBtnText);
+        }
       });
     }
   });
