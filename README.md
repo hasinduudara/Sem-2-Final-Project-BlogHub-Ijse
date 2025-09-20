@@ -38,7 +38,7 @@ Follow these steps to run the project locally.
 
 1. Clone the repository:  
 ```bash
-   git clone [https://github.com/your-username/blog-article-platform.git
+   git clone [https://github.com/your-username/blog-article-platform.git](https://github.com/hasinduudara/Sem-2-Final-Project-BlogHub-Ijse.git)
 
 ```
 2. Configure the database in application.properties:
