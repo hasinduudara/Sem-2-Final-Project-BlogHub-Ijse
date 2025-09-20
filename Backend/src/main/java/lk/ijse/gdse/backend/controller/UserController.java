@@ -224,17 +224,9 @@ public class UserController {
             return ResponseEntity.ok(new ApiResponse(500, "Internal server error", e.getMessage()));
         }
     }
-}
 
-// ✅ New controller for profile endpoints that match frontend expectations
-@RestController
-@RequestMapping("/getprofile")
-@RequiredArgsConstructor
-class ProfileController {
-
-    private final UserService userService;
-
-    @GetMapping("/getprofildetails")
+    // ✅ Get Profile Details (merged from ProfileController)
+    @GetMapping("/getprofile/getprofildetails")
     public ResponseEntity<UserProfileResponseDTO> getProfileDetails(@RequestParam Long userId) {
         try {
             UserEntity user = userService.findById(userId);
