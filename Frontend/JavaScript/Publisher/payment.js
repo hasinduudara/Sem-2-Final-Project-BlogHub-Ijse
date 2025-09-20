@@ -240,7 +240,7 @@ payhere.onCompleted = function onCompleted(orderId) {
 
   // Redirect to dashboard after a short delay
   setTimeout(() => {
-    window.location.href = "/Frontend/pages/Publisher/publisher-dashboard.html";
+      window.location.href = "/Frontend/pages/Publisher/AI-generated-article.html";
   }, 3000);
 };
 
