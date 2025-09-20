@@ -454,15 +454,26 @@ $(document).ready(function () {
     // Clear the flag
     localStorage.removeItem("freshArticlePublished");
 
+    // Show success notification
+    showNotification("Article published successfully! It may take a moment to appear.", "success");
+
     // Add a small delay before loading articles to ensure backend has processed the new article
     setTimeout(() => {
       refreshArticles(); // Load published and scheduled articles
       loadPublisherProfileImage(); // Load the publisher's profile image
-    }, 500);
+    }, 1000);
   } else {
     // Normal load without delay
     refreshArticles(); // Load published and scheduled articles
     loadPublisherProfileImage(); // Load the publisher's profile image
+  }
+});
+
+// 🔹 Page visibility change handler - refresh when page becomes visible
+$(document).on('visibilitychange', function() {
+  if (!document.hidden) {
+    // Page became visible, refresh articles to show any new content
+    refreshArticles();
   }
 });
 
@@ -557,3 +568,23 @@ $("#editArticleModal").on("hidden.bs.modal", function () {
   $("#editImagePreview").hide();
 });
 
+// 🔹 Initialize Dashboard on Page Load
+$(document).ready(function () {
+  // Load articles when page loads
+  refreshArticles();
+
+  // Check if user just published an article from AI generation page
+  const freshArticlePublished = localStorage.getItem("freshArticlePublished");
+  if (freshArticlePublished === "true") {
+    // Remove the flag
+    localStorage.removeItem("freshArticlePublished");
+
+    // Show success notification
+    showNotification("Article published successfully! It may take a moment to appear.", "success");
+
+    // Refresh articles after a short delay to ensure backend processing is complete
+    setTimeout(function() {
+      refreshArticles();
+    }, 2000);
+  }
+});
