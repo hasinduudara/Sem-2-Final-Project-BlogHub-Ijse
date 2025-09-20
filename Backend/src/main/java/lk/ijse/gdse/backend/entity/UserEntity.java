@@ -34,6 +34,11 @@ public class UserEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    // Subscription fields for payment system
+    private Boolean hasSubscription = false;
+
+    private java.time.LocalDateTime subscriptionDate;
+
     public String getName() {
         return username;
     }

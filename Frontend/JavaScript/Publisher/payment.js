@@ -1,203 +1,294 @@
-$(document).ready(function() {
-    // ✅ Check authentication status on page load
-    checkAuthenticationStatus();
-});
+const API_BASE = "http://localhost:8080/api";
 
-function checkAuthenticationStatus() {
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
-    const userRole = localStorage.getItem("role");
+// Function to show notification
+function showNotification(message, type = "success") {
+  const alertClass =
+    type === "success"
+      ? "alert-success"
+      : type === "error"
+      ? "alert-danger"
+      : "alert-info";
+  const icon =
+    type === "success"
+      ? "fa-check-circle"
+      : type === "error"
+      ? "fa-exclamation-circle"
+      : "fa-info-circle";
 
-    console.log("=== AUTHENTICATION CHECK ===");
-    console.log("Token:", token ? "Present" : "Missing");
-    console.log("UserId:", userId);
-    console.log("User Role:", userRole);
-    console.log("============================");
+  const notification = $(`
+    <div class="alert ${alertClass} alert-dismissible fade show position-fixed" 
+         style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;" role="alert">
+      <i class="fas ${icon} me-2"></i>${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  `);
 
-    if (!token || !userId || userId === 'null' || userId === 'undefined') {
-        console.warn("User not authenticated - redirecting to login");
-
-        // Show user-friendly message
-        Swal.fire({
-            icon: 'warning',
-            title: 'Authentication Required',
-            text: 'Please log in to continue with your payment.',
-            confirmButtonText: 'Go to Login',
-            allowOutsideClick: false
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Redirect to login page
-                window.location.href = "http://localhost:5500/Frontend/pages/login-and-register/login-and-register.html";
-            }
-        });
-        return false;
-    }
-
-    return true;
+  $("body").append(notification);
+  setTimeout(() => {
+    notification.alert("close");
+  }, 5000);
 }
 
-$(document).on('click', '#payHereButton', function () {
-    // ✅ Check authentication before processing payment
-    if (!checkAuthenticationStatus()) {
-        return; // Stop execution if not authenticated
-    }
-
-    const token = localStorage.getItem("token");
-    const exchangeId = $(this).data('id');
-    const card = $(`.booking-card[data-booking-id="${exchangeId}"]`);
-    let price = parseFloat(card.find('.booking-price').data('price') || 0);
-    const itemName = card.find('.booking-item').text().trim() || "Subscription Payment";
-
-    // Step 1: Get user profile
-    getUserProfile(token).then(profile => {
-        // Step 2: Generate hash
-        $.ajax({
-            url: "http://localhost:8080/payment/generate-hash",
-            type: "GET",
-            headers: { "Authorization": "Bearer " + token },
-            data: { orderId: exchangeId, amount: price.toFixed(2), currency: "LKR" },
-            success: function(response) {
-                const payment = {
-                    sandbox: true,
-                    merchant_id: "1231966",
-                    return_url: "http://localhost:8080/payment-success",
-                    cancel_url: "http://localhost:8080/payment-cancel",
-                    notify_url: "http://localhost:8080/payment-notify",
-                    order_id: exchangeId,
-                    items: itemName,
-                    amount: price.toFixed(2),
-                    currency: "LKR",
-                    first_name: profile.firstName,
-                    last_name: profile.lastName,
-                    email: profile.email,
-                    phone: profile.phone,
-                    address: profile.address,
-                    city: profile.city,
-                    country: profile.country,
-                    hash: response.hash
-                };
-
-                console.log("Payment Request:", payment);
-                payhere.startPayment(payment);
-            },
-            error: function(err) {
-                console.error("Failed to get hash:", err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Payment Error',
-                    text: 'Unable to generate payment hash. Please try again.'
-                });
-            }
-        });
-    }).catch(err => {
-        console.error("Error preparing payment:", err);
-        Swal.fire({
-            icon: 'error',
-            title: 'Profile Error',
-            text: 'Unable to load your profile. Please ensure you are logged in.'
-        });
-    });
-});
-
-// ✅ Enhanced Function to get user profile details with better error handling
-function getUserProfile(token) {
-    let userId = localStorage.getItem("userId");
-    console.log("Retrieved userId from localStorage:", userId);
-
-    // Check if userId is null or empty
-    if (!userId || userId === 'null' || userId === 'undefined') {
-        console.error("UserId is null or empty. User needs to log in.");
-        return Promise.reject("Please log in to continue with payment");
-    }
-
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: "http://localhost:8080/getprofile/getprofildetails",
-            type: "GET",
-            data: { userId: userId },
-            headers: { "Authorization": "Bearer " + token },
-            success: function(profileResponse) {
-                console.log("Profile response:", profileResponse);
-                const profile = {
-                    firstName: profileResponse.username || profileResponse.firstName || "John", // Use username from backend
-                    lastName: profileResponse.lastName || "Doe",
-                    email: profileResponse.email || "john@example.com",
-                    phone: profileResponse.phone || "0771234567",
-                    address: profileResponse.address || "Colombo",
-                    city: profileResponse.city || "Colombo",
-                    country: "Sri Lanka"
-                };
-                resolve(profile);
-            },
-            error: function(err) {
-                console.error("Failed to fetch profile details:", err);
-                if (err.status === 401 || err.status === 403) {
-                    // Authentication error - redirect to login
-                    localStorage.clear(); // Clear invalid session data
-                    window.location.href = "http://localhost:5500/Frontend/pages/login-and-register/login-and-register.html";
-                }
-                reject("Unable to load profile information");
-            }
-        });
-    });
+// Helper: Get token or redirect to login if not authenticated
+function getAuthToken() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    showNotification("Please log in to continue with your subscription purchase.", "error");
+    setTimeout(() => {
+      window.location.href = "/Frontend/pages/login-and-register/login-and-register.html";
+    }, 2000);
+    return null;
+  }
+  return token;
 }
 
-// ✅ PayHere completed callback
+// Helper: Check if user is authenticated publisher
+function checkPublisherAuth() {
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+  const email = localStorage.getItem("email");
+
+  if (!token || !role || !email) {
+    showNotification("Authentication required. Please log in to purchase subscription.", "error");
+    setTimeout(() => {
+      window.location.href = "/Frontend/pages/login-and-register/login-and-register.html";
+    }, 2000);
+    return false;
+  }
+
+  if (role !== "PUBLISHER") {
+    showNotification("Only publishers can purchase subscriptions.", "error");
+    setTimeout(() => {
+      window.location.href = "/Frontend/index.html";
+    }, 2000);
+    return false;
+  }
+
+  return true;
+}
+
+// Function to clear all user data from localStorage
+function clearUserData() {
+  const keysToRemove = [
+    "token", "userId", "username", "role", "email",
+    "profileImageUrl", "publisherLogoUrl", "publisherName",
+    "hasSubscription", "subscriptionDate", "pendingPayment"
+  ];
+
+  keysToRemove.forEach(key => localStorage.removeItem(key));
+  console.log("All user data cleared from localStorage");
+}
+
+// Function to refresh user data from backend
+async function refreshUserData() {
+  const token = localStorage.getItem("token");
+  if (!token) return false;
+
+  try {
+    const response = await fetch(`${API_BASE}/auth/profile`, {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer " + token,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success && data.data) {
+        // Update localStorage with fresh data from backend
+        localStorage.setItem("email", data.data.email);
+        localStorage.setItem("username", data.data.username);
+        localStorage.setItem("role", data.data.role);
+        console.log("User data refreshed:", data.data);
+        return true;
+      }
+    }
+  } catch (error) {
+    console.error("Failed to refresh user data:", error);
+  }
+  return false;
+}
+
+// PayHere payment integration
+function initiatePayment() {
+  const token = getAuthToken();
+  if (!token) return;
+
+  const email = localStorage.getItem("email");
+  const username = localStorage.getItem("username");
+
+  if (!email || !username) {
+    showNotification("User information not found. Please log in again.", "error");
+    return;
+  }
+
+  // Generate unique order ID
+  const orderId = "SUB_" + Date.now();
+
+  // Try to create payment record in backend first
+  $.ajax({
+    url: API_BASE + "/payments/create",
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer " + token,
+      "Content-Type": "application/json"
+    },
+    data: JSON.stringify({
+      orderId: orderId,
+      amount: 4999.00,
+      currency: "LKR",
+      description: "BlogHub Premium Subscription - Lifetime Access",
+      userEmail: email
+    }),
+    success: function(response) {
+      console.log("Payment creation successful:", response);
+
+      // Configure PayHere payment object with proper hash
+      const payment = {
+        sandbox: true, // Set to false for production
+        merchant_id: "1231966", // Updated to match backend configuration
+        return_url: window.location.origin + "/Frontend/pages/Publisher/publisher-dashboard.html",
+        cancel_url: window.location.origin + "/Frontend/pages/Publisher/buy-subscription.html",
+        notify_url: "http://localhost:8080/api/payments/notify", // Backend webhook URL
+        order_id: orderId,
+        items: "BlogHub Premium Subscription - Lifetime Access",
+        amount: "4999.00",
+        currency: "LKR",
+        hash: response.data && response.data.hash ? response.data.hash : "DEV_" + orderId,
+        first_name: username.split(" ")[0] || username,
+        last_name: username.split(" ")[1] || "User",
+        email: email,
+        phone: "0777123456", // Provide default phone number for testing
+        address: "Colombo", // Provide default address
+        city: "Colombo",
+        country: "Sri Lanka",
+        delivery_address: "Colombo",
+        delivery_city: "Colombo",
+        delivery_country: "Sri Lanka",
+        custom_1: email, // Pass user email for backend processing
+        custom_2: token // Pass token for verification
+      };
+
+      console.log("Initiating PayHere payment with config:", payment);
+
+      // Initialize PayHere payment
+      payhere.startPayment(payment);
+    },
+    error: function(xhr) {
+      console.error("Payment creation error:", xhr);
+
+      if (xhr.status === 401 || xhr.status === 403) {
+        showNotification("Authentication failed. Please log in again.", "error");
+        setTimeout(() => {
+          window.location.href = "/Frontend/pages/login-and-register/login-and-register.html";
+        }, 2000);
+        return;
+      }
+
+      // Fallback: Continue with payment without backend hash (for development)
+      showNotification("Payment system initialized. Proceeding with PayHere...", "info");
+
+      const fallbackPayment = {
+        sandbox: true,
+        merchant_id: "1231966",
+        return_url: window.location.origin + "/Frontend/pages/Publisher/publisher-dashboard.html",
+        cancel_url: window.location.origin + "/Frontend/pages/Publisher/buy-subscription.html",
+        notify_url: "http://localhost:8080/api/payments/notify",
+        order_id: orderId,
+        items: "BlogHub Premium Subscription - Lifetime Access",
+        amount: "4999.00",
+        currency: "LKR",
+        hash: "FALLBACK_" + orderId,
+        first_name: username.split(" ")[0] || username,
+        last_name: username.split(" ")[1] || "User",
+        email: email,
+        phone: "0777123456",
+        address: "Colombo",
+        city: "Colombo",
+        country: "Sri Lanka",
+        delivery_address: "Colombo",
+        delivery_city: "Colombo",
+        delivery_country: "Sri Lanka",
+        custom_1: email,
+        custom_2: token
+      };
+
+      // Store payment info locally for manual processing if needed
+      localStorage.setItem("pendingPayment", JSON.stringify({
+        orderId: orderId,
+        email: email,
+        amount: 4999.00,
+        timestamp: new Date().toISOString()
+      }));
+
+      // Initialize PayHere payment anyway
+      payhere.startPayment(fallbackPayment);
+    }
+  });
+}
+
+// PayHere event handlers
 payhere.onCompleted = function onCompleted(orderId) {
-    console.log("✅ Payment completed for Order:", orderId);
+  console.log("Payment completed. OrderID:" + orderId);
 
-    // Send to backend to confirm payment first
-    const token = localStorage.getItem("token");
-    const paymentData = {
-        payerId: localStorage.getItem('userId'),
-        exchangeId: orderId.toString(),
-        amount: 4999,
-        paymentMethod: "CARD",
-        paymentStatus: "COMPLETED",
-        paymentDate: new Date().toISOString(),
-        transactionId: "TRX" + Math.floor(Math.random() * 1000000000)
-    };
+  showNotification("Payment completed successfully! Your subscription is now active.", "success");
 
-    $.ajax({
-        url: "http://localhost:8080/mybookings/paymentdone",
-        method: "POST",
-        contentType: "application/json",
-        headers: { "Authorization": "Bearer " + token },
-        data: JSON.stringify(paymentData),
-        success: function (response) {
-            console.log("✅ Payment saved:", response);
+  // Update local storage to reflect subscription status
+  localStorage.setItem("hasSubscription", "true");
+  localStorage.setItem("subscriptionDate", new Date().toISOString());
 
-            // Show success alert and then navigate
-            Swal.fire({
-                icon: 'success',
-                title: 'Payment Successful!',
-                text: 'Your subscription has been activated! You will now be redirected to create AI articles.',
-                timer: 3000,
-                timerProgressBar: true,
-                showConfirmButton: true,
-                confirmButtonText: 'Continue to AI Articles',
-                allowOutsideClick: false
-            }).then((result) => {
-                // Navigate to AI article generation page
-                console.log("🚀 Navigating to AI article generation page...");
-                window.location.href = "http://localhost:5500/Frontend/pages/Publisher/AI-generated-article.html";
-            });
-        },
-        error: function (err) {
-            console.error('Payment error (backend):', err);
-
-            // Even if backend fails, show success and navigate (payment was successful on PayHere)
-            Swal.fire({
-                icon: 'warning',
-                title: 'Payment Successful',
-                text: 'Your payment was successful, but there was an issue saving the record. You can still access AI article generation.',
-                confirmButtonText: 'Continue to AI Articles',
-                allowOutsideClick: false
-            }).then((result) => {
-                // Navigate to AI article generation page even if backend save failed
-                console.log("🚀 Navigating to AI article generation page (despite backend error)...");
-                window.location.href = "http://localhost:5500/Frontend/pages/Publisher/AI-generated-article.html";
-            });
-        }
-    });
+  // Redirect to dashboard after a short delay
+  setTimeout(() => {
+    window.location.href = "/Frontend/pages/Publisher/publisher-dashboard.html";
+  }, 3000);
 };
+
+payhere.onDismissed = function onDismissed() {
+  console.log("Payment dismissed");
+  showNotification("Payment was cancelled.", "info");
+};
+
+payhere.onError = function onError(error) {
+  console.log("Error:" + error);
+  showNotification("Payment failed: " + error, "error");
+};
+
+// Initialize page
+$(document).ready(function() {
+  // Check authentication first
+  if (!checkPublisherAuth()) {
+    return;
+  }
+
+  // Refresh user data from backend
+  refreshUserData();
+
+  // Populate user information
+  const email = localStorage.getItem("email");
+  const username = localStorage.getItem("username");
+
+  if (email && username) {
+    // Update UI with user info if needed
+    console.log("Payment page loaded for:", username, email);
+  }
+
+  // Bind payment button click event
+  $("#payHereButton").on("click", function() {
+    const $btn = $(this);
+    const originalText = $btn.html();
+
+    // Show loading state
+    $btn.prop('disabled', true);
+    $btn.html('<i class="fas fa-spinner fa-spin me-2"></i>Processing...');
+
+    // Initialize payment
+    initiatePayment();
+
+    // Reset button after a delay (in case payment modal doesn't open)
+    setTimeout(() => {
+      $btn.prop('disabled', false);
+      $btn.html(originalText);
+    }, 5000);
+  });
+});

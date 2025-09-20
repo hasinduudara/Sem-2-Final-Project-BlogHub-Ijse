@@ -42,6 +42,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/forgot-password/**").permitAll()
                                 .requestMatchers("/getprofile/**").authenticated()
                                 .requestMatchers("/payment/**").authenticated()
+                                .requestMatchers("/api/payments/**").authenticated()
                                 .requestMatchers("/mybookings/**").authenticated()
                                 .requestMatchers("/api/articles/published/**").permitAll()
                                 .requestMatchers("/api/home/**").permitAll()

@@ -25,7 +25,7 @@ public class PaymentDTO {
 
     // Constructor for frontend payment data
     public PaymentDTO(Long payerId, String exchangeId, Double amount,
-                     String paymentMethod, String transactionId) {
+                      String paymentMethod, String transactionId) {
         this.payerId = payerId;
         this.exchangeId = exchangeId;
         this.amount = amount;
