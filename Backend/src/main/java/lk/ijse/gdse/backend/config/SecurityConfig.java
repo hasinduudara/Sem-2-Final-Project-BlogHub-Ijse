@@ -36,20 +36,19 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ enable cors
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/logout").permitAll()
-                                .requestMatchers("/api/auth/profile/**").authenticated() // Profile endpoints require authentication
-                                .requestMatchers("/api/auth/validate-password/**").authenticated() // Password validation requires authentication
-                                .requestMatchers("/api/auth/debug/**").permitAll() // Debug endpoints
-                                .requestMatchers("/api/forgot-password/**").permitAll() // ✅ Allow forgot password endpoints
-                                .requestMatchers("/getprofile/**").authenticated() // ✅ Allow profile endpoints
-                                .requestMatchers("/payment/**").authenticated() // ✅ Allow payment endpoints
-                                .requestMatchers("/mybookings/**").authenticated() // ✅ Allow payment booking endpoints
+                                .requestMatchers("/api/auth/profile/**").authenticated()
+                                .requestMatchers("/api/auth/validate-password/**").authenticated()
+                                .requestMatchers("/api/auth/debug/**").permitAll()
+                                .requestMatchers("/api/forgot-password/**").permitAll()
+                                .requestMatchers("/getprofile/**").authenticated()
+                                .requestMatchers("/payment/**").authenticated()
+                                .requestMatchers("/mybookings/**").authenticated()
                                 .requestMatchers("/api/articles/published/**").permitAll()
                                 .requestMatchers("/api/home/**").permitAll()
                                 .requestMatchers("/api/articles/**").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/api/articles/admin/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/comments/**").authenticated()
-                                // ✅ Add likes permissions
                                 .requestMatchers(HttpMethod.GET, "/api/likes/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/likes/**").authenticated()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
@@ -76,7 +75,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://127.0.0.1:5500", "http://localhost:5500")); // frontend origins
+        config.setAllowedOrigins(List.of("http://127.0.0.1:5500", "http://localhost:5500"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

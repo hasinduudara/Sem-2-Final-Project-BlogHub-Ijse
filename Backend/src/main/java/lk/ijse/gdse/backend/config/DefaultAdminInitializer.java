@@ -28,7 +28,7 @@ public class DefaultAdminInitializer implements CommandLineRunner {
             UserEntity adminUser = new UserEntity();
             adminUser.setUsername("admin");
             adminUser.setEmail(adminEmail);
-            adminUser.setPassword(passwordEncoder.encode("123")); // Change this password!
+            adminUser.setPassword(passwordEncoder.encode("123"));
             adminUser.setRole(UserRole.ADMIN);
 
             UserEntity savedAdmin = userRepository.save(adminUser);
