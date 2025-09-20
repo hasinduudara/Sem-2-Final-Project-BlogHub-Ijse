@@ -1,6 +1,22 @@
 const params = new URLSearchParams(window.location.search);
 const articleId = params.get("id");
 
+// Function to convert plain text with newlines to HTML paragraphs
+function formatArticleContent(content) {
+  if (!content) return "";
+
+  // Split content by double newlines (paragraph breaks) and single newlines
+  return content
+    .split(/\n\s*\n/) // Split by double newlines (paragraph breaks)
+    .map((paragraph) => {
+      // Trim whitespace and replace single newlines with <br> tags
+      const formattedParagraph = paragraph.trim().replace(/\n/g, "<br>");
+      return formattedParagraph ? `<p>${formattedParagraph}</p>` : "";
+    })
+    .filter((p) => p) // Remove empty paragraphs
+    .join("");
+}
+
 // Load article
 function loadArticle() {
   $.ajax({
@@ -8,6 +24,8 @@ function loadArticle() {
     method: "GET",
     success: function (article) {
       const container = $("#articleContainer");
+      const formattedContent = formatArticleContent(article.content);
+
       container.html(`
         <div class="card">
           ${
@@ -20,7 +38,7 @@ function loadArticle() {
             <p class="text-muted">By <strong>${
               article.publisherName
             }</strong> | ${new Date(article.publishAt).toLocaleDateString()}</p>
-            <div class="card-text mt-4 article-content">${article.content}</div>
+            <div class="card-text mt-4 article-content">${formattedContent}</div>
             <button class="like-btn mt-3" id="likeBtn">
               <i class="fas fa-thumbs-up me-1"></i> Like (<span id="likeCount">0</span>)
             </button>

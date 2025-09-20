@@ -1,5 +1,21 @@
 const API_BASE = "http://localhost:8080/api";
 
+// Function to convert plain text with newlines to HTML paragraphs
+function formatArticleContent(content) {
+  if (!content) return "";
+
+  // Split content by double newlines (paragraph breaks) and single newlines
+  return content
+    .split(/\n\s*\n/) // Split by double newlines (paragraph breaks)
+    .map((paragraph) => {
+      // Trim whitespace and replace single newlines with <br> tags
+      const formattedParagraph = paragraph.trim().replace(/\n/g, "<br>");
+      return formattedParagraph ? `<p>${formattedParagraph}</p>` : "";
+    })
+    .filter((p) => p) // Remove empty paragraphs
+    .join("");
+}
+
 // Function to show notification
 function showNotification(message, type = "success") {
   $(".alert-notification").remove(); // Ensure only one notification is shown
