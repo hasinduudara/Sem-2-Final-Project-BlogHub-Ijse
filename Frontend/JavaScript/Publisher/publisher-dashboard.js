@@ -68,6 +68,9 @@ $("#logoutBtn").on("click", function () {
   localStorage.removeItem("username");
   localStorage.removeItem("email");
   localStorage.removeItem("role");
+  localStorage.removeItem("profileImageUrl"); // Clear user profile image
+  localStorage.removeItem("publisherLogoUrl"); // Clear publisher logo
+  localStorage.removeItem("publisherName"); // Clear publisher name
 
   showNotification("Logged out successfully!");
   setTimeout(() => {
@@ -316,11 +319,20 @@ function loadMyArticles(status) {
   const token = getAuthToken();
   if (!token) return;
 
+  // Add cache-busting timestamp to ensure fresh data
+  const cacheBuster = new Date().getTime();
+
   // Fetch articles from the API
   $.ajax({
-    url: `${API_BASE}/articles/me?status=${status}&page=0&size=50`, // Fetch first 50 articles
+    url: `${API_BASE}/articles/me?status=${status}&page=0&size=50&_t=${cacheBuster}`, // Add cache buster
     type: "GET",
-    headers: { Authorization: "Bearer " + token },
+    headers: {
+      Authorization: "Bearer " + token,
+      "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+      "Pragma": "no-cache",
+      "Expires": "0"
+    },
+    cache: false, // Disable jQuery caching
     success: function (res) {
       // If no articles are found, show the empty state
       if (!res.content || res.content.length === 0) {
@@ -435,8 +447,23 @@ $(document).ready(function () {
   const token = getAuthToken(); // Ensure user is authenticated
   if (!token) return; // Stop execution if not authenticated
 
-  refreshArticles(); // Load published and scheduled articles
-  loadPublisherProfileImage(); // Load the publisher's profile image
+  // Check if a fresh article was just published
+  const freshArticlePublished = localStorage.getItem("freshArticlePublished");
+
+  if (freshArticlePublished === "true") {
+    // Clear the flag
+    localStorage.removeItem("freshArticlePublished");
+
+    // Add a small delay before loading articles to ensure backend has processed the new article
+    setTimeout(() => {
+      refreshArticles(); // Load published and scheduled articles
+      loadPublisherProfileImage(); // Load the publisher's profile image
+    }, 500);
+  } else {
+    // Normal load without delay
+    refreshArticles(); // Load published and scheduled articles
+    loadPublisherProfileImage(); // Load the publisher's profile image
+  }
 });
 
 // 🔹 Image Preview Functionality for Create Article Modal

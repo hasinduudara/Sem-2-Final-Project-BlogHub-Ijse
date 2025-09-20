@@ -135,52 +135,86 @@
         resizeCanvas(windowWidth, windowHeight);
       }
 
-      // Authentication check
+      // Authentication check with race condition prevention
       document.addEventListener("DOMContentLoaded", function () {
-        // Check if user is authenticated and is an admin
-        const token = localStorage.getItem("token");
-        const role = localStorage.getItem("role");
-        const username = localStorage.getItem("username");
+        // Add delay to ensure localStorage is populated after redirect
+        setTimeout(function() {
+          checkAuthentication();
+        }, 100);
 
-        console.log("Token:", token);
-        console.log("Role:", role);
-        console.log("Username:", username);
+        function checkAuthentication() {
+          // Check if user is authenticated and is an admin
+          const token = localStorage.getItem("token");
+          const role = localStorage.getItem("role");
+          const username = localStorage.getItem("username");
 
-        if (!token) {
-          alert("Please log in first.");
-          window.location.href = "/Frontend/pages/login.html";
-          return;
+          console.log("HTML Auth Check - Token:", token);
+          console.log("HTML Auth Check - Role:", role);
+          console.log("HTML Auth Check - Username:", username);
+
+          // If no token or role on first check, retry after delay
+          if (!token || !role) {
+            console.log("HTML Auth - First check failed, retrying...");
+            setTimeout(function() {
+              const retryToken = localStorage.getItem("token");
+              const retryRole = localStorage.getItem("role");
+              const retryUsername = localStorage.getItem("username");
+
+              console.log("HTML Auth Retry - Token:", retryToken);
+              console.log("HTML Auth Retry - Role:", retryRole);
+
+              if (!retryToken) {
+                alert("Please log in first.");
+                window.location.href = "http://127.0.0.1:5500/Frontend/pages/login-and-register/login-and-register.html";
+                return;
+              }
+
+              if (retryRole !== "ADMIN") {
+                alert("Access denied. Please log in as an admin.");
+                window.location.href = "http://127.0.0.1:5500/Frontend/pages/login-and-register/login-and-register.html";
+                return;
+              }
+
+              // Authentication successful
+              console.log("HTML Auth - Welcome, Admin!");
+              initializePage(retryUsername);
+            }, 500);
+            return;
+          }
+
+          if (role !== "ADMIN") {
+            alert("Access denied. Please log in as an admin.");
+            window.location.href = "http://127.0.0.1:5500/Frontend/pages/login-and-register/login-and-register.html";
+            return;
+          }
+
+          // If we get here, user is authenticated as admin
+          console.log("HTML Auth - Welcome, Admin!");
+          initializePage(username);
         }
 
-        if (role !== "ADMIN") {
-          alert("Access denied. Please log in as an admin.");
-          window.location.href = "/Frontend/pages/login.html";
-          return;
-        }
+        function initializePage(username) {
+          // Display username in the UI
+          const userDisplayElement = document.getElementById("userDisplay");
+          if (userDisplayElement && username) {
+            userDisplayElement.textContent = username;
+          }
 
-        // If we get here, user is authenticated as admin
-        console.log("Welcome, Admin!");
+          // Add logout functionality
+          const logoutBtn = document.getElementById("logoutBtn");
+          if (logoutBtn) {
+            logoutBtn.addEventListener("click", function () {
+              // Clear localStorage
+              localStorage.removeItem("token");
+              localStorage.removeItem("userId");
+              localStorage.removeItem("username");
+              localStorage.removeItem("role");
+              localStorage.removeItem("email");
 
-        // Display username in the UI
-        const userDisplayElement = document.getElementById("userDisplay");
-        if (userDisplayElement && username) {
-          userDisplayElement.textContent = username;
-        }
-
-        // Add logout functionality
-        const logoutBtn = document.getElementById("logoutBtn");
-        if (logoutBtn) {
-          logoutBtn.addEventListener("click", function () {
-            // Clear localStorage
-            localStorage.removeItem("token");
-            localStorage.removeItem("username");
-            localStorage.removeItem("role");
-            localStorage.removeItem("email");
-
-            // Redirect to login page
-            window.location.href =
-              "/Frontend/pages/login-and-register/login-and-register.html";
-          });
+              // Redirect to login page
+              window.location.href = "http://127.0.0.1:5500/Frontend/pages/login-and-register/login-and-register.html";
+            });
+          }
         }
       });
     </script>

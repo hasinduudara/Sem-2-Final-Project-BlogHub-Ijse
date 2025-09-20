@@ -110,16 +110,31 @@ document.addEventListener("DOMContentLoaded", () => {
           console.log("User ID:", userId);  // ✅ Log userId
           console.log("Username:", username);
           console.log("Role received:", role);
+          console.log("Role type:", typeof role);
+          console.log("Role length:", role ? role.length : "N/A");
+          console.log("Role chars:", role ? Array.from(role).map(c => c.charCodeAt(0)) : "N/A");
 
           alert("Login Successful!");
 
-          // Store all data in localStorage
+          // Clear ALL previous user data first to prevent cross-user contamination
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          localStorage.removeItem("username");
+          localStorage.removeItem("role");
+          localStorage.removeItem("email");
+          localStorage.removeItem("profileImageUrl"); // Clear previous user's profile image
+          localStorage.removeItem("publisherLogoUrl"); // Clear previous publisher's logo
+          localStorage.removeItem("publisherName"); // Clear previous publisher's name
+
+          // Store the new user's data in localStorage
           localStorage.setItem("token", token);
           localStorage.setItem("userId", userId);  // ✅ Store userId
           localStorage.setItem("username", username);
           localStorage.setItem("role", role);
           localStorage.setItem("email", email);
 
+          // Verify what was actually stored
+          const storedRole = localStorage.getItem("role");
           console.log("Data stored in localStorage:");
           console.log(
             "- Token:",
@@ -127,7 +142,9 @@ document.addEventListener("DOMContentLoaded", () => {
           );
           console.log("- User ID:", localStorage.getItem("userId"));  // ✅ Log stored userId
           console.log("- Username:", localStorage.getItem("username"));
-          console.log("- Role:", localStorage.getItem("role"));
+          console.log("- Role stored:", storedRole);
+          console.log("- Role stored type:", typeof storedRole);
+          console.log("- Role stored === 'ADMIN':", storedRole === "ADMIN");
           console.log("- Email:", localStorage.getItem("email"));
 
           // Redirect based on role

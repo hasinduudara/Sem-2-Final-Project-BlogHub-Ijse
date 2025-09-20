@@ -29,7 +29,14 @@ function initializePage() {
 function setupEventListeners() {
     // Logout button
     $('#logoutBtn').click(function() {
-        localStorage.clear();
+        // Clear all user data including profile images
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        localStorage.removeItem("email");
+        localStorage.removeItem("role");
+        localStorage.removeItem("profileImageUrl"); // Clear user profile image
+        localStorage.removeItem("publisherLogoUrl"); // Clear publisher logo
+        localStorage.removeItem("publisherName"); // Clear publisher name
         window.location.href = "../../pages/login-and-register/login-and-register.html";
     });
 

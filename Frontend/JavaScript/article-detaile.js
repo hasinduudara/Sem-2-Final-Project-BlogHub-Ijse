@@ -42,7 +42,7 @@ function loadArticle() {
             <button class="like-btn mt-3" id="likeBtn">
               <i class="fas fa-thumbs-up me-1"></i> Like (<span id="likeCount">0</span>)
             </button>
-            <button class="share-btn mt-3" id="shareBtn">
+            <button class="share-btn mt-3 ms-2" id="shareBtn">
               <i class="fas fa-share-alt me-1"></i> Share
             </button>
           </div>
@@ -51,6 +51,7 @@ function loadArticle() {
 
       loadLikeCount();
 
+      // Attach like button event listener
       $("#likeBtn").click(function () {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -76,6 +77,33 @@ function loadArticle() {
           },
         });
       });
+
+      // Attach share button event listener after button is created
+      $("#shareBtn").click(function () {
+        console.log("Share button clicked!"); // Debug log
+        const shareUrl = window.location.href;
+        const articleTitle = article.title;
+
+        if (navigator.share) {
+          navigator
+            .share({
+              title: articleTitle,
+              text: `Check out this article: ${articleTitle}`,
+              url: shareUrl,
+            })
+            .then(() => {
+              console.log("Article shared successfully!");
+            })
+            .catch((error) => {
+              console.error("Error sharing article:", error);
+              // Fallback to clipboard if native sharing fails
+              fallbackToClipboard(shareUrl, articleTitle);
+            });
+        } else {
+          // Fallback for browsers that don't support navigator.share
+          fallbackToClipboard(shareUrl, articleTitle);
+        }
+      });
     },
     error: function (xhr) {
       console.error("Failed to load article", xhr.status);
@@ -86,6 +114,27 @@ function loadArticle() {
       `);
     },
   });
+}
+
+// Fallback function for clipboard sharing
+function fallbackToClipboard(shareUrl, articleTitle) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(shareUrl)
+      .then(() => {
+        alert(
+          `Article link copied to clipboard!\n\n"${articleTitle}"\n${shareUrl}`
+        );
+      })
+      .catch((error) => {
+        console.error("Failed to copy to clipboard:", error);
+        // Final fallback - show the URL in an alert
+        prompt("Copy this link to share the article:", shareUrl);
+      });
+  } else {
+    // For older browsers without clipboard API
+    prompt("Copy this link to share the article:", shareUrl);
+  }
 }
 
 // Load like count
@@ -178,22 +227,6 @@ $("#commentForm").submit(function (e) {
       alert(msg);
     },
   });
-});
-
-$("#shareBtn").click(function () {
-  const shareUrl = window.location.href;
-  if (navigator.share) {
-    navigator
-      .share({
-        title: document.title,
-        url: shareUrl,
-      })
-      .catch(console.error);
-  } else {
-    navigator.clipboard.writeText(shareUrl).then(() => {
-      alert("Link copied to clipboard!");
-    });
-  }
 });
 
 // Init

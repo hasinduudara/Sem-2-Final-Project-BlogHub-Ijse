@@ -5,12 +5,38 @@ class UserProfileManager {
         this.baseUrl = 'http://localhost:8080/api/auth';
         this.currentUserEmail = this.getCurrentUserEmail();
         this.isEditMode = false;
+        this.defaultProfileImageUrl = "https://placehold.co/120x120/e9ecef/6c757d?text=No+Image";
         this.init();
     }
 
     init() {
         this.bindEventListeners();
+        this.setInitialProfileImage();
         this.loadUserProfile();
+    }
+
+    setInitialProfileImage() {
+        const profileImg = document.getElementById('profileImage');
+        const storedImageUrl = localStorage.getItem('profileImageUrl');
+        const currentUserEmail = this.currentUserEmail;
+        const storedUserEmail = localStorage.getItem('email');
+
+        if (profileImg) {
+            // Only use stored image if it belongs to the current user
+            if (storedImageUrl &&
+                storedImageUrl !== this.defaultProfileImageUrl &&
+                currentUserEmail &&
+                storedUserEmail &&
+                currentUserEmail === storedUserEmail) {
+                profileImg.src = storedImageUrl;
+            } else {
+                // Clear any invalid stored image and use default
+                if (storedImageUrl && currentUserEmail !== storedUserEmail) {
+                    localStorage.removeItem('profileImageUrl');
+                }
+                profileImg.src = this.defaultProfileImageUrl;
+            }
+        }
     }
 
     bindEventListeners() {
@@ -144,14 +170,20 @@ class UserProfileManager {
         if (usernameInput) usernameInput.value = profileData.username || '';
         if (emailInput) emailInput.value = profileData.email || '';
 
-        if (profileImg && profileData.profileImageUrl) {
+        // Handle profile image - only set if backend provides a valid URL
+        if (profileImg && profileData.profileImageUrl && profileData.profileImageUrl.trim() !== "") {
             profileImg.src = profileData.profileImageUrl;
             localStorage.setItem('profileImageUrl', profileData.profileImageUrl);
         } else {
-            // Fallback to locally stored image if backend doesn't provide one
+            // If no image from backend, check localStorage
             const storedImageUrl = localStorage.getItem('profileImageUrl');
-            if(profileImg && storedImageUrl) {
-                profileImg.src = storedImageUrl;
+            if (profileImg) {
+                if (storedImageUrl && storedImageUrl !== this.defaultProfileImageUrl) {
+                    profileImg.src = storedImageUrl;
+                } else {
+                    profileImg.src = this.defaultProfileImageUrl;
+                    // Don't store the default image URL in localStorage
+                }
             }
         }
     }
@@ -167,7 +199,14 @@ class UserProfileManager {
 
         if (usernameInput) usernameInput.value = storedUsername || 'User';
         if (emailInput) emailInput.value = storedEmail || this.currentUserEmail || 'user@example.com';
-        if (profileImg && storedProfileImageUrl) profileImg.src = storedProfileImageUrl;
+
+        if (profileImg) {
+            if (storedProfileImageUrl && storedProfileImageUrl !== this.defaultProfileImageUrl) {
+                profileImg.src = storedProfileImageUrl;
+            } else {
+                profileImg.src = this.defaultProfileImageUrl;
+            }
+        }
     }
 
     toggleEditMode() {
@@ -334,7 +373,15 @@ class UserProfileManager {
             console.error('Error uploading image:', error);
             this.showError('Upload failed: ' + error.message);
             // Revert to previously saved image on failure
-            document.getElementById('profileImage').src = localStorage.getItem('profileImageUrl') || 'https://placehold.co/120x120/0d6efd/FFFFFF?text=JD';
+            const storedImageUrl = localStorage.getItem('profileImageUrl');
+            const profileImg = document.getElementById('profileImage');
+            if (profileImg) {
+                if (storedImageUrl && storedImageUrl !== this.defaultProfileImageUrl) {
+                    profileImg.src = storedImageUrl;
+                } else {
+                    profileImg.src = this.defaultProfileImageUrl;
+                }
+            }
         } finally {
             this.hideLoading();
         }

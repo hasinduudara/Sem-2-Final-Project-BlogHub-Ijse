@@ -95,11 +95,14 @@ $("#publishBtn").on("click", function () {
       // Show popup message and navigate to dashboard
       alert("Published");
 
-      // Navigate to publisher dashboard after a short delay
+      // Add a flag to localStorage to indicate fresh article was published
+      localStorage.setItem("freshArticlePublished", "true");
+
+      // Navigate to publisher dashboard after a longer delay to ensure backend processing
       setTimeout(function () {
         window.location.href =
           "/Frontend/pages/Publisher/publisher-dashboard.html";
-      }, 500);
+      }, 1500); // Increased delay to 1.5 seconds
     },
     error: function (xhr) {
       $("#statusMsg").html(

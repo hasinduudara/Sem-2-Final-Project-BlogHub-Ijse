@@ -69,12 +69,16 @@ async function loadHomeArticles() {
 // Load user profile image for navigation bar
 async function loadUserProfileImage() {
   try {
-    // Get user email from localStorage
     const userEmail = localStorage.getItem('email');
     const token = localStorage.getItem('token');
 
     if (!userEmail || !token) {
-      console.log('No user authentication found, using default profile image');
+      console.log('No user email or token found');
+      // Set default image immediately
+      const profileImg = document.querySelector('.profile-image');
+      if (profileImg) {
+        profileImg.src = "https://placehold.co/120x120/e9ecef/6c757d?text=No+Image";
+      }
       return;
     }
 
@@ -90,22 +94,82 @@ async function loadUserProfileImage() {
 
     if (response.ok) {
       const result = await response.json();
+      const profileImg = document.querySelector('.profile-image');
+      const defaultImageUrl = "https://placehold.co/120x120/e9ecef/6c757d?text=No+Image";
 
-      if (result.code === 200 && result.data.profileImageUrl) {
-        const profileImg = document.querySelector('.profile-image');
+      if (result.code === 200 && result.data.profileImageUrl && result.data.profileImageUrl.trim() !== "") {
         if (profileImg) {
           profileImg.src = result.data.profileImageUrl;
+          localStorage.setItem('profileImageUrl', result.data.profileImageUrl);
           console.log('Profile image loaded:', result.data.profileImageUrl);
         }
       } else {
-        console.log('No profile image found for user');
+        // No profile image from backend, check localStorage for previously uploaded image
+        const storedImageUrl = localStorage.getItem('profileImageUrl');
+        const storedUserEmail = localStorage.getItem('email');
+
+        if (profileImg) {
+          // Only use stored image if it belongs to the current user
+          if (storedImageUrl &&
+              storedImageUrl !== defaultImageUrl &&
+              userEmail === storedUserEmail) {
+            profileImg.src = storedImageUrl;
+          } else {
+            // Clear any invalid stored image and use default
+            if (storedImageUrl && userEmail !== storedUserEmail) {
+              localStorage.removeItem('profileImageUrl');
+            }
+            profileImg.src = defaultImageUrl;
+          }
+        }
+        console.log('No profile image found from backend, using stored or default image');
       }
     } else {
       console.log('Failed to load user profile:', response.status);
+      // Set default image on failure
+      const profileImg = document.querySelector('.profile-image');
+      if (profileImg) {
+        const storedImageUrl = localStorage.getItem('profileImageUrl');
+        const storedUserEmail = localStorage.getItem('email');
+        const defaultImageUrl = "https://placehold.co/120x120/e9ecef/6c757d?text=No+Image";
+
+        // Only use stored image if it belongs to the current user
+        if (storedImageUrl &&
+            storedImageUrl !== defaultImageUrl &&
+            userEmail === storedUserEmail) {
+          profileImg.src = storedImageUrl;
+        } else {
+          // Clear any invalid stored image and use default
+          if (storedImageUrl && userEmail !== storedUserEmail) {
+            localStorage.removeItem('profileImageUrl');
+          }
+          profileImg.src = defaultImageUrl;
+        }
+      }
     }
   } catch (error) {
     console.error('Error loading user profile image:', error);
-    // Keep default image on error
+    // Set default image on error
+    const profileImg = document.querySelector('.profile-image');
+    if (profileImg) {
+      const userEmail = localStorage.getItem('email');
+      const storedImageUrl = localStorage.getItem('profileImageUrl');
+      const storedUserEmail = localStorage.getItem('email');
+      const defaultImageUrl = "https://placehold.co/120x120/e9ecef/6c757d?text=No+Image";
+
+      // Only use stored image if it belongs to the current user
+      if (storedImageUrl &&
+          storedImageUrl !== defaultImageUrl &&
+          userEmail === storedUserEmail) {
+        profileImg.src = storedImageUrl;
+      } else {
+        // Clear any invalid stored image and use default
+        if (storedImageUrl && userEmail !== storedUserEmail) {
+          localStorage.removeItem('profileImageUrl');
+        }
+        profileImg.src = defaultImageUrl;
+      }
+    }
   }
 }
 
@@ -117,11 +181,14 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
       credentials: "include",
     });
 
-    // Always clear local storage + cookies reference
+    // Always clear local storage + cookies reference - including profile images
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("role");
+    localStorage.removeItem("profileImageUrl"); // Clear user profile image
+    localStorage.removeItem("publisherLogoUrl"); // Clear publisher logo
+    localStorage.removeItem("publisherName"); // Clear publisher name
 
     if (res.ok) {
       const toastEl = document.getElementById("logoutToast");

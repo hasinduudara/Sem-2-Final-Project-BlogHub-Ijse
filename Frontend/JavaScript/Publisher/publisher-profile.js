@@ -6,12 +6,38 @@ class PublisherProfileManager {
     this.baseUrl = "http://localhost:8080/api/publishers";
     this.currentUserEmail = this.getCurrentUserEmail();
     this.isEditMode = false;
+    this.defaultLogoUrl = "https://placehold.co/120x120/e9ecef/6c757d?text=No+Logo";
     this.init();
   }
 
   init() {
     this.bindEventListeners();
+    this.setInitialProfileImage();
     this.loadPublisherProfile();
+  }
+
+  setInitialProfileImage() {
+    const profileImageElement = document.getElementById("profileImage");
+    const storedLogo = localStorage.getItem("publisherLogoUrl");
+    const currentUserEmail = this.currentUserEmail;
+    const storedUserEmail = localStorage.getItem("email");
+
+    if (profileImageElement) {
+      // Only use stored image if it belongs to the current user
+      if (storedLogo &&
+          storedLogo !== this.defaultLogoUrl &&
+          currentUserEmail &&
+          storedUserEmail &&
+          currentUserEmail === storedUserEmail) {
+        profileImageElement.src = storedLogo;
+      } else {
+        // Clear any invalid stored image and use default
+        if (storedLogo && currentUserEmail !== storedUserEmail) {
+          localStorage.removeItem("publisherLogoUrl");
+        }
+        profileImageElement.src = this.defaultLogoUrl;
+      }
+    }
   }
 
   bindEventListeners() {
@@ -122,13 +148,22 @@ class PublisherProfileManager {
         localStorage.setItem("email", data.email);
       }
     }
-    if (data.logoUrl && profileImageElement) {
+
+    // Handle profile image - only set if backend provides a valid URL
+    if (data.logoUrl && data.logoUrl.trim() !== "" && profileImageElement) {
       profileImageElement.src = data.logoUrl;
       localStorage.setItem("publisherLogoUrl", data.logoUrl);
     } else {
+      // If no logo from backend, check localStorage
       const storedLogo = localStorage.getItem("publisherLogoUrl");
-      if (profileImageElement && storedLogo)
-        profileImageElement.src = storedLogo;
+      if (profileImageElement) {
+        if (storedLogo && storedLogo !== this.defaultLogoUrl) {
+          profileImageElement.src = storedLogo;
+        } else {
+          profileImageElement.src = this.defaultLogoUrl;
+          // Don't store the default logo URL in localStorage
+        }
+      }
     }
   }
 
@@ -142,7 +177,15 @@ class PublisherProfileManager {
 
     document.getElementById("publisherName").value = publisherName;
     document.getElementById("contactEmail").value = email;
-    if (logoUrl) document.getElementById("profileImage").src = logoUrl;
+
+    const profileImageElement = document.getElementById("profileImage");
+    if (profileImageElement) {
+      if (logoUrl && logoUrl !== this.defaultLogoUrl) {
+        profileImageElement.src = logoUrl;
+      } else {
+        profileImageElement.src = this.defaultLogoUrl;
+      }
+    }
   }
 
   toggleEditMode() {
@@ -295,10 +338,16 @@ class PublisherProfileManager {
     } catch (error) {
       console.error("Error uploading image:", error);
       this.showError(error.message);
-      // Revert to old image on failure
-      document.getElementById("profileImage").src =
-        localStorage.getItem("publisherLogoUrl") ||
-        "https://placehold.co/120x120/0d6efd/FFFFFF?text=LOGO";
+      // Revert to previous image on failure
+      const storedLogo = localStorage.getItem("publisherLogoUrl");
+      const profileImageElement = document.getElementById("profileImage");
+      if (profileImageElement) {
+        if (storedLogo && storedLogo !== this.defaultLogoUrl) {
+          profileImageElement.src = storedLogo;
+        } else {
+          profileImageElement.src = this.defaultLogoUrl;
+        }
+      }
     }
   }
 
