@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class GPTClient {
 
     // ✅ Use your new OpenRouter API Key
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "YOUR_KEY_HERE";
 
     public static String generateArticleContent(String title) {
         try {
